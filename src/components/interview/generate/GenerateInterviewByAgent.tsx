@@ -8,6 +8,7 @@ import CallAction from "../../call/CallAction";
 
 import { vapi } from "@/lib/vapi.sdk";
 import { Message, SavedMessage } from "@/types/vapi.types";
+import { useAuth } from "@/providers/AuthProvider";
 
 export enum CallStatus {
   INACTIVE = "INACTIVE",
@@ -23,6 +24,7 @@ interface GenerateInterviewByAgentProps {
 const GenerateInterviewByAgent = ({
   onClose,
 }: GenerateInterviewByAgentProps) => {
+  const { user } = useAuth();
   const [callStatus, setCallStatus] = useState<CallStatus>(
     CallStatus.CONNECTING,
   );
@@ -34,8 +36,8 @@ const GenerateInterviewByAgent = ({
     try {
       await vapi.start(process.env.NEXT_PUBLIC_VAPI_WORKFLOW_ID!, {
         variableValues: {
-          username: "Mian Zubair",
-          userid: 1234,
+          username: user.user_metadata.name,
+          userid: user.id,
         },
       });
     } catch (error) {

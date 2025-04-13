@@ -9,19 +9,19 @@ datasource db {
 
 // User: Stores user profile information
 model User {
-  id             String              @id @default(uuid())
+  id             String          @id @default(uuid())
   name           String
-  email          String              @unique
-  avatar      String?
-  provider    String
-  createdAt      DateTime            @default(now())
-  updatedAt      DateTime            @updatedAt
+  email          String          @unique
+  avatar         String?
+  provider       String
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
   sessions       Session[]
   goals          Goal[]
   interviewStats InterviewStats?
   strengths      UserStrength[]
   weaknesses     UserWeakness[]
-  templates      InterviewTemplate[] // Interviews created by user
+  interviews     Interview[] // Interviews created by user
 
   @@index([email]) // Index for fast email lookups
 }
@@ -68,95 +68,94 @@ model UserWeakness {
   @@index([userId]) // Index for user-specific weaknesses
 }
 
-// InterviewTemplate: Reusable interview templates
-model InterviewTemplate {
-  id           String                        @id @default(uuid())
+// Interview: Reusable interviews
+model Interview {
+  id           String                @id @default(uuid())
   creatorId    String?
-  creator      User?                         @relation(fields: [creatorId], references: [id], onDelete: SetNull)
+  creator      User?                 @relation(fields: [creatorId], references: [id], onDelete: SetNull)
   title        String // e.g., "Senior React Developer"
   description  String?
   duration     Int // Planned minutes
   difficulty   Difficulty
   focusAreas   FocusArea[]
-  isPublic     Boolean                       @default(false)
-  createdAt    DateTime                      @default(now())
-  updatedAt    DateTime                      @updatedAt
-  technologies InterviewTemplateTechnology[]
-  questions    TemplateQuestion[]
-  sessions     Session[] // Instances of this template
+  isPublic     Boolean               @default(false)
+  createdAt    DateTime              @default(now())
+  updatedAt    DateTime              @updatedAt
+  technologies InterviewTechnology[]
+  questions    InterviewQuestion[]
+  sessions     Session[] // Instances of this interview
 
-  @@index([creatorId]) // Index for creator-specific templates
+  @@index([creatorId]) // Index for creator-specific interviews
 }
 
-// TemplateQuestion: Questions within a template
-model TemplateQuestion {
+// InterviewQuestion: Questions within a interview
+model InterviewQuestion {
   id                 String             @id @default(uuid())
-  templateId         String
-  interviewTemplate  InterviewTemplate  @relation(fields: [templateId], references: [id], onDelete: Cascade)
+  interviewId        String
+  interview          Interview          @relation(fields: [interviewId], references: [id], onDelete: Cascade)
   text               String
   type               QuestionType
   technologyId       String?
   technology         Technology?        @relation(fields: [technologyId], references: [id], onDelete: SetNull)
-  sampleAnswer       String?
   evaluationCriteria String[] // e.g., ["Clarity", "Correctness"]
   createdAt          DateTime           @default(now())
   responses          QuestionResponse[]
 
-  @@index([templateId]) // Index for template-specific questions
+  @@index([interviewId]) // Index for interview-specific questions
 }
 
 // Technology: Programming languages, frameworks, etc.
 model Technology {
-  id                String                        @id @default(uuid())
-  name              String                        @unique
+  id                String                @id @default(uuid())
+  name              String                @unique
   category          TechCategory
-  createdAt         DateTime                      @default(now())
-  templates         InterviewTemplateTechnology[]
-  questions         TemplateQuestion[]
+  createdAt         DateTime              @default(now())
+  interviews        InterviewTechnology[]
+  questions         InterviewQuestion[]
   feedbackTechs     FeedbackTechnology[]
   SessionTechnology SessionTechnology[]
 
   @@index([name]) // Index for technology lookups
 }
 
-// InterviewTemplateTechnology: Links technologies to templates
-model InterviewTemplateTechnology {
-  templateId        String
-  technologyId      String
-  interviewTemplate InterviewTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
-  technology        Technology        @relation(fields: [technologyId], references: [id], onDelete: Cascade)
+// InterviewTechnology: Links technologies to interviews
+model InterviewTechnology {
+  interviewId  String
+  technologyId String
+  interview    Interview  @relation(fields: [interviewId], references: [id], onDelete: Cascade)
+  technology   Technology @relation(fields: [technologyId], references: [id], onDelete: Cascade)
 
-  @@id([templateId, technologyId])
+  @@id([interviewId, technologyId])
 }
 
 // Session: An instance of a user taking an interview
 model Session {
-  id                String              @id @default(uuid())
-  userId            String
-  templateId        String?
-  user              User                @relation(fields: [userId], references: [id], onDelete: Cascade)
-  interviewTemplate InterviewTemplate?  @relation(fields: [templateId], references: [id], onDelete: SetNull)
-  title             String? // Optional override
-  description       String?
-  startedAt         DateTime            @default(now())
-  endedAt           DateTime?
-  duration          Int? // Planned minutes
-  actualDuration    Int? // Actual minutes
-  focusAreas        FocusArea[]
-  difficulty        Difficulty
-  status            SessionStatus       @default(PLANNED)
-  mode              SessionMode         @default(MANUAL)
-  overallScore      Float? // 0-100
-  recordingUrl      String? // If recorded
-  transcript        String? // Speech-to-text
-  createdAt         DateTime            @default(now())
-  updatedAt         DateTime            @updatedAt
-  technologies      SessionTechnology[]
-  feedback          Feedback?
-  responses         QuestionResponse[]
-  pauses            SessionPause[]
+  id             String              @id @default(uuid())
+  userId         String
+  interviewId    String?
+  user           User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  interview      Interview?          @relation(fields: [interviewId], references: [id], onDelete: SetNull)
+  title          String? // Optional override
+  description    String?
+  startedAt      DateTime            @default(now())
+  endedAt        DateTime?
+  duration       Int? // Planned minutes
+  actualDuration Int? // Actual minutes
+  focusAreas     FocusArea[]
+  difficulty     Difficulty
+  status         SessionStatus       @default(PLANNED)
+  mode           SessionMode         @default(MANUAL)
+  overallScore   Float? // 0-100
+  recordingUrl   String? // If recorded
+  transcript     String? // Speech-to-text
+  createdAt      DateTime            @default(now())
+  updatedAt      DateTime            @updatedAt
+  technologies   SessionTechnology[]
+  feedback       Feedback?
+  responses      QuestionResponse[]
+  pauses         SessionPause[]
 
-  @@index([userId, templateId]) // Index for user and template queries
+  @@index([userId, interviewId]) // Index for user and interview queries
 }
 
 // SessionTechnology: Links technologies to sessions
@@ -171,20 +170,20 @@ model SessionTechnology {
 
 // QuestionResponse: User answers to questions
 model QuestionResponse {
-  id              String            @id @default(uuid())
+  id              String             @id @default(uuid())
   sessionId       String
   questionId      String?
-  session         Session           @relation(fields: [sessionId], references: [id], onDelete: Cascade)
-  question        TemplateQuestion? @relation(fields: [questionId], references: [id], onDelete: SetNull)
+  session         Session            @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  question        InterviewQuestion? @relation(fields: [questionId], references: [id], onDelete: SetNull)
   questionText    String // For persistence
   userAnswer      String // Text, code, or transcript
-  isCode          Boolean           @default(false) // Flag for code submissions
+  expectedAnswer  String?
   score           Float? // 0-100
   timeTaken       Int? // Seconds spent answering
   feedback        String? // AI notes
   improvementTips String[] // e.g., ["Explain useEffect better"]
-  createdAt       DateTime          @default(now())
-  updatedAt       DateTime          @updatedAt
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
 
   @@index([sessionId]) // Index for session-specific responses
 }
@@ -285,7 +284,6 @@ enum QuestionType {
   BEHAVIORAL
   SYSTEM_DESIGN
   PROBLEM_SOLVING
-  CODING
 }
 
 enum TechCategory {
