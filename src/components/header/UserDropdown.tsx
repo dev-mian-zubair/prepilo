@@ -9,7 +9,7 @@ import {
 import { Avatar } from "@heroui/avatar";
 import { ChartPie, Settings, CircleHelp, LogOut } from "lucide-react";
 
-const UserDropdown = () => {
+const UserDropdown = ({ user }: { user: any }) => {
   const iconClasses = "w-4 h-4";
 
   return (
@@ -19,7 +19,7 @@ const UserDropdown = () => {
           className="cursor-pointer"
           color="primary"
           size="sm"
-          src="https://i.pravatar.cc/150?u=a042581f4e29026704d"
+          src={user.user_metadata.avatar_url}
         />
       </DropdownTrigger>
       <DropdownMenu aria-label="User Actions" variant="flat">

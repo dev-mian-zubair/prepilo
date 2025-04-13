@@ -1,0 +1,325 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// User: Stores user profile information
+model User {
+  id             String              @id @default(uuid())
+  name           String
+  email          String              @unique
+  avatar      String?
+  provider    String
+  createdAt      DateTime            @default(now())
+  updatedAt      DateTime            @updatedAt
+  sessions       Session[]
+  goals          Goal[]
+  interviewStats InterviewStats?
+  strengths      UserStrength[]
+  weaknesses     UserWeakness[]
+  templates      InterviewTemplate[] // Interviews created by user
+
+  @@index([email]) // Index for fast email lookups
+}
+
+// InterviewStats: Aggregates user performance
+model InterviewStats {
+  id                     String   @id @default(uuid())
+  userId                 String   @unique
+  user                   User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  totalSessions          Int      @default(0)
+  completedSessions      Int      @default(0)
+  avgTechnicalScore      Float? // 0-100
+  avgCommunicationScore  Float? // 0-100
+  avgProblemSolvingScore Float? // 0-100
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
+
+  @@index([userId]) // Index for user-specific stats queries
+}
+
+// UserStrength: Tracks user strengths
+model UserStrength {
+  id          String           @id @default(uuid())
+  userId      String
+  user        User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  category    StrengthCategory
+  description String // e.g., "Strong React component design"
+  sessionIds  String[] // Links to sessions as evidence
+  createdAt   DateTime         @default(now())
+
+  @@index([userId]) // Index for user-specific strengths
+}
+
+// UserWeakness: Tracks areas for improvement
+model UserWeakness {
+  id              String           @id @default(uuid())
+  userId          String
+  user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  category        WeaknessCategory
+  description     String // e.g., "Weak in SQL joins"
+  improvementTips String[] // e.g., ["Practice join queries", "Review indexing"]
+  createdAt       DateTime         @default(now())
+
+  @@index([userId]) // Index for user-specific weaknesses
+}
+
+// InterviewTemplate: Reusable interview templates
+model InterviewTemplate {
+  id           String                        @id @default(uuid())
+  creatorId    String?
+  creator      User?                         @relation(fields: [creatorId], references: [id], onDelete: SetNull)
+  title        String // e.g., "Senior React Developer"
+  description  String?
+  duration     Int // Planned minutes
+  difficulty   Difficulty
+  focusAreas   FocusArea[]
+  isPublic     Boolean                       @default(false)
+  createdAt    DateTime                      @default(now())
+  updatedAt    DateTime                      @updatedAt
+  technologies InterviewTemplateTechnology[]
+  questions    TemplateQuestion[]
+  sessions     Session[] // Instances of this template
+
+  @@index([creatorId]) // Index for creator-specific templates
+}
+
+// TemplateQuestion: Questions within a template
+model TemplateQuestion {
+  id                 String             @id @default(uuid())
+  templateId         String
+  interviewTemplate  InterviewTemplate  @relation(fields: [templateId], references: [id], onDelete: Cascade)
+  text               String
+  type               QuestionType
+  technologyId       String?
+  technology         Technology?        @relation(fields: [technologyId], references: [id], onDelete: SetNull)
+  sampleAnswer       String?
+  evaluationCriteria String[] // e.g., ["Clarity", "Correctness"]
+  createdAt          DateTime           @default(now())
+  responses          QuestionResponse[]
+
+  @@index([templateId]) // Index for template-specific questions
+}
+
+// Technology: Programming languages, frameworks, etc.
+model Technology {
+  id                String                        @id @default(uuid())
+  name              String                        @unique
+  category          TechCategory
+  createdAt         DateTime                      @default(now())
+  templates         InterviewTemplateTechnology[]
+  questions         TemplateQuestion[]
+  feedbackTechs     FeedbackTechnology[]
+  SessionTechnology SessionTechnology[]
+
+  @@index([name]) // Index for technology lookups
+}
+
+// InterviewTemplateTechnology: Links technologies to templates
+model InterviewTemplateTechnology {
+  templateId        String
+  technologyId      String
+  interviewTemplate InterviewTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+  technology        Technology        @relation(fields: [technologyId], references: [id], onDelete: Cascade)
+
+  @@id([templateId, technologyId])
+}
+
+// Session: An instance of a user taking an interview
+model Session {
+  id                String              @id @default(uuid())
+  userId            String
+  templateId        String?
+  user              User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  interviewTemplate InterviewTemplate?  @relation(fields: [templateId], references: [id], onDelete: SetNull)
+  title             String? // Optional override
+  description       String?
+  startedAt         DateTime            @default(now())
+  endedAt           DateTime?
+  duration          Int? // Planned minutes
+  actualDuration    Int? // Actual minutes
+  focusAreas        FocusArea[]
+  difficulty        Difficulty
+  status            SessionStatus       @default(PLANNED)
+  mode              SessionMode         @default(MANUAL)
+  overallScore      Float? // 0-100
+  recordingUrl      String? // If recorded
+  transcript        String? // Speech-to-text
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+  technologies      SessionTechnology[]
+  feedback          Feedback?
+  responses         QuestionResponse[]
+  pauses            SessionPause[]
+
+  @@index([userId, templateId]) // Index for user and template queries
+}
+
+// SessionTechnology: Links technologies to sessions
+model SessionTechnology {
+  sessionId    String
+  technologyId String
+  session      Session    @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  technology   Technology @relation(fields: [technologyId], references: [id], onDelete: Cascade)
+
+  @@id([sessionId, technologyId])
+}
+
+// QuestionResponse: User answers to questions
+model QuestionResponse {
+  id              String            @id @default(uuid())
+  sessionId       String
+  questionId      String?
+  session         Session           @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  question        TemplateQuestion? @relation(fields: [questionId], references: [id], onDelete: SetNull)
+  questionText    String // For persistence
+  userAnswer      String // Text, code, or transcript
+  isCode          Boolean           @default(false) // Flag for code submissions
+  score           Float? // 0-100
+  timeTaken       Int? // Seconds spent answering
+  feedback        String? // AI notes
+  improvementTips String[] // e.g., ["Explain useEffect better"]
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  @@index([sessionId]) // Index for session-specific responses
+}
+
+// SessionPause: Tracks pauses during sessions
+model SessionPause {
+  id         String    @id @default(uuid())
+  sessionId  String
+  session    Session   @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  pauseStart DateTime
+  pauseEnd   DateTime?
+  duration   Int? // Seconds
+  createdAt  DateTime  @default(now())
+
+  @@index([sessionId]) // Index for session-specific pauses
+}
+
+// Feedback: AI-generated feedback for a session
+model Feedback {
+  id              String               @id @default(uuid())
+  sessionId       String               @unique
+  session         Session              @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  technical       Float? // 0-100
+  problemSolving  Float? // 0-100
+  communication   Float? // 0-100
+  clarity         Float? // 0-100
+  confidence      Float? // 0-100
+  fillerWords     Float? // % of speech
+  pacing          Float? // Words/min or 0-100
+  summary         String? // General feedback
+  improvementPlan String? // Actionable steps
+  createdAt       DateTime             @default(now())
+  techScores      FeedbackTechnology[]
+
+  @@index([sessionId]) // Index for session-specific feedback
+}
+
+// FeedbackTechnology: Per-technology feedback
+model FeedbackTechnology {
+  feedbackId   String
+  technologyId String
+  feedback     Feedback   @relation(fields: [feedbackId], references: [id], onDelete: Cascade)
+  technology   Technology @relation(fields: [technologyId], references: [id], onDelete: Cascade)
+  score        Float // 0-100
+  strengths    String[] // e.g., ["Good state management"]
+  weaknesses   String[] // e.g., ["Missed hooks"]
+
+  @@id([feedbackId, technologyId])
+}
+
+// Goal: Tracks user goals
+model Goal {
+  id          String     @id @default(uuid())
+  userId      String
+  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type        GoalType
+  target      Int // e.g., 5 sessions
+  current     Int        @default(0)
+  period      GoalPeriod
+  startDate   DateTime
+  endDate     DateTime?
+  isCompleted Boolean    @default(false)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  @@index([userId]) // Index for user-specific goals
+}
+
+// Enums
+enum FocusArea {
+  TECHNICAL
+  SYSTEM_DESIGN
+  BEHAVIORAL
+  COMMUNICATION
+  PROBLEM_SOLVING
+}
+
+enum Difficulty {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+}
+
+enum SessionStatus {
+  PLANNED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum SessionMode {
+  MANUAL
+  AGENT_GUIDED
+}
+
+enum QuestionType {
+  TECHNICAL
+  BEHAVIORAL
+  SYSTEM_DESIGN
+  PROBLEM_SOLVING
+  CODING
+}
+
+enum TechCategory {
+  FRONTEND
+  BACKEND
+  DATABASE
+  DEVOPS
+  PROGRAMMING_LANGUAGE
+  FRAMEWORK
+}
+
+enum StrengthCategory {
+  TECHNICAL
+  COMMUNICATION
+  PROBLEM_SOLVING
+  KNOWLEDGE
+}
+
+enum WeaknessCategory {
+  TECHNICAL
+  COMMUNICATION
+  PROBLEM_SOLVING
+  CONFIDENCE
+  CLARITY
+}
+
+enum GoalType {
+  SESSIONS_COMPLETED
+  SCORE_IMPROVEMENT
+  SKILL_IMPROVEMENT
+}
+
+enum GoalPeriod {
+  WEEKLY
+  MONTHLY
+  QUARTERLY
+}
