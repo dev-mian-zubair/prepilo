@@ -13,6 +13,8 @@ const mockData: DashboardData = {
   stats: {
     totalSessions: 20,
     completedSessions: 15,
+    weeklySessions: 5,
+    highScoreSessions: 12,
     avgTechnicalScore: 85,
     avgCommunicationScore: 78,
     avgProblemSolvingScore: 82,
@@ -32,6 +34,55 @@ const mockData: DashboardData = {
       title: "React Advanced Interview",
       startedAt: new Date(),
       overallScore: 85,
+      status: "COMPLETED",
+    },
+    {
+      id: "2",
+      title: "System Design Practice",
+      startedAt: new Date(Date.now() - 86400000), // 1 day ago
+      overallScore: 78,
+      status: "COMPLETED",
+    },
+    {
+      id: "3",
+      title: "Data Structures & Algorithms",
+      startedAt: new Date(Date.now() - 172800000), // 2 days ago
+      overallScore: 92,
+      status: "COMPLETED",
+    },
+    {
+      id: "4",
+      title: "Backend Architecture",
+      startedAt: new Date(Date.now() - 259200000), // 3 days ago
+      overallScore: 88,
+      status: "COMPLETED",
+    },
+    {
+      id: "5",
+      title: "Frontend Performance",
+      startedAt: new Date(Date.now() - 345600000), // 4 days ago
+      overallScore: 81,
+      status: "COMPLETED",
+    },
+    {
+      id: "6",
+      title: "Database Optimization",
+      startedAt: new Date(Date.now() - 432000000), // 5 days ago
+      overallScore: 75,
+      status: "COMPLETED",
+    },
+    {
+      id: "7",
+      title: "API Design",
+      startedAt: new Date(Date.now() - 518400000), // 6 days ago
+      overallScore: 89,
+      status: "COMPLETED",
+    },
+    {
+      id: "8",
+      title: "Cloud Architecture",
+      startedAt: new Date(Date.now() - 604800000), // 7 days ago
+      overallScore: 83,
       status: "COMPLETED",
     },
   ],
@@ -93,7 +144,6 @@ export default function DashboardPage() {
           stats={mockData.stats}
           recentFeedback={mockData.recentFeedback}
         />
-        <RecentActivity sessions={mockData.recentSessions} />
         <KeyMetrics
           stats={mockData.stats}
           totalHours={12.5}
@@ -106,6 +156,7 @@ export default function DashboardPage() {
         />
         <GoalProgress goals={mockData.goals} />
         <RecommendedActions actions={mockActions} />
+        <RecentActivity sessions={mockData.recentSessions} />
         <UpcomingSessions sessions={mockData.upcomingSessions} />
       </div>
     </div>

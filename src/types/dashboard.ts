@@ -1,6 +1,8 @@
 export interface InterviewStats {
   totalSessions: number;
   completedSessions: number;
+  weeklySessions: number;
+  highScoreSessions: number;
   avgTechnicalScore?: number;
   avgCommunicationScore?: number;
   avgProblemSolvingScore?: number;
