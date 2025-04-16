@@ -2,12 +2,27 @@ import { Card, CardBody, CardHeader } from "@heroui/card";
 import { Progress } from "@heroui/progress";
 import { InterviewStats, Feedback } from "@/types/dashboard";
 
-interface PerformanceOverviewProps {
-  stats: InterviewStats;
-  recentFeedback: Feedback[];
-}
+export default function PerformanceOverview() {
+  const stats: InterviewStats = {
+    totalSessions: 20,
+    completedSessions: 15,
+    weeklySessions: 5,
+    highScoreSessions: 12,
+    avgTechnicalScore: 85,
+    avgCommunicationScore: 78,
+    avgProblemSolvingScore: 82,
+  };
 
-export default function PerformanceOverview({ stats, recentFeedback }: PerformanceOverviewProps) {
+  const recentFeedback: Feedback[] = [
+    {
+      technical: 88,
+      communication: 75,
+      problemSolving: 85,
+      clarity: 80,
+      confidence: 70,
+    },
+  ];
+
   const latestFeedback = recentFeedback[0];
   
   return (
