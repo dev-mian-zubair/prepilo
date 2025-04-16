@@ -17,7 +17,7 @@ const ConversationBox = ({ messages }: ConversationBoxProps) => {
   }, [messages]);
 
   return (
-    <Card className="w-[400px] bg-content1 border-l border-divider flex flex-col rounded-none">
+    <Card className="w-[400px] bg-content1 border-l border-divider flex flex-col rounded-none shadow-none">
       <CardHeader className="p-4 border-b border-divider">
         <h2 className="text-sm font-semibold text-foreground">Conversation</h2>
       </CardHeader>

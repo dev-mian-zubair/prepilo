@@ -1,6 +1,8 @@
 "use client";
 import React from "react";
 
+import { ThemeSwitch } from "../ThemeSwitch";
+
 import UserDropdown from "./UserDropdown";
 import SignInButton from "./SignInButton";
 import NewInterviewButton from "./NewInterviewButton";
@@ -12,8 +14,15 @@ const HeaderRightActions = () => {
 
   return (
     <>
-      <NewInterviewButton />
-      {!loading && user ? <UserDropdown user={user} /> : <SignInButton />}
+      <ThemeSwitch />
+      {!loading && user ? (
+        <>
+          <NewInterviewButton />
+          <UserDropdown user={user} />
+        </>
+      ) : (
+        <SignInButton />
+      )}
     </>
   );
 };

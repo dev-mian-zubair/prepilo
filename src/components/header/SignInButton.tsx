@@ -36,7 +36,7 @@ const SignInButton = () => {
     <Button
       disabled={loading}
       radius="full"
-      size="sm"
+      size="md"
       variant="bordered"
       onPress={() => signIn("google")}
     >

@@ -3,7 +3,7 @@ import { Card, CardBody } from "@heroui/card";
 import React from "react";
 import { Chip } from "@heroui/chip";
 
-import { CallStatus } from "../interview/generate/GenerateInterviewByAgent";
+import { CallStatus } from "@/enums";
 
 const AgentCard = ({
   isSpeaking,
@@ -20,12 +20,12 @@ const AgentCard = ({
   }[status];
 
   return (
-    <div className="absolute top-10 left-10 z-30">
-      <Card className="relative overflow-hidden rounded-medium border-none shadow-md w-72">
+    <div className="absolute top-12 left-12 z-30">
+      <Card className="relative overflow-hidden rounded-medium border-none shadow-md w-72 bg-gradient-to-tl from-green-100 to-cyan-100">
         <div className="absolute inset-0 bg-gradient-to-t z-10" />
         <CardBody className="flex flex-col items-center justify-center p-4 z-20 relative h-38">
           <Chip
-            className="absolute top-2 left-2"
+            className="absolute top-2 left-2 size-5 text-white"
             color={chipInfo[0] as any}
             size="sm"
           >
@@ -33,7 +33,7 @@ const AgentCard = ({
           </Chip>
           <div
             className={`rounded-full p-4 ${
-              isSpeaking ? "animate-pulse bg-green-200" : ""
+              isSpeaking ? "animate-pulse bg-green-300" : ""
             }`}
           >
             <Avatar
@@ -44,7 +44,9 @@ const AgentCard = ({
               src="https://i.pravatar.cc/150?u=a04258114e29026708c"
             />
           </div>
-          <span className="mt-2 text-xs font-medium">Sam (AI)</span>
+          <span className="text-xs font-medium absolute bottom-2 left-2">
+            Hana
+          </span>
         </CardBody>
       </Card>
     </div>
