@@ -18,11 +18,6 @@ export const Navbar = () => {
             <span className={title({ size: "xxs", color: "blue" })}>Prepilo</span>
           </Link>
         </NavbarBrand>
-        <NavbarItem>
-          <Link href="/dashboard" className="text-foreground">
-            Dashboard
-          </Link>
-        </NavbarItem>
       </NavbarContent>
 
       <NavbarContent className="flex basis-1/5 sm:basis-full" justify="end">
