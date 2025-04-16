@@ -1,5 +1,6 @@
 import { Card, CardBody, CardHeader } from "@heroui/card";
 import { Progress } from "@heroui/progress";
+
 import { InterviewStats, Feedback } from "@/types/dashboard";
 
 export default function PerformanceOverview() {
@@ -24,82 +25,107 @@ export default function PerformanceOverview() {
   ];
 
   const latestFeedback = recentFeedback[0];
-  
+
   return (
-    <Card className="col-span-2 bg-content1 shadow-lg">
-      <CardHeader className="bg-default-100 border-b border-default-200">
-        <h2 className="text-xl font-semibold text-foreground">Performance Overview</h2>
+    <Card className="col-span-2 bg-content1 rounded-large shadow-none overflow-hidden transition-all duration-300">
+      <CardHeader>
+        <h2 className="text-large font-bold text-background-foreground tracking-tight">
+          Performance Overview
+        </h2>
       </CardHeader>
-      <CardBody className="text-foreground">
-        <div className="grid grid-cols-2 gap-6">
+      <CardBody>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* Progress Snapshot */}
-          <div className="space-y-4">
-            <h3 className="text-lg font-medium text-foreground">Progress Snapshot</h3>
-            <div className="space-y-2">
-              <div>
-                <p className="text-sm text-foreground/70">Sessions Completed</p>
-                <p className="text-2xl font-bold text-foreground">{stats.completedSessions}/{stats.totalSessions}</p>
-                <Progress 
-                  value={(stats.completedSessions / stats.totalSessions) * 100} 
+          <div className="space-y-6 bg-hover rounded-medium p-6">
+            <h3 className="text-medium font-semibold text-background-foreground">
+              Progress Snapshot
+            </h3>
+            <div className="space-y-6">
+              <div className="group">
+                <p className="text-tiny text-secondary mb-1">
+                  Sessions Completed
+                </p>
+                <p className="text-large font-bold text-background-foreground">
+                  {stats.completedSessions}/{stats.totalSessions}
+                </p>
+                <Progress
                   classNames={{
-                    base: "overflow-hidden rounded-full bg-hover",
-                    indicator: "h-full bg-primary rounded-full"
+                    base: "h-3 rounded-medium bg-background overflow-hidden",
+                    indicator:
+                      "h-full bg-success transition-all duration-500 group-hover:bg-opacity-90",
                   }}
+                  value={(stats.completedSessions / stats.totalSessions) * 100}
                 />
               </div>
               <div>
-                <p className="text-sm text-foreground/70">Current Streak</p>
-                <p className="text-2xl font-bold text-success">3 days</p>
+                <p className="text-tiny text-secondary mb сложности-1">
+                  Current Streak
+                </p>
+                <p className="text-large font-bold text-success">3 days</p>
               </div>
             </div>
           </div>
 
           {/* Skill Radar */}
-          <div className="space-y-4">
-            <h3 className="text-lg font-medium text-foreground">Skill Assessment</h3>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <p className="text-sm text-foreground/70">Technical</p>
-                <p className="text-sm font-medium text-foreground mb-1">{latestFeedback?.technical || 0}%</p>
-                <Progress 
-                  value={latestFeedback?.technical || 0} 
+          <div className="space-y-6">
+            <h3 className="text-medium font-semibold text-background-foreground">
+              Skill Assessment
+            </h3>
+            <div className="grid grid-cols-2 gap-6">
+              <div className="group border border-border rounded-medium p-4 hover:bg-hover transition-all duration-300">
+                <p className="text-tiny text-secondary mb-1">Technical</p>
+                <p className="text-small font-medium text-background-foreground mb-2">
+                  {latestFeedback?.technical || 0}%
+                </p>
+                <Progress
                   classNames={{
-                    base: "overflow-hidden rounded-full bg-hover",
-                    indicator: "h-full bg-primary rounded-full"
+                    base: "h-2 rounded-medium bg-background overflow-hidden",
+                    indicator:
+                      "h-full bg-gradient-to-r from-primary to-secondary transition-all duration-500 group-hover:from-primary group-hover:to-primary",
                   }}
+                  value={latestFeedback?.technical || 0}
                 />
               </div>
-              <div>
-                <p className="text-sm text-foreground/70">Communication</p>
-                <p className="text-sm font-medium text-foreground mb-1">{latestFeedback?.communication || 0}%</p>
-                <Progress 
-                  value={latestFeedback?.communication || 0} 
+              <div className="group border border-border rounded-medium p-4 hover:bg-hover transition-all duration-300">
+                <p className="text-tiny text-secondary mb-1">Communication</p>
+                <p className="text-small font-medium text-background-foreground mb-2">
+                  {latestFeedback?.communication || 0}%
+                </p>
+                <Progress
                   classNames={{
-                    base: "overflow-hidden rounded-full bg-hover",
-                    indicator: "h-full bg-primary rounded-full"
+                    base: "h-2 rounded-medium bg-background overflow-hidden",
+                    indicator:
+                      "h-full bg-gradient-to-r from-primary to-secondary transition-all duration-500 group-hover:from-primary group-hover:to-primary",
                   }}
+                  value={latestFeedback?.communication || 0}
                 />
               </div>
-              <div>
-                <p className="text-sm text-foreground/70">Problem Solving</p>
-                <p className="text-sm font-medium text-foreground mb-1">{latestFeedback?.problemSolving || 0}%</p>
-                <Progress 
-                  value={latestFeedback?.problemSolving || 0} 
+              <div className="group border border-border rounded-medium p-4 hover:bg-hover transition-all duration-300">
+                <p className="text-tiny text-secondary mb-1">Problem Solving</p>
+                <p className="text-small font-medium text-background-foreground mb-2">
+                  {latestFeedback?.problemSolving || 0}%
+                </p>
+                <Progress
                   classNames={{
-                    base: "overflow-hidden rounded-full bg-hover",
-                    indicator: "h-full bg-primary rounded-full"
+                    base: "h-2 rounded-medium bg-background overflow-hidden",
+                    indicator:
+                      "h-full bg-gradient-to-r from-primary to-secondary transition-all duration-500 group-hover:from-primary group-hover:to-primary",
                   }}
+                  value={latestFeedback?.problemSolving || 0}
                 />
               </div>
-              <div>
-                <p className="text-sm text-foreground/70">Confidence</p>
-                <p className="text-sm font-medium text-foreground mb-1">{latestFeedback?.confidence || 0}%</p>
-                <Progress 
-                  value={latestFeedback?.confidence || 0} 
+              <div className="group border border-border rounded-medium p-4 hover:bg-hover transition-all duration-300">
+                <p className="text-tiny text-secondary mb-1">Confidence</p>
+                <p className="text-small font-medium text-background-foreground mb-2">
+                  {latestFeedback?.confidence || 0}%
+                </p>
+                <Progress
                   classNames={{
-                    base: "overflow-hidden rounded-full bg-hover",
-                    indicator: "h-full bg-primary rounded-full"
+                    base: "h-2 rounded-medium bg-background overflow-hidden",
+                    indicator:
+                      "h-full bg-gradient-to-r from-primary to-secondary transition-all duration-500 group-hover:from-primary group-hover:to-primary",
                   }}
+                  value={latestFeedback?.confidence || 0}
                 />
               </div>
             </div>
@@ -108,4 +134,4 @@ export default function PerformanceOverview() {
       </CardBody>
     </Card>
   );
-} 
+}
