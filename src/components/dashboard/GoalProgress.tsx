@@ -9,11 +9,11 @@ interface GoalProgressProps {
 
 export default function GoalProgress({ goals }: GoalProgressProps) {
   return (
-    <Card className="bg-white shadow-lg">
-      <CardHeader className="bg-blue-50">
-        <h2 className="text-xl font-semibold text-blue-800">Goal Progress</h2>
+    <Card className="bg-content1 shadow-lg">
+      <CardHeader className="bg-background">
+        <h2 className="text-xl font-semibold text-foreground">Goal Progress</h2>
       </CardHeader>
-      <CardBody>
+      <CardBody className="text-foreground">
         <div className="space-y-6">
           {goals.map((goal, index) => {
             const progress = (goal.current / goal.target) * 100;
@@ -22,20 +22,23 @@ export default function GoalProgress({ goals }: GoalProgressProps) {
             return (
               <div key={index} className="space-y-2">
                 <div className="flex justify-between items-center">
-                  <p className="font-medium text-blue-900">{goal.type}</p>
-                  <p className="text-sm text-blue-600">
+                  <p className="font-medium text-foreground">{goal.type}</p>
+                  <p className="text-sm text-foreground/70">
                     {goal.current}/{goal.target} {goal.period.toLowerCase()}
                   </p>
                 </div>
-                <div className="w-full bg-blue-100 rounded-full h-2">
-                  <div 
-                    className="bg-blue-600 h-2 rounded-full" 
-                    style={{ width: `${progress}%` }}
-                  />
-                </div>
+                <Progress 
+                  value={progress}
+                  classNames={{
+                    base: "overflow-hidden rounded-full bg-hover",
+                    indicator: "h-full bg-primary rounded-full"
+                  }}
+                />
                 <div className="flex justify-between text-sm">
-                  <p className="text-blue-600">{progress.toFixed(1)}% complete</p>
-                  {daysRemaining > 0 && <p className="text-blue-600">{daysRemaining} days remaining</p>}
+                  <p className="text-foreground/70">{progress.toFixed(1)}% complete</p>
+                  {daysRemaining > 0 && (
+                    <p className="text-foreground/70">{daysRemaining} days remaining</p>
+                  )}
                 </div>
               </div>
             );

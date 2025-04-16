@@ -8,19 +8,19 @@ interface StrengthsWeaknessesProps {
 
 export default function StrengthsWeaknesses({ strengths, weaknesses }: StrengthsWeaknessesProps) {
   return (
-    <Card className="bg-white shadow-lg">
-      <CardHeader className="bg-green-50">
-        <h2 className="text-xl font-semibold text-green-800">Strengths & Weaknesses</h2>
+    <Card className="bg-content1 shadow-lg">
+      <CardHeader className="bg-background">
+        <h2 className="text-xl font-semibold text-foreground">Strengths & Weaknesses</h2>
       </CardHeader>
-      <CardBody>
+      <CardBody className="text-foreground">
         <div className="space-y-6">
           <div>
-            <h3 className="text-lg font-medium text-green-700 mb-3">Strengths</h3>
+            <h3 className="text-lg font-medium text-success mb-3">Strengths</h3>
             <div className="flex flex-wrap gap-2">
               {strengths.map((strength, index) => (
                 <div
                   key={index}
-                  className="px-3 py-1 rounded-full bg-green-100 text-green-800 text-sm font-medium"
+                  className="px-3 py-1 rounded-full bg-success/20 text-success-500 text-sm font-medium hover:bg-success/30 transition-colors"
                 >
                   {strength.category}
                 </div>
@@ -28,12 +28,12 @@ export default function StrengthsWeaknesses({ strengths, weaknesses }: Strengths
             </div>
           </div>
           <div>
-            <h3 className="text-lg font-medium text-red-700 mb-3">Areas for Improvement</h3>
+            <h3 className="text-lg font-medium text-danger mb-3">Areas for Improvement</h3>
             <div className="flex flex-wrap gap-2">
               {weaknesses.map((weakness, index) => (
                 <div
                   key={index}
-                  className="px-3 py-1 rounded-full bg-red-100 text-red-800 text-sm font-medium"
+                  className="px-3 py-1 rounded-full bg-danger/20 text-danger-500 text-sm font-medium hover:bg-danger/30 transition-colors"
                 >
                   {weakness.category}
                 </div>

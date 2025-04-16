@@ -5,7 +5,6 @@ import TechnologyBreakdown from "@/components/dashboard/TechnologyBreakdown";
 import StrengthsWeaknesses from "@/components/dashboard/StrengthsWeaknesses";
 import GoalProgress from "@/components/dashboard/GoalProgress";
 import RecommendedActions from "@/components/dashboard/RecommendedActions";
-import UpcomingSessions from "@/components/dashboard/UpcomingSessions";
 import { DashboardData } from "@/types/dashboard";
 
 // Mock data - replace with actual data fetching
@@ -113,14 +112,6 @@ const mockData: DashboardData = {
       endDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
     },
   ],
-  upcomingSessions: [
-    {
-      id: "2",
-      title: "System Design Interview",
-      startedAt: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000),
-      status: "PLANNED",
-    },
-  ],
 };
 
 const mockActions = [
@@ -157,7 +148,6 @@ export default function DashboardPage() {
         <GoalProgress goals={mockData.goals} />
         <RecommendedActions actions={mockActions} />
         <RecentActivity sessions={mockData.recentSessions} />
-        <UpcomingSessions sessions={mockData.upcomingSessions} />
       </div>
     </div>
   );
