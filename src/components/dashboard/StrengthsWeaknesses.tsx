@@ -9,7 +9,7 @@ interface StrengthsWeaknessesProps {
 export default function StrengthsWeaknesses({ strengths, weaknesses }: StrengthsWeaknessesProps) {
   return (
     <Card className="bg-content1 shadow-lg">
-      <CardHeader className="bg-background">
+      <CardHeader className="bg-default-100 border-b border-default-200">
         <h2 className="text-xl font-semibold text-foreground">Strengths & Weaknesses</h2>
       </CardHeader>
       <CardBody className="text-foreground">

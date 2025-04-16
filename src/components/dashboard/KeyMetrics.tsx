@@ -15,7 +15,7 @@ export default function KeyMetrics({ stats, totalHours, avgSessionLength }: KeyM
 
   return (
     <Card className="col-span-2 bg-content1 shadow-lg">
-      <CardHeader className="bg-background">
+      <CardHeader className="bg-default-100 border-b border-default-200">
         <h2 className="text-xl font-semibold text-foreground">Key Metrics</h2>
       </CardHeader>
       <CardBody className="text-foreground">

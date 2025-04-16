@@ -59,5 +59,4 @@ export interface DashboardData {
   strengths: UserStrength[];
   weaknesses: UserWeakness[];
   goals: Goal[];
-  upcomingSessions: Session[];
 } 

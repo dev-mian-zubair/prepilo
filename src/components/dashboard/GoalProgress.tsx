@@ -10,7 +10,7 @@ interface GoalProgressProps {
 export default function GoalProgress({ goals }: GoalProgressProps) {
   return (
     <Card className="bg-content1 shadow-lg">
-      <CardHeader className="bg-background">
+      <CardHeader className="bg-default-100 border-b border-default-200">
         <h2 className="text-xl font-semibold text-foreground">Goal Progress</h2>
       </CardHeader>
       <CardBody className="text-foreground">

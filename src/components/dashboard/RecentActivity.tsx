@@ -15,7 +15,7 @@ export default function RecentActivity({ sessions }: RecentActivityProps) {
 
   return (
     <Card className="col-span-2 bg-content1 shadow-lg w-full">
-      <CardHeader className="bg-background">
+      <CardHeader className="bg-default-100 border-b border-default-200">
         <h2 className="text-xl font-semibold text-foreground">Recent Activity</h2>
       </CardHeader>
       <CardBody className="text-foreground">
