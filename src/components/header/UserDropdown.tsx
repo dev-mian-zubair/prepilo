@@ -18,7 +18,7 @@ const UserDropdown = ({ user }: { user: any }) => {
         <Avatar
           className="cursor-pointer"
           color="primary"
-          size="sm"
+          size="md"
           src={user.user_metadata.avatar_url}
         />
       </DropdownTrigger>

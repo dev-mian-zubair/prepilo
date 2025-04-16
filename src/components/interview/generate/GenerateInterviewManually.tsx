@@ -110,7 +110,7 @@ const GenerateInterviewManually = ({
     <Card className="w-full max-w-3xl mx-auto mt-8 bg-content1 border-divider shadow-md rounded-medium">
       <CardHeader className="p-6 border-b border-divider flex justify-center">
         <h2 className="text-xl font-semibold text-foreground">
-          Create Interview Template
+          Create Interview
         </h2>
       </CardHeader>
       <CardBody className="p-6">

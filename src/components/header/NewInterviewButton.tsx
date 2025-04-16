@@ -8,7 +8,7 @@ import {
   DropdownMenu,
   DropdownTrigger,
 } from "@heroui/dropdown";
-import { ChevronDownIcon } from "lucide-react";
+import { ChevronDownIcon, Plus } from "lucide-react";
 
 import InterviewGeneratorModal from "../modals/InterviewGeneratorModal";
 
@@ -34,13 +34,11 @@ const NewInterviewButton = () => {
 
   return (
     <>
-      <ButtonGroup
-        className="rounded-full"
-        radius="full"
-        size="sm"
-        variant="bordered"
-      >
-        <Button onPress={onOpen}>{labelsMap[selectedOption]}</Button>
+      <ButtonGroup radius="full" size="md" variant="bordered">
+        <Button onPress={onOpen}>
+          <Plus className="size-4" />
+          {labelsMap[selectedOption]}
+        </Button>
         <Dropdown className="shadow-sm" placement="bottom-end">
           <DropdownTrigger>
             <Button isIconOnly variant="bordered">

@@ -13,7 +13,7 @@ const CallAction = ({
   toggleCamera,
 }: CallActionProps) => {
   return (
-    <div className="p-4 flex justify-center gap-6 bg-content1 border-t border-divider h-20">
+    <div className="absolute bottom-0 left-0 w-full p-4 flex justify-center gap-6 bg-content1 border-divider h-20 z-20">
       <Button
         color="danger"
         radius="full"
