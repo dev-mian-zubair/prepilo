@@ -50,13 +50,3 @@ export interface Goal {
   period: 'WEEKLY' | 'MONTHLY';
   endDate?: Date;
 }
-
-export interface DashboardData {
-  stats: InterviewStats;
-  recentFeedback: Feedback[];
-  recentSessions: Session[];
-  technologies: Technology[];
-  strengths: UserStrength[];
-  weaknesses: UserWeakness[];
-  goals: Goal[];
-} 
