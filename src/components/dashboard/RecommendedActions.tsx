@@ -6,11 +6,20 @@ interface RecommendedAction {
   priority: 'high' | 'medium' | 'low';
 }
 
-interface RecommendedActionsProps {
-  actions: RecommendedAction[];
-}
+export default function RecommendedActions() {
+  const actions: RecommendedAction[] = [
+    {
+      title: "Practice System Design",
+      description: "Your score is 15% below average in system design interviews",
+      priority: "high" as const,
+    },
+    {
+      title: "Try Advanced React",
+      description: "You've mastered Intermediate React concepts",
+      priority: "medium" as const,
+    },
+  ];
 
-export default function RecommendedActions({ actions }: RecommendedActionsProps) {
   return (
     <Card className="bg-content1 shadow-lg">
       <CardHeader className="bg-default-100 border-b border-default-200">

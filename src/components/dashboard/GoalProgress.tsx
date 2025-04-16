@@ -3,11 +3,17 @@ import { Progress } from "@heroui/progress";
 import { Goal } from "@/types/dashboard";
 import { format, differenceInDays } from "date-fns";
 
-interface GoalProgressProps {
-  goals: Goal[];
-}
+export default function GoalProgress() {
+  const goals: Goal[] = [
+    {
+      type: "Weekly Practice",
+      target: 5,
+      current: 3,
+      period: "WEEKLY",
+      endDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+    },
+  ];
 
-export default function GoalProgress({ goals }: GoalProgressProps) {
   return (
     <Card className="bg-content1 shadow-lg">
       <CardHeader className="bg-default-100 border-b border-default-200">

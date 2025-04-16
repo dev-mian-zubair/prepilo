@@ -2,10 +2,6 @@ import { Card, CardBody, CardHeader } from "@heroui/card";
 import { Progress } from "@heroui/progress";
 import { Technology } from "@/types/dashboard";
 
-interface TechnologyBreakdownProps {
-  technologies: Technology[];
-}
-
 const getProgressColor = (score: number) => {
   if (score >= 80) return 'bg-success';
   if (score >= 60) return 'bg-warning';
@@ -18,7 +14,12 @@ const getTextColor = (score: number) => {
   return 'text-danger/90';
 };
 
-export default function TechnologyBreakdown({ technologies }: TechnologyBreakdownProps) {
+export default function TechnologyBreakdown() {
+  const technologies: Technology[] = [
+    { id: "1", name: "React", score: 85, count: 10 },
+    { id: "2", name: "Node.js", score: 75, count: 5 },
+  ];
+
   return (
     <Card className="bg-content1 shadow-lg">
       <CardHeader className="bg-default-100 border-b border-default-200">

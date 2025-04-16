@@ -5,12 +5,68 @@ import { Card, CardBody, CardHeader } from "@heroui/card";
 import { format } from "date-fns";
 import { Session } from "@/types/dashboard";
 
-interface RecentActivityProps {
-  sessions: Session[];
-}
-
-export default function RecentActivity({ sessions }: RecentActivityProps) {
+export default function RecentActivity() {
   const [showAll, setShowAll] = useState(false);
+  
+  const sessions: Session[] = [
+    {
+      id: "1",
+      title: "React Advanced Interview",
+      startedAt: new Date(),
+      overallScore: 85,
+      status: "COMPLETED",
+    },
+    {
+      id: "2",
+      title: "System Design Practice",
+      startedAt: new Date(Date.now() - 86400000), // 1 day ago
+      overallScore: 78,
+      status: "COMPLETED",
+    },
+    {
+      id: "3",
+      title: "Data Structures & Algorithms",
+      startedAt: new Date(Date.now() - 172800000), // 2 days ago
+      overallScore: 92,
+      status: "COMPLETED",
+    },
+    {
+      id: "4",
+      title: "Backend Architecture",
+      startedAt: new Date(Date.now() - 259200000), // 3 days ago
+      overallScore: 88,
+      status: "COMPLETED",
+    },
+    {
+      id: "5",
+      title: "Frontend Performance",
+      startedAt: new Date(Date.now() - 345600000), // 4 days ago
+      overallScore: 81,
+      status: "COMPLETED",
+    },
+    {
+      id: "6",
+      title: "Database Optimization",
+      startedAt: new Date(Date.now() - 432000000), // 5 days ago
+      overallScore: 75,
+      status: "COMPLETED",
+    },
+    {
+      id: "7",
+      title: "API Design",
+      startedAt: new Date(Date.now() - 518400000), // 6 days ago
+      overallScore: 89,
+      status: "COMPLETED",
+    },
+    {
+      id: "8",
+      title: "Cloud Architecture",
+      startedAt: new Date(Date.now() - 604800000), // 7 days ago
+      overallScore: 83,
+      status: "COMPLETED",
+    },
+  ];
+
   const displaySessions = showAll ? sessions : sessions.slice(0, 3);
 
   return (

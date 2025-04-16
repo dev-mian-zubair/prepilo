@@ -2,13 +2,20 @@ import { Card, CardBody, CardHeader } from "@heroui/card";
 import { Progress } from "@heroui/progress";
 import { InterviewStats } from "@/types/dashboard";
 
-interface KeyMetricsProps {
-  stats: InterviewStats;
-  totalHours: number;
-  avgSessionLength: number;
-}
+export default function KeyMetrics() {
+  const stats: InterviewStats = {
+    totalSessions: 20,
+    completedSessions: 15,
+    weeklySessions: 5,
+    highScoreSessions: 12,
+    avgTechnicalScore: 85,
+    avgCommunicationScore: 78,
+    avgProblemSolvingScore: 82,
+  };
 
-export default function KeyMetrics({ stats, totalHours, avgSessionLength }: KeyMetricsProps) {
+  const totalHours = 12.5;
+  const avgSessionLength = 45;
+
   const completionRate = (stats.completedSessions / stats.totalSessions) * 100;
   const consistencyRate = (stats.weeklySessions / 7) * 100;
   const successRate = (stats.highScoreSessions / stats.totalSessions) * 100;

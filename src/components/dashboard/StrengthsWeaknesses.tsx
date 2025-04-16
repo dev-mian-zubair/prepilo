@@ -1,12 +1,23 @@
 import { Card, CardBody, CardHeader } from "@heroui/card";
 import { UserStrength, UserWeakness } from "@/types/dashboard";
 
-interface StrengthsWeaknessesProps {
-  strengths: UserStrength[];
-  weaknesses: UserWeakness[];
-}
+export default function StrengthsWeaknesses() {
+  const strengths: UserStrength[] = [
+    {
+      category: "React Hooks",
+      description: "Strong understanding of useEffect and useState",
+      sessionIds: ["1", "2"],
+    },
+  ];
 
-export default function StrengthsWeaknesses({ strengths, weaknesses }: StrengthsWeaknessesProps) {
+  const weaknesses: UserWeakness[] = [
+    {
+      category: "System Design",
+      description: "Need to improve scalability discussions",
+      improvementTips: ["Study common patterns", "Practice whiteboarding"],
+    },
+  ];
+
   return (
     <Card className="bg-content1 shadow-lg">
       <CardHeader className="bg-default-100 border-b border-default-200">

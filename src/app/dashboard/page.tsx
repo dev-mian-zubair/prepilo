@@ -132,19 +132,12 @@ export default function DashboardPage() {
     <div className="min-h-screen">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6">
         <PerformanceOverview />
-        <KeyMetrics
-          stats={mockData.stats}
-          totalHours={12.5}
-          avgSessionLength={45}
-        />
-        <TechnologyBreakdown technologies={mockData.technologies} />
-        <StrengthsWeaknesses
-          strengths={mockData.strengths}
-          weaknesses={mockData.weaknesses}
-        />
-        <GoalProgress goals={mockData.goals} />
-        <RecommendedActions actions={mockActions} />
-        <RecentActivity sessions={mockData.recentSessions} />
+        <KeyMetrics />
+        <TechnologyBreakdown />
+        <StrengthsWeaknesses />
+        <GoalProgress />
+        <RecommendedActions />
+        <RecentActivity />
       </div>
     </div>
   );
