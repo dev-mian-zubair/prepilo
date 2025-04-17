@@ -8,7 +8,7 @@ import {
 import { Link } from "@heroui/link";
 import { useAuth } from "@/providers/AuthProvider";
 import { usePathname } from "next/navigation";
-import { ChartPie, Video, Settings } from "lucide-react";
+import { ChartPie, Video } from "lucide-react";
 
 import { title } from "./primitives";
 import HeaderRightActions from "./header/HeaderRightActions";
@@ -34,9 +34,9 @@ export const Navbar = () => {
             <NavbarItem className="h-full">
               <Link 
                 href="/dashboard" 
-                className={`transition-all duration-200 font-semibold h-full flex items-center gap-2 px-4 ${
+                className={`transition-all duration-200 font-semibold h-full flex items-center gap-2 px-2 ${
                   isActive('/dashboard')
-                    ? 'text-background-foreground border-b-2 border-background-foreground'
+                    ? 'text-success'
                     : 'text-background-foreground'
                 }`}
               >
@@ -47,9 +47,9 @@ export const Navbar = () => {
             <NavbarItem className="h-full">
               <Link 
                 href="/interviews" 
-                className={`transition-all duration-200 font-semibold h-full flex items-center gap-2 px-4 ${
+                className={`transition-all duration-200 font-semibold h-full flex items-center gap-2 px-2 ${
                   isActive('/interviews')
-                    ? 'text-background-foreground border-b-2 border-background-foreground'
+                    ? 'text-success'
                     : 'text-background-foreground'
                 }`}
               >
