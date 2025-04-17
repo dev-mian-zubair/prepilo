@@ -13,10 +13,10 @@ const UserDropdown = ({ user }: { user: any }) => {
   const iconClasses = "w-4 h-4";
 
   return (
-    <Dropdown className="shadow-sm" placement="bottom-end">
+    <Dropdown className="shadow-lg rounded-lg" placement="bottom-end">
       <DropdownTrigger>
         <Avatar
-          className="cursor-pointer"
+          className="cursor-pointer border border-gray-200"
           color="primary"
           size="md"
           src={user.user_metadata.avatar_url}
@@ -49,7 +49,7 @@ const UserDropdown = ({ user }: { user: any }) => {
         </DropdownItem>
         <DropdownItem
           key="logout"
-          className="p-2"
+          className="p-2 text-danger"
           href="/logout"
           startContent={<LogOut className={iconClasses} />}
         >

@@ -13,7 +13,7 @@ const HeaderRightActions = () => {
   const { user, loading } = useAuth();
 
   return (
-    <>
+    <div className="flex items-center gap-3">
       <ThemeSwitch />
       {!loading && user ? (
         <>
@@ -23,7 +23,7 @@ const HeaderRightActions = () => {
       ) : (
         <SignInButton />
       )}
-    </>
+    </div>
   );
 };
 

@@ -11,17 +11,25 @@ const config = {
   theme: {
     extend: {
       colors: {
-        border: '#e5e7eb', // neutral border color
-        hover: '#f3f4f6', // subtle hover bg
-        primary: '#242629', // main accent
-        secondary: '#575759', // secondary accent
-        danger: '#EB154E',
-        success: '#00D184',
-        warning: '#FF6A00',
+        border: '#D1D5DB', // slightly lighter than before
+        hover: '#E5E7EB',  // soft hover
+        primary: '#00E0CA', // Aqua Glow from the image
+        secondary: '#64748B', // blue-gray tone
+        muted: '#F1F5F9', // card backgrounds
+        danger: '#EF4444',
+        success: '#10B981',
+        warning: '#F59E0B',
       },
       fontFamily: {
-        sans: ['var(--font-sans)'],
-        mono: ['var(--font-mono)'],
+        sans: ['Inter', 'ui-sans-serif', 'system-ui'],
+        mono: ['Menlo', 'monospace'],
+      },
+      boxShadow: {
+        glass: '0 4px 30px rgba(0, 0, 0, 0.1)',
+        glow: '0 0 10px rgba(0, 224, 202, 0.6)', // matches the accent
+      },
+      backdropBlur: {
+        md: '8px',
       },
     },
   },
@@ -30,28 +38,28 @@ const config = {
       themes: {
         light: {
           colors: {
-            background: { DEFAULT: '#FAF9F7', foreground: '#242629' },
-            content1: '#ffffff',
-            primary: { DEFAULT: '#242629' },
-            secondary: { DEFAULT: '#575759' },
-            border: '#e5e7eb',
-            hover: '#f3f4f6',
-            danger: { DEFAULT: '#EB154E' },
-            success: { DEFAULT: '#00D184' },
-            warning: { DEFAULT: '#FF6A00' },
+            background: { DEFAULT: '#F9FAFB', foreground: '#0F172A' }, // light gray with deep navy text
+            content1: '#FFFFFF', // true white cards
+            primary: { DEFAULT: '#00E0CA' }, // glowing aqua
+            secondary: { DEFAULT: '#64748B' }, // subtle blue-gray
+            border: '#D1D5DB',
+            hover: '#E2E8F0',
+            danger: { DEFAULT: '#EF4444' },
+            success: { DEFAULT: '#10B981' },
+            warning: { DEFAULT: '#F59E0B' },
           },
         },
         dark: {
           colors: {
-            background: { DEFAULT: '#202124', foreground: '#f9fafa' },
-            content1: '#36383a',
-            primary: { DEFAULT: '#36383a' },
-            secondary: { DEFAULT: '#c7c7c7' },
-            border: '#3f3f46',
-            hover: '#2c2c2c',
-            danger: { DEFAULT: '#EB154E' },
-            success: { DEFAULT: '#00D184' },
-            warning: { DEFAULT: '#FF6A00' },
+            background: { DEFAULT: '#111827', foreground: '#F3F4F6' }, // charcoal canvas
+            content1: '#1F2937', // subtle dark panels
+            primary: { DEFAULT: '#00E0CA' },
+            secondary: { DEFAULT: '#9CA3AF' },
+            border: '#334155',
+            hover: '#1E293B',
+            danger: { DEFAULT: '#EF4444' },
+            success: { DEFAULT: '#10B981' },
+            warning: { DEFAULT: '#F59E0B' },
           },
         },
       },
@@ -63,22 +71,22 @@ const config = {
           large: '1.125rem',
         },
         lineHeight: {
-          tiny: '1rem',
-          small: '1.25rem',
-          medium: '1.5rem',
-          large: '1.75rem',
+          tiny: '1.2rem',
+          small: '1.4rem',
+          medium: '1.6rem',
+          large: '1.8rem',
         },
         radius: {
-          small: '0.5rem',
-          medium: '0.75rem',
-          large: '0.875rem',
+          small: '0.25rem',
+          medium: '0.5rem',
+          large: '1rem', // more rounded (matches image card style)
         },
         borderWidth: {
           small: '1px',
-          medium: '2px',
-          large: '3px',
+          medium: '1.5px',
+          large: '2px',
         },
-        disabledOpacity: '0.5',
+        disabledOpacity: '0.3',
         dividerWeight: '1',
         hoverOpacity: '0.9',
       },
