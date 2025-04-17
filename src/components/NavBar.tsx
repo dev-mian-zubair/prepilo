@@ -8,6 +8,7 @@ import {
 import { Link } from "@heroui/link";
 import { useAuth } from "@/providers/AuthProvider";
 import { usePathname } from "next/navigation";
+import { ChartPie, Video, Settings } from "lucide-react";
 
 import { title } from "./primitives";
 import HeaderRightActions from "./header/HeaderRightActions";
@@ -23,7 +24,7 @@ export const Navbar = () => {
   return (
     <HeroUINavbar maxWidth="full" position="sticky" className="bg-background">
       <NavbarContent className="basis-1/5 sm:basis-full" justify="start">
-        <NavbarBrand as="li" className="gap-3 max-w-fit">
+        <NavbarBrand as="li" className="gap-3 max-w-fit mr-8">
           <Link className="flex justify-start items-center gap-1" href="/">
             <span className={title({ size: "xxs", color: "blue" })}>Prepilo</span>
           </Link>
@@ -33,24 +34,26 @@ export const Navbar = () => {
             <NavbarItem className="h-full">
               <Link 
                 href="/dashboard" 
-                className={`transition-all duration-200 font-semibold h-full flex items-center px-4 ${
+                className={`transition-all duration-200 font-semibold h-full flex items-center gap-2 px-4 ${
                   isActive('/dashboard')
                     ? 'text-background-foreground border-b-2 border-background-foreground'
-                    : 'text-secondary'
+                    : 'text-background-foreground'
                 }`}
               >
+                <ChartPie size={18} />
                 Dashboard
               </Link>
             </NavbarItem>
             <NavbarItem className="h-full">
               <Link 
                 href="/interviews" 
-                className={`transition-all duration-200 font-semibold h-full flex items-center px-4 ${
+                className={`transition-all duration-200 font-semibold h-full flex items-center gap-2 px-4 ${
                   isActive('/interviews')
                     ? 'text-background-foreground border-b-2 border-background-foreground'
-                    : 'text-secondary'
+                    : 'text-background-foreground'
                 }`}
               >
+                <Video size={18} />
                 Interviews
               </Link>
             </NavbarItem>

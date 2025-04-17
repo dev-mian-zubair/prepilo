@@ -9,8 +9,6 @@ export default function DashboardLayout({
 }) {
   return (
     <div className="flex flex-col h-full w-full bg-background rounded-xl shadow-none overflow-hidden">
-      {/* Navigation Bar */}
-      <NavigationBar />
 
       {/* Main Content */}
       <div className="flex-1 overflow-y-auto bg-content1 rounded-b-xl">
