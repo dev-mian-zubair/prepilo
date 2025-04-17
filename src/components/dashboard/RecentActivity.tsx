@@ -89,8 +89,14 @@ export default function RecentActivity() {
 
   return (
     <Card className="col-span-2 bg-content1 rounded-large shadow-none overflow-hidden transition-all duration-300">
-      <CardHeader>
-        <h2 className="text-large font-bold text-foreground tracking-tight">Recent Activity</h2>
+      <CardHeader className="pb-2">
+        <div className="flex items-center gap-2">
+          <h2 className="text-large font-bold text-foreground tracking-tight">Recent Activity</h2>
+          <div className="flex items-center gap-2 px-2 py-1 rounded-small bg-default-100 dark:bg-default-50">
+            <span className="text-tiny font-medium text-default-600">{sessions.length}</span>
+            <span className="text-tiny text-default-500">Sessions This Week</span>
+          </div>
+        </div>
       </CardHeader>
       <CardBody>
         <div className="space-y-3">
