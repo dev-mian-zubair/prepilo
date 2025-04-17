@@ -10,7 +10,7 @@ import { useAuth } from "@/providers/AuthProvider";
 import { usePathname } from "next/navigation";
 import { ChartPie, Video } from "lucide-react";
 
-import { title } from "./primitives";
+// import { title } from "./primitives";
 import HeaderRightActions from "./header/HeaderRightActions";
 
 export const Navbar = () => {
@@ -22,11 +22,13 @@ export const Navbar = () => {
   };
 
   return (
-    <HeroUINavbar maxWidth="full" position="sticky" className="bg-background">
+    <HeroUINavbar className="bg-background" maxWidth="full" position="sticky">
       <NavbarContent className="basis-1/5 sm:basis-full" justify="start">
         <NavbarBrand as="li" className="gap-3 max-w-fit mr-8">
           <Link className="flex justify-start items-center gap-1" href="/">
-            <span className={title({ size: "xxs", color: "blue" })}>Prepilo</span>
+            <h1 className="text-3xl font-bold tracking-tight">
+              Prep<span className="text-primary">ilo</span>
+            </h1>
           </Link>
         </NavbarBrand>
         {!loading && user && (

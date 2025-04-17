@@ -34,10 +34,10 @@ const SignInButton = () => {
 
   return (
     <Button
+      className="bg-blue-500 text-white hover:bg-blue-600 transition"
       disabled={loading}
       radius="full"
       size="md"
-      variant="bordered"
       onPress={() => signIn("google")}
     >
       <User2 className="size-4" />

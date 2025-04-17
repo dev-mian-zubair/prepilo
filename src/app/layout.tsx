@@ -41,7 +41,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         <Providers themeProps={{ attribute: "class", defaultTheme: "dark" }}>
           <div className="relative flex flex-col h-screen">
             <Navbar />
-            <main className="pt-2 px-6 flex-grow">{children}</main>
+            <main className="flex-grow">{children}</main>
             <Footer />
           </div>
         </Providers>

@@ -4,6 +4,7 @@ export const title = tv({
   base: "tracking-tight inline font-semibold",
   variants: {
     color: {
+      primary: "from-[#00E0CA] to-[#00E0CA]",
       violet: "from-[#FF1CF7] to-[#b249f8]",
       yellow: "from-[#FF705B] to-[#FFB457]",
       blue: "from-[#5EA2EF] to-[#0072F5]",
@@ -25,6 +26,7 @@ export const title = tv({
   },
   defaultVariants: {
     size: "md",
+    color: "primary", // default color to primary
   },
   compoundVariants: [
     {
@@ -48,8 +50,13 @@ export const subtitle = tv({
     fullWidth: {
       true: "!w-full",
     },
+    color: {
+      primary: "text-primary", // Applying the primary color here
+      default: "text-default-300", // default color
+    },
   },
   defaultVariants: {
     fullWidth: true,
+    color: "primary", // default subtitle color to primary
   },
 });
