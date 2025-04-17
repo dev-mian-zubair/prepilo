@@ -22,6 +22,10 @@ export default function TechnologyBreakdown() {
     { id: "2", name: "Node.js", score: 75, count: 5 },
     { id: "3", name: "TypeScript", score: 92, count: 8 },
     { id: "4", name: "System Design", score: 78, count: 6 },
+    { id: "5", name: "Python", score: 88, count: 7 },
+    { id: "6", name: "AWS", score: 82, count: 4 },
+    { id: "7", name: "Docker", score: 79, count: 5 },
+    { id: "8", name: "GraphQL", score: 90, count: 3 },
   ];
 
   return (
@@ -30,30 +34,32 @@ export default function TechnologyBreakdown() {
         <h2 className="text-large font-bold text-foreground tracking-tight">Technology Breakdown</h2>
       </CardHeader>
       <CardBody>
-        <div className="space-y-4">
-          {technologies.map((tech) => (
-            <div 
-              key={tech.id} 
-              className="group border border-border rounded-medium p-4 hover:bg-hover/40 transition-all duration-300"
-            >
-              <div className="flex justify-between items-center mb-2">
-                <p className="font-medium text-foreground">{tech.name}</p>
-                <p className="text-tiny text-foreground/70">{tech.count} sessions</p>
-              </div>
-              <div className="flex items-center space-x-4">
-                <Progress 
-                  value={tech.score} 
-                  classNames={{
-                    base: "h-2 rounded-medium bg-default-200/50 dark:bg-default-500/20 overflow-hidden flex-1",
-                    indicator: `h-full bg-gradient-to-r ${getProgressColor(tech.score)} rounded-full transition-all duration-500 group-hover:opacity-90`
-                  }}
-                />
-                <div className={`text-tiny font-medium ${getTextColor(tech.score)}`}>
-                  {tech.score}%
+        <div className="max-h-[400px] overflow-y-auto pr-2 scrollbar-thin scrollbar-track-default-100 scrollbar-thumb-default-300 hover:scrollbar-thumb-default-400">
+          <div className="space-y-4">
+            {technologies.map((tech) => (
+              <div 
+                key={tech.id} 
+                className="group border border-border rounded-medium p-4 hover:bg-hover/40 transition-all duration-300"
+              >
+                <div className="flex justify-between items-center mb-2">
+                  <p className="font-medium text-foreground">{tech.name}</p>
+                  <p className="text-tiny text-foreground/70">{tech.count} sessions</p>
+                </div>
+                <div className="flex items-center space-x-4">
+                  <Progress 
+                    value={tech.score} 
+                    classNames={{
+                      base: "h-2 rounded-medium bg-default-200/50 dark:bg-default-500/20 overflow-hidden flex-1",
+                      indicator: `h-full bg-gradient-to-r ${getProgressColor(tech.score)} rounded-full transition-all duration-500 group-hover:opacity-90`
+                    }}
+                  />
+                  <div className={`text-tiny font-medium ${getTextColor(tech.score)}`}>
+                    {tech.score}%
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </CardBody>
     </Card>

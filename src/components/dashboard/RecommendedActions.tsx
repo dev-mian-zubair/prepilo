@@ -22,6 +22,21 @@ export default function RecommendedActions() {
       title: "Review Database Concepts",
       description: "Strengthen your understanding of database optimization",
       priority: "medium" as const,
+    },
+    {
+      title: "Explore Cloud Architecture",
+      description: "Improve your knowledge of cloud services and patterns",
+      priority: "high" as const,
+    },
+    {
+      title: "Practice Data Structures",
+      description: "Focus on advanced data structure implementations",
+      priority: "medium" as const,
+    },
+    {
+      title: "Learn GraphQL",
+      description: "Add modern API development to your skillset",
+      priority: "low" as const,
     }
   ];
 
@@ -54,25 +69,27 @@ export default function RecommendedActions() {
         <h2 className="text-large font-bold text-foreground tracking-tight">Recommended Actions</h2>
       </CardHeader>
       <CardBody>
-        <div className="space-y-3">
-          {actions.map((action, index) => {
-            const colors = getPriorityColors(action.priority);
-            
-            return (
-              <div 
-                key={index} 
-                className="group border border-border rounded-medium p-4 hover:bg-hover/40 transition-all duration-300"
-              >
-                <div className="flex items-center justify-between mb-2">
-                  <h3 className="font-medium text-foreground">{action.title}</h3>
-                  <div className={`px-3 py-1 rounded-small bg-gradient-to-r ${colors.bg} ${colors.text} text-tiny font-medium transition-all duration-300 ${colors.hover}`}>
-                    {action.priority} priority
+        <div className="max-h-[400px] overflow-y-auto pr-2 scrollbar-thin scrollbar-track-default-100 scrollbar-thumb-default-300 hover:scrollbar-thumb-default-400">
+          <div className="space-y-3">
+            {actions.map((action, index) => {
+              const colors = getPriorityColors(action.priority);
+              
+              return (
+                <div 
+                  key={index} 
+                  className="group border border-border rounded-medium p-4 hover:bg-hover/40 transition-all duration-300"
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="font-medium text-foreground">{action.title}</h3>
+                    <div className={`px-3 py-1 rounded-small bg-gradient-to-r ${colors.bg} ${colors.text} text-tiny font-medium transition-all duration-300 ${colors.hover}`}>
+                      {action.priority} priority
+                    </div>
                   </div>
+                  <p className="text-tiny text-foreground/70">{action.description}</p>
                 </div>
-                <p className="text-tiny text-foreground/70">{action.description}</p>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
         </div>
       </CardBody>
     </Card>
