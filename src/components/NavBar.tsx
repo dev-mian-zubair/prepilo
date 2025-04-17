@@ -6,12 +6,12 @@ import {
   NavbarItem,
 } from "@heroui/navbar";
 import { Link } from "@heroui/link";
-import { useAuth } from "@/providers/AuthProvider";
 import { usePathname } from "next/navigation";
-import { ChartPie, Video } from "lucide-react";
 
 // import { title } from "./primitives";
 import HeaderRightActions from "./header/HeaderRightActions";
+
+import { useAuth } from "@/providers/AuthProvider";
 
 export const Navbar = () => {
   const { user, loading } = useAuth();
@@ -22,40 +22,34 @@ export const Navbar = () => {
   };
 
   return (
-    <HeroUINavbar className="bg-background" maxWidth="full" position="sticky">
+    <HeroUINavbar className="bg-background" maxWidth="2xl" position="sticky">
       <NavbarContent className="basis-1/5 sm:basis-full" justify="start">
         <NavbarBrand as="li" className="gap-3 max-w-fit mr-8">
           <Link className="flex justify-start items-center gap-1" href="/">
             <h1 className="text-3xl font-bold tracking-tight">
-              Prep<span className="text-primary">ilo</span>
+              <span className="text-foreground">Prep</span>ilo
             </h1>
           </Link>
         </NavbarBrand>
         {!loading && user && (
           <>
             <NavbarItem className="h-full">
-              <Link 
-                href="/dashboard" 
+              <Link
                 className={`transition-all duration-200 font-semibold h-full flex items-center gap-2 px-2 ${
-                  isActive('/dashboard')
-                    ? 'text-success'
-                    : 'text-background-foreground'
+                  isActive("/dashboard") ? "text-foreground" : "text-secondary"
                 }`}
+                href="/dashboard"
               >
-                <ChartPie size={18} />
                 Dashboard
               </Link>
             </NavbarItem>
             <NavbarItem className="h-full">
-              <Link 
-                href="/interviews" 
+              <Link
                 className={`transition-all duration-200 font-semibold h-full flex items-center gap-2 px-2 ${
-                  isActive('/interviews')
-                    ? 'text-success'
-                    : 'text-background-foreground'
+                  isActive("/interviews") ? "text-foreground" : "text-secondary"
                 }`}
+                href="/interviews"
               >
-                <Video size={18} />
                 Interviews
               </Link>
             </NavbarItem>

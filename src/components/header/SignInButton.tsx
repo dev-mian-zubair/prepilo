@@ -34,9 +34,10 @@ const SignInButton = () => {
 
   return (
     <Button
-      className="bg-blue-500 text-white hover:bg-blue-600 transition"
+      className="text-black"
+      color="primary"
       disabled={loading}
-      radius="full"
+      radius="lg"
       size="md"
       onPress={() => signIn("google")}
     >
