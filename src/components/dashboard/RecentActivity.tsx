@@ -69,13 +69,31 @@ export default function RecentActivity() {
 
   const displaySessions = showAll ? sessions : sessions.slice(0, 3);
 
+  const getScoreColor = (score: number) => {
+    if (score >= 90) return 'from-emerald-500/90 to-emerald-400/90 dark:from-emerald-400 dark:to-emerald-300';
+    if (score >= 80) return 'from-primary/90 to-secondary/90 dark:from-primary dark:to-secondary';
+    if (score >= 70) return 'from-amber-500/90 to-amber-400/90 dark:from-amber-400 dark:to-amber-300';
+    return 'from-rose-500/90 to-rose-400/90 dark:from-rose-400 dark:to-rose-300';
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'COMPLETED':
+        return 'bg-gradient-to-r from-emerald-500 to-emerald-400 dark:from-emerald-400 dark:to-emerald-300';
+      case 'IN_PROGRESS':
+        return 'bg-gradient-to-r from-amber-500 to-amber-400 dark:from-amber-400 dark:to-amber-300';
+      default:
+        return 'bg-gradient-to-r from-default-500 to-default-400 dark:from-default-400 dark:to-default-300';
+    }
+  };
+
   return (
-    <Card className="col-span-2 bg-content1 shadow-lg w-full">
-      <CardHeader className="bg-default-100 border-b border-default-200">
-        <h2 className="text-xl font-semibold text-foreground">Recent Activity</h2>
+    <Card className="col-span-2 bg-content1 rounded-large shadow-none overflow-hidden transition-all duration-300">
+      <CardHeader>
+        <h2 className="text-large font-bold text-foreground tracking-tight">Recent Activity</h2>
       </CardHeader>
-      <CardBody className="text-foreground">
-        <div className="space-y-4">
+      <CardBody>
+        <div className="space-y-3">
           {sessions.length === 0 ? (
             <p className="text-center text-foreground/70">No recent activities</p>
           ) : (
@@ -83,40 +101,33 @@ export default function RecentActivity() {
               {displaySessions.map((session) => (
                 <div 
                   key={session.id} 
-                  className="flex items-center justify-between p-4 border border-content2 rounded-lg bg-content2/40 hover:bg-content2/60 transition-colors"
+                  className="group border border-border rounded-medium p-4 hover:bg-hover/40 transition-all duration-300"
                 >
-                  <div className="space-y-1">
-                    <h3 className="font-medium text-foreground">{session.title || "Untitled Session"}</h3>
-                    <p className="text-sm text-foreground/70">
-                      {format(new Date(session.startedAt), "MMM d, yyyy h:mm a")}
-                    </p>
-                  </div>
-                  <div className="flex items-center space-x-4">
-                    {session.overallScore && (
-                      <div className="text-right">
-                        <p className="text-sm text-foreground/70">Score</p>
-                        <p className={`font-bold ${
-                          session.overallScore >= 90 ? 'text-success/90' :
-                          session.overallScore >= 80 ? 'text-primary/90' :
-                          session.overallScore >= 70 ? 'text-warning/90' :
-                          'text-danger/90'
-                        }`}>
-                          {session.overallScore}%
-                        </p>
-                      </div>
-                    )}
-                    <div className={`w-3 h-3 rounded-full ${
-                      session.status === 'COMPLETED' ? 'bg-success' :
-                      session.status === 'IN_PROGRESS' ? 'bg-warning' :
-                      'bg-default-400'
-                    }`} />
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-1">
+                      <h3 className="font-medium text-foreground">{session.title || "Untitled Session"}</h3>
+                      <p className="text-tiny text-foreground/70">
+                        {format(new Date(session.startedAt), "MMM d, yyyy h:mm a")}
+                      </p>
+                    </div>
+                    <div className="flex items-center space-x-4">
+                      {session.overallScore && (
+                        <div className="text-right">
+                          <p className="text-tiny text-foreground/70 mb-1">Score</p>
+                          <div className={`px-2 py-1 rounded-small bg-gradient-to-r ${getScoreColor(session.overallScore)} text-white font-medium text-tiny transition-all duration-300 group-hover:opacity-90`}>
+                            {session.overallScore}%
+                          </div>
+                        </div>
+                      )}
+                      <div className={`w-3 h-3 rounded-full ${getStatusColor(session.status)}`} />
+                    </div>
                   </div>
                 </div>
               ))}
               {sessions.length > 3 && (
                 <button
                   onClick={() => setShowAll(!showAll)}
-                  className="w-full py-2 text-sm font-medium text-foreground/70 hover:text-foreground transition-colors"
+                  className="w-full py-2 text-tiny font-medium text-foreground/70 hover:text-foreground transition-colors rounded-medium hover:bg-hover/40"
                 >
                   {showAll ? 'Show Less' : `Show ${sessions.length - 3} More`}
                 </button>

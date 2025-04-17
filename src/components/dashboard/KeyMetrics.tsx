@@ -21,106 +21,106 @@ export default function KeyMetrics() {
   const successRate = (stats.highScoreSessions / stats.totalSessions) * 100;
 
   return (
-    <Card className="col-span-2 bg-content1 shadow-lg">
-      <CardHeader className="bg-default-100 border-b border-default-200">
-        <h2 className="text-xl font-semibold text-foreground">Key Metrics</h2>
+    <Card className="col-span-2 bg-content1 rounded-large shadow-none overflow-hidden transition-all duration-300">
+      <CardHeader>
+        <h2 className="text-large font-bold text-foreground tracking-tight">Key Metrics</h2>
       </CardHeader>
-      <CardBody className="text-foreground">
-        <div className="grid grid-cols-3 gap-6">
+      <CardBody>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {/* Completion Rate */}
-          <div className="space-y-2">
-            <p className="text-sm text-foreground/70">Completion Rate</p>
-            <p className="text-2xl font-bold text-foreground">{completionRate.toFixed(1)}%</p>
+          <div className="group border border-border rounded-medium p-4 hover:bg-hover/40 transition-all duration-300">
+            <p className="text-tiny text-foreground/80 mb-1">Completion Rate</p>
+            <p className="text-medium font-bold text-foreground mb-2">{completionRate.toFixed(1)}%</p>
             <Progress 
               value={completionRate} 
               classNames={{
-                base: "overflow-hidden rounded-full bg-hover",
-                indicator: "h-full bg-primary rounded-full"
+                base: "h-2 rounded-medium bg-default-200/50 dark:bg-default-500/20 overflow-hidden",
+                indicator: "h-full bg-gradient-to-r from-primary/90 to-secondary/90 dark:from-primary dark:to-secondary transition-all duration-500 group-hover:opacity-90"
               }}
             />
           </div>
 
           {/* Success Rate */}
-          <div className="space-y-2">
-            <p className="text-sm text-foreground/70">Success Rate</p>
-            <p className="text-2xl font-bold text-success/90">{successRate.toFixed(1)}%</p>
+          <div className="group border border-border rounded-medium p-4 hover:bg-hover/40 transition-all duration-300">
+            <p className="text-tiny text-foreground/80 mb-1">Success Rate</p>
+            <p className="text-medium font-bold text-success mb-2">{successRate.toFixed(1)}%</p>
             <Progress 
               value={successRate} 
               classNames={{
-                base: "overflow-hidden rounded-full bg-hover",
-                indicator: "h-full bg-success rounded-full"
+                base: "h-2 rounded-medium bg-default-200/50 dark:bg-default-500/20 overflow-hidden",
+                indicator: "h-full bg-gradient-to-r from-success/90 to-success-500/90 dark:from-success dark:to-success-500 transition-all duration-500 group-hover:opacity-90"
               }}
             />
           </div>
 
           {/* Average Technical Score */}
-          <div className="space-y-2">
-            <p className="text-sm text-foreground/70">Average Technical Score</p>
-            <p className="text-2xl font-bold text-foreground">{stats.avgTechnicalScore?.toFixed(1) || 0}%</p>
+          <div className="group border border-border rounded-medium p-4 hover:bg-hover/40 transition-all duration-300">
+            <p className="text-tiny text-foreground/80 mb-1">Average Technical Score</p>
+            <p className="text-medium font-bold text-foreground mb-2">{stats.avgTechnicalScore?.toFixed(1) || 0}%</p>
             <Progress 
               value={stats.avgTechnicalScore || 0} 
               classNames={{
-                base: "overflow-hidden rounded-full bg-hover",
-                indicator: "h-full bg-primary rounded-full"
+                base: "h-2 rounded-medium bg-default-200/50 dark:bg-default-500/20 overflow-hidden",
+                indicator: "h-full bg-gradient-to-r from-primary/90 to-secondary/90 dark:from-primary dark:to-secondary transition-all duration-500 group-hover:opacity-90"
               }}
             />
           </div>
 
           {/* Communication Score */}
-          <div className="space-y-2">
-            <p className="text-sm text-foreground/70">Communication Score</p>
-            <p className="text-2xl font-bold text-foreground">{stats.avgCommunicationScore?.toFixed(1) || 0}%</p>
+          <div className="group border border-border rounded-medium p-4 hover:bg-hover/40 transition-all duration-300">
+            <p className="text-tiny text-foreground/80 mb-1">Communication Score</p>
+            <p className="text-medium font-bold text-foreground mb-2">{stats.avgCommunicationScore?.toFixed(1) || 0}%</p>
             <Progress 
               value={stats.avgCommunicationScore || 0} 
               classNames={{
-                base: "overflow-hidden rounded-full bg-hover",
-                indicator: "h-full bg-primary rounded-full"
+                base: "h-2 rounded-medium bg-default-200/50 dark:bg-default-500/20 overflow-hidden",
+                indicator: "h-full bg-gradient-to-r from-primary/90 to-secondary/90 dark:from-primary dark:to-secondary transition-all duration-500 group-hover:opacity-90"
               }}
             />
           </div>
 
           {/* Problem Solving Score */}
-          <div className="space-y-2">
-            <p className="text-sm text-foreground/70">Problem Solving Score</p>
-            <p className="text-2xl font-bold text-foreground">{stats.avgProblemSolvingScore?.toFixed(1) || 0}%</p>
+          <div className="group border border-border rounded-medium p-4 hover:bg-hover/40 transition-all duration-300">
+            <p className="text-tiny text-foreground/80 mb-1">Problem Solving Score</p>
+            <p className="text-medium font-bold text-foreground mb-2">{stats.avgProblemSolvingScore?.toFixed(1) || 0}%</p>
             <Progress 
               value={stats.avgProblemSolvingScore || 0} 
               classNames={{
-                base: "overflow-hidden rounded-full bg-hover",
-                indicator: "h-full bg-primary rounded-full"
+                base: "h-2 rounded-medium bg-default-200/50 dark:bg-default-500/20 overflow-hidden",
+                indicator: "h-full bg-gradient-to-r from-primary/90 to-secondary/90 dark:from-primary dark:to-secondary transition-all duration-500 group-hover:opacity-90"
               }}
             />
           </div>
 
           {/* Weekly Consistency */}
-          <div className="space-y-2">
-            <p className="text-sm text-foreground/70">Weekly Consistency</p>
-            <p className="text-2xl font-bold text-warning/90">{consistencyRate.toFixed(1)}%</p>
+          <div className="group border border-border rounded-medium p-4 hover:bg-hover/40 transition-all duration-300">
+            <p className="text-tiny text-foreground/80 mb-1">Weekly Consistency</p>
+            <p className="text-medium font-bold text-warning mb-2">{consistencyRate.toFixed(1)}%</p>
             <Progress 
               value={consistencyRate} 
               classNames={{
-                base: "overflow-hidden rounded-full bg-hover",
-                indicator: "h-full bg-warning rounded-full"
+                base: "h-2 rounded-medium bg-default-200/50 dark:bg-default-500/20 overflow-hidden",
+                indicator: "h-full bg-gradient-to-r from-warning/90 to-warning-500/90 dark:from-warning dark:to-warning-500 transition-all duration-500 group-hover:opacity-90"
               }}
             />
           </div>
 
           {/* Average Session Length */}
-          <div className="space-y-2">
-            <p className="text-sm text-foreground/70">Average Session Length</p>
-            <p className="text-2xl font-bold text-foreground">{avgSessionLength.toFixed(1)} min</p>
+          <div className="group border border-border rounded-medium p-4 hover:bg-hover/40 transition-all duration-300">
+            <p className="text-tiny text-foreground/80 mb-1">Average Session Length</p>
+            <p className="text-medium font-bold text-foreground">{avgSessionLength.toFixed(1)} min</p>
           </div>
 
           {/* Total Hours Practiced */}
-          <div className="space-y-2">
-            <p className="text-sm text-foreground/70">Total Hours Practiced</p>
-            <p className="text-2xl font-bold text-success/90">{totalHours.toFixed(1)}</p>
+          <div className="group border border-border rounded-medium p-4 hover:bg-hover/40 transition-all duration-300">
+            <p className="text-tiny text-foreground/80 mb-1">Total Hours Practiced</p>
+            <p className="text-medium font-bold text-success">{totalHours.toFixed(1)} hrs</p>
           </div>
 
           {/* Total Sessions */}
-          <div className="space-y-2">
-            <p className="text-sm text-foreground/70">Total Sessions</p>
-            <p className="text-2xl font-bold text-foreground">{stats.totalSessions}</p>
+          <div className="group border border-border rounded-medium p-4 hover:bg-hover/40 transition-all duration-300">
+            <p className="text-tiny text-foreground/80 mb-1">Total Sessions</p>
+            <p className="text-medium font-bold text-foreground">{stats.totalSessions}</p>
           </div>
         </div>
       </CardBody>
