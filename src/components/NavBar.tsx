@@ -7,12 +7,18 @@ import {
 } from "@heroui/navbar";
 import { Link } from "@heroui/link";
 import { useAuth } from "@/providers/AuthProvider";
+import { usePathname } from "next/navigation";
 
 import { title } from "./primitives";
 import HeaderRightActions from "./header/HeaderRightActions";
 
 export const Navbar = () => {
   const { user, loading } = useAuth();
+  const pathname = usePathname();
+
+  const isActive = (path: string) => {
+    return pathname === path;
+  };
 
   return (
     <HeroUINavbar maxWidth="full" position="sticky" className="bg-background">
@@ -24,18 +30,26 @@ export const Navbar = () => {
         </NavbarBrand>
         {!loading && user && (
           <>
-            <NavbarItem>
+            <NavbarItem className="h-full">
               <Link 
                 href="/dashboard" 
-                className="text-foreground/80 hover:text-foreground transition-colors font-medium"
+                className={`transition-all duration-200 font-semibold h-full flex items-center px-4 ${
+                  isActive('/dashboard')
+                    ? 'text-background-foreground border-b-2 border-background-foreground'
+                    : 'text-secondary'
+                }`}
               >
                 Dashboard
               </Link>
             </NavbarItem>
-            <NavbarItem>
+            <NavbarItem className="h-full">
               <Link 
                 href="/interviews" 
-                className="text-foreground/80 hover:text-foreground transition-colors font-medium"
+                className={`transition-all duration-200 font-semibold h-full flex items-center px-4 ${
+                  isActive('/interviews')
+                    ? 'text-background-foreground border-b-2 border-background-foreground'
+                    : 'text-secondary'
+                }`}
               >
                 Interviews
               </Link>
