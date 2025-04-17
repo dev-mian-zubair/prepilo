@@ -30,8 +30,14 @@ export default function TechnologyBreakdown() {
 
   return (
     <Card className="bg-content1 rounded-large shadow-none overflow-hidden transition-all duration-300">
-      <CardHeader>
-        <h2 className="text-large font-bold text-foreground tracking-tight">Technology Breakdown</h2>
+      <CardHeader className="pb-2">
+        <div className="flex items-center gap-2">
+          <h2 className="text-large font-bold text-foreground tracking-tight">Technology Breakdown</h2>
+          <div className="flex items-center gap-2 px-2 py-1 rounded-small bg-default-100 dark:bg-default-50">
+            <span className="text-tiny font-medium text-default-600">{technologies.length}</span>
+            <span className="text-tiny text-default-500">Skills Tracked</span>
+          </div>
+        </div>
       </CardHeader>
       <CardBody>
         <div className="max-h-[400px] overflow-y-auto pr-2 scrollbar-thin scrollbar-track-default-100 scrollbar-thumb-default-300 hover:scrollbar-thumb-default-400">
