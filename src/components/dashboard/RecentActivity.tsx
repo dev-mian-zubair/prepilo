@@ -2,8 +2,9 @@
 
 import { useState } from "react";
 import { Card, CardBody, CardHeader } from "@heroui/card";
-import { format } from "date-fns";
-import { Session } from "@/types/dashboard";
+import { format, formatDistanceStrict } from "date-fns";
+import { Session, Difficulty } from "@/types/dashboard";
+import { Clock } from "lucide-react";
 
 export default function RecentActivity() {
   const [showAll, setShowAll] = useState(false);
@@ -13,77 +14,138 @@ export default function RecentActivity() {
       id: "1",
       title: "React Advanced Interview",
       startedAt: new Date(),
+      endedAt: new Date(Date.now() + 45 * 60000),
       overallScore: 85,
       status: "COMPLETED",
+      difficulty: "ADVANCED"
     },
     {
       id: "2",
       title: "System Design Practice",
-      startedAt: new Date(Date.now() - 86400000), // 1 day ago
-      overallScore: 78,
-      status: "COMPLETED",
+      startedAt: new Date(Date.now() - 86400000),
+      endedAt: new Date(Date.now() - 86400000 + 30 * 60000),
+      overallScore: 45,
+      status: "LEFT_IN_MID",
+      difficulty: "INTERMEDIATE"
     },
     {
       id: "3",
       title: "Data Structures & Algorithms",
-      startedAt: new Date(Date.now() - 172800000), // 2 days ago
+      startedAt: new Date(Date.now() - 172800000),
+      endedAt: new Date(Date.now() - 172800000 + 50 * 60000),
       overallScore: 92,
       status: "COMPLETED",
+      difficulty: "ADVANCED"
     },
     {
       id: "4",
       title: "Backend Architecture",
-      startedAt: new Date(Date.now() - 259200000), // 3 days ago
-      overallScore: 88,
-      status: "COMPLETED",
+      startedAt: new Date(Date.now() - 259200000),
+      endedAt: new Date(Date.now() - 259200000 + 20 * 60000),
+      overallScore: 35,
+      status: "LEFT_IN_MID",
+      difficulty: "INTERMEDIATE"
     },
     {
       id: "5",
       title: "Frontend Performance",
-      startedAt: new Date(Date.now() - 345600000), // 4 days ago
-      overallScore: 81,
+      startedAt: new Date(Date.now() - 345600000),
+      endedAt: new Date(Date.now() - 345600000 + 40 * 60000),
+      overallScore: 78,
       status: "COMPLETED",
+      difficulty: "BEGINNER"
     },
     {
       id: "6",
       title: "Database Optimization",
-      startedAt: new Date(Date.now() - 432000000), // 5 days ago
-      overallScore: 75,
-      status: "COMPLETED",
+      startedAt: new Date(Date.now() - 432000000),
+      endedAt: new Date(Date.now() - 432000000 + 15 * 60000),
+      overallScore: 28,
+      status: "LEFT_IN_MID",
+      difficulty: "INTERMEDIATE"
     },
     {
       id: "7",
       title: "API Design",
-      startedAt: new Date(Date.now() - 518400000), // 6 days ago
+      startedAt: new Date(Date.now() - 518400000),
+      endedAt: new Date(Date.now() - 518400000 + 45 * 60000),
       overallScore: 89,
       status: "COMPLETED",
+      difficulty: "ADVANCED"
     },
     {
       id: "8",
       title: "Cloud Architecture",
-      startedAt: new Date(Date.now() - 604800000), // 7 days ago
+      startedAt: new Date(Date.now() - 604800000),
+      endedAt: new Date(Date.now() - 604800000 + 60 * 60000),
       overallScore: 83,
       status: "COMPLETED",
+      difficulty: "INTERMEDIATE"
     },
+    {
+      id: "9",
+      title: "Basic JavaScript Concepts",
+      startedAt: new Date(Date.now() - 691200000),
+      endedAt: new Date(Date.now() - 691200000 + 25 * 60000),
+      overallScore: 42,
+      status: "LEFT_IN_MID",
+      difficulty: "BEGINNER"
+    },
+    {
+      id: "10",
+      title: "Web Security Fundamentals",
+      startedAt: new Date(Date.now() - 777600000),
+      endedAt: new Date(Date.now() - 777600000 + 55 * 60000),
+      overallScore: 62,
+      status: "COMPLETED",
+      difficulty: "INTERMEDIATE"
+    }
   ];
 
   const displaySessions = showAll ? sessions : sessions.slice(0, 3);
 
   const getScoreColor = (score: number) => {
-    if (score >= 90) return 'from-emerald-500/90 to-emerald-400/90 dark:from-emerald-400 dark:to-emerald-300';
-    if (score >= 80) return 'from-primary/90 to-secondary/90 dark:from-primary dark:to-secondary';
-    if (score >= 70) return 'from-amber-500/90 to-amber-400/90 dark:from-amber-400 dark:to-amber-300';
-    return 'from-rose-500/90 to-rose-400/90 dark:from-rose-400 dark:to-rose-300';
+    if (score >= 90) return 'from-success to-success/80';
+    if (score >= 75) return 'from-warning to-warning/80';
+    if (score >= 60) return 'from-primary to-primary/80';
+    return 'from-danger to-danger/80';
+  };
+
+  const getScoreBackground = (score: number) => {
+    if (score >= 90) return 'bg-success/5 border-success/20';
+    if (score >= 75) return 'bg-warning/5 border-warning/20';
+    if (score >= 60) return 'bg-primary/5 border-primary/20';
+    return 'bg-danger/5 border-danger/20';
+  };
+
+  const getScoreText = (score: number) => {
+    if (score >= 90) return 'Excellent';
+    if (score >= 75) return 'Good';
+    if (score >= 60) return 'Fair';
+    return 'Needs Improvement';
   };
 
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'COMPLETED':
-        return 'bg-gradient-to-r from-emerald-500 to-emerald-400 dark:from-emerald-400 dark:to-emerald-300';
-      case 'IN_PROGRESS':
-        return 'bg-gradient-to-r from-amber-500 to-amber-400 dark:from-amber-400 dark:to-amber-300';
+        return 'bg-gradient-to-r from-success-500 to-success-400 dark:from-success-400 dark:to-success-300';
+      case 'LEFT_IN_MID':
+        return 'bg-gradient-to-r from-danger-500 to-danger-400 dark:from-danger-400 dark:to-danger-300';
       default:
         return 'bg-gradient-to-r from-default-500 to-default-400 dark:from-default-400 dark:to-default-300';
+    }
+  };
+
+  const getDifficultyColor = (difficulty: Difficulty) => {
+    switch (difficulty) {
+      case 'BEGINNER':
+        return 'text-success bg-success/10';
+      case 'INTERMEDIATE':
+        return 'text-warning bg-warning/10';
+      case 'ADVANCED':
+        return 'text-danger bg-danger/10';
+      default:
+        return 'text-secondary bg-secondary/10';
     }
   };
 
@@ -91,10 +153,10 @@ export default function RecentActivity() {
     <Card className="col-span-2 bg-content1 rounded-large shadow-none overflow-hidden transition-all duration-300">
       <CardHeader className="pb-2">
         <div className="flex items-center gap-2">
-          <h2 className="text-large font-bold text-foreground tracking-tight">Recent Activity</h2>
+          <h2 className="text-large font-bold text-foreground tracking-tight">Practice Interview History</h2>
           <div className="flex items-center gap-2 px-2 py-1 rounded-small bg-default-100 dark:bg-default-50">
             <span className="text-tiny font-medium text-default-600">{sessions.length}</span>
-            <span className="text-tiny text-default-500">Sessions This Week</span>
+            <span className="text-tiny text-default-500">Total Sessions</span>
           </div>
         </div>
       </CardHeader>
@@ -107,25 +169,45 @@ export default function RecentActivity() {
               {displaySessions.map((session) => (
                 <div 
                   key={session.id} 
-                  className="group border border-border rounded-medium p-4 hover:bg-hover/40 transition-all duration-300"
+                  className={`group border rounded-medium p-4 transition-all duration-300 ${
+                    session.overallScore ? getScoreBackground(session.overallScore) : 'border-border'
+                  }`}
                 >
                   <div className="flex items-center justify-between">
                     <div className="space-y-1">
-                      <h3 className="font-medium text-foreground">{session.title || "Untitled Session"}</h3>
-                      <p className="text-tiny text-foreground/70">
-                        {format(new Date(session.startedAt), "MMM d, yyyy h:mm a")}
-                      </p>
+                      <div className="flex items-center gap-2">
+                        <h3 className="font-medium text-foreground">{session.title || "Untitled Session"}</h3>
+                        <span className={`text-tiny px-2 py-0.5 rounded-full font-medium ${getDifficultyColor(session.difficulty)}`}>
+                          {session.difficulty.charAt(0) + session.difficulty.slice(1).toLowerCase()}
+                        </span>
+                        <span className={`text-tiny px-2 py-0.5 rounded-full font-medium ${
+                          session.status === 'COMPLETED' ? 'text-success bg-success/10' :
+                          'text-danger bg-danger/10'
+                        }`}>
+                          {session.status === 'COMPLETED' ? 'Completed' : 'Left in Mid'}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <p className="text-tiny text-foreground/70">
+                          {format(new Date(session.startedAt), "MMM d, yyyy h:mm a")}
+                        </p>
+                        {session.endedAt && (
+                          <div className="flex items-center gap-1 text-tiny text-foreground/70">
+                            <Clock size={12} />
+                            <span>{formatDistanceStrict(new Date(session.endedAt), new Date(session.startedAt))}</span>
+                          </div>
+                        )}
+                      </div>
                     </div>
                     <div className="flex items-center space-x-4">
                       {session.overallScore && (
                         <div className="text-right">
-                          <p className="text-tiny text-foreground/70 mb-1">Score</p>
-                          <div className={`px-2 py-1 rounded-small bg-gradient-to-r ${getScoreColor(session.overallScore)} text-white font-medium text-tiny transition-all duration-300 group-hover:opacity-90`}>
-                            {session.overallScore}%
+                          <div className={`px-2 py-1 rounded-small bg-gradient-to-r ${getScoreColor(session.overallScore)} text-white font-medium text-tiny transition-all duration-300`}>
+                            Score: {session.overallScore}% - {getScoreText(session.overallScore)}
                           </div>
                         </div>
                       )}
-                      <div className={`w-3 h-3 rounded-full ${getStatusColor(session.status)}`} />
+                      {/* <div className={`w-3 h-3 rounded-full ${getStatusColor(session.status)}`} /> */}
                     </div>
                   </div>
                 </div>
