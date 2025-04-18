@@ -16,12 +16,16 @@ export interface Feedback {
   confidence?: number;
 }
 
+export type Difficulty = 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED';
+
 export interface Session {
   id: string;
-  title?: string;
+  title: string;
   startedAt: Date;
+  endedAt?: Date;
   overallScore?: number;
-  status: 'COMPLETED' | 'IN_PROGRESS' | 'PLANNED';
+  status: 'COMPLETED' | 'LEFT_IN_MID';
+  difficulty: Difficulty;
 }
 
 export interface Technology {
