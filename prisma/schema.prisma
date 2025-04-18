@@ -7,115 +7,78 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// User: Stores user profile information
+// User: user profile
 model User {
-  id             String          @id @default(uuid())
-  name           String
-  email          String          @unique
-  avatar         String?
-  provider       String
-  createdAt      DateTime        @default(now())
-  updatedAt      DateTime        @updatedAt
-  sessions       Session[]
-  goals          Goal[]
-  interviewStats InterviewStats?
-  strengths      UserStrength[]
-  weaknesses     UserWeakness[]
-  interviews     Interview[] // Interviews created by user
+  id         String      @id @default(uuid())
+  name       String
+  email      String      @unique
+  avatar     String?
+  provider   String
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+  sessions   Session[] // Sessions taken by user
+  interviews Interview[] // Interviews created by user
 
-  @@index([email]) // Index for fast email lookups
+  @@index([email]) // For fast email lookups
 }
 
-// InterviewStats: Aggregates user performance
-model InterviewStats {
-  id                     String   @id @default(uuid())
-  userId                 String   @unique
-  user                   User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  totalSessions          Int      @default(0)
-  completedSessions      Int      @default(0)
-  avgTechnicalScore      Float? // 0-100
-  avgCommunicationScore  Float? // 0-100
-  avgProblemSolvingScore Float? // 0-100
-  createdAt              DateTime @default(now())
-  updatedAt              DateTime @updatedAt
-
-  @@index([userId]) // Index for user-specific stats queries
-}
-
-// UserStrength: Tracks user strengths
-model UserStrength {
-  id          String           @id @default(uuid())
-  userId      String
-  user        User             @relation(fields: [userId], references: [id], onDelete: Cascade)
-  category    StrengthCategory
-  description String // e.g., "Strong React component design"
-  sessionIds  String[] // Links to sessions as evidence
-  createdAt   DateTime         @default(now())
-
-  @@index([userId]) // Index for user-specific strengths
-}
-
-// UserWeakness: Tracks areas for improvement
-model UserWeakness {
-  id              String           @id @default(uuid())
-  userId          String
-  user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
-  category        WeaknessCategory
-  description     String // e.g., "Weak in SQL joins"
-  improvementTips String[] // e.g., ["Practice join queries", "Review indexing"]
-  createdAt       DateTime         @default(now())
-
-  @@index([userId]) // Index for user-specific weaknesses
-}
-
-// Interview: Reusable interviews
+// Interview: Reusable interview templates
 model Interview {
   id           String                @id @default(uuid())
   creatorId    String?
   creator      User?                 @relation(fields: [creatorId], references: [id], onDelete: SetNull)
-  title        String // e.g., "Senior React Developer"
+  title        String // e.g., "Junior React Developer"
   description  String?
   duration     Int // Planned minutes
-  difficulty   Difficulty
-  focusAreas   FocusArea[]
   isPublic     Boolean               @default(false)
   createdAt    DateTime              @default(now())
   updatedAt    DateTime              @updatedAt
+  focusAreas   FocusArea[]
   technologies InterviewTechnology[]
-  questions    InterviewQuestion[]
-  sessions     Session[] // Instances of this interview
+  versions     InterviewVersion[] // Versions of this interview
 
-  @@index([creatorId]) // Index for creator-specific interviews
+  @@index([creatorId]) // For creator-specific queries
 }
 
-// InterviewQuestion: Questions within a interview
-model InterviewQuestion {
-  id                 String             @id @default(uuid())
-  interviewId        String
-  interview          Interview          @relation(fields: [interviewId], references: [id], onDelete: Cascade)
-  text               String
-  type               QuestionType
-  technologyId       String?
-  technology         Technology?        @relation(fields: [technologyId], references: [id], onDelete: SetNull)
-  evaluationCriteria String[] // e.g., ["Clarity", "Correctness"]
-  createdAt          DateTime           @default(now())
-  responses          QuestionResponse[]
+// InterviewVersion: Specific version of an interview by difficulty
+model InterviewVersion {
+  id          String              @id @default(uuid())
+  interviewId String
+  interview   Interview           @relation(fields: [interviewId], references: [id], onDelete: Cascade)
+  difficulty  Difficulty
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
+  questions   InterviewQuestion[] // Questions for this version
+  sessions    Session[] // Sessions for this version
 
-  @@index([interviewId]) // Index for interview-specific questions
+  @@unique([interviewId, difficulty]) // Ensure one version per difficulty per interview
+  @@index([interviewId]) // For interview-specific version queries
+}
+
+// InterviewQuestion: Questions within an interview version
+model InterviewQuestion {
+  id           String             @id @default(uuid())
+  versionId    String
+  version      InterviewVersion   @relation(fields: [versionId], references: [id], onDelete: Cascade)
+  text         String
+  type         QuestionType
+  technologyId String?
+  technology   Technology?        @relation(fields: [technologyId], references: [id], onDelete: SetNull)
+  createdAt    DateTime           @default(now())
+  responses    QuestionResponse[]
+
+  @@index([versionId]) // For version-specific questions
 }
 
 // Technology: Programming languages, frameworks, etc.
 model Technology {
-  id                String                @id @default(uuid())
-  name              String                @unique
-  category          TechCategory
-  createdAt         DateTime              @default(now())
-  interviews        InterviewTechnology[]
-  questions         InterviewQuestion[]
-  feedbackTechs     FeedbackTechnology[]
-  SessionTechnology SessionTechnology[]
+  id         String                @id @default(uuid())
+  name       String                @unique
+  createdAt  DateTime              @default(now())
+  interviews InterviewTechnology[]
+  questions  InterviewQuestion[]
 
-  @@index([name]) // Index for technology lookups
+  @@index([name]) // For technology lookups
 }
 
 // InterviewTechnology: Links technologies to interviews
@@ -128,128 +91,57 @@ model InterviewTechnology {
   @@id([interviewId, technologyId])
 }
 
-// Session: An instance of a user taking an interview
+// Session: Instance of a user taking an interview version
 model Session {
-  id             String              @id @default(uuid())
-  userId         String
-  interviewId    String?
-  user           User                @relation(fields: [userId], references: [id], onDelete: Cascade)
-  interview      Interview?          @relation(fields: [interviewId], references: [id], onDelete: SetNull)
-  title          String? // Optional override
-  description    String?
-  startedAt      DateTime            @default(now())
-  endedAt        DateTime?
-  duration       Int? // Planned minutes
-  actualDuration Int? // Actual minutes
-  focusAreas     FocusArea[]
-  difficulty     Difficulty
-  status         SessionStatus       @default(PLANNED)
-  mode           SessionMode         @default(MANUAL)
-  overallScore   Float? // 0-100
-  recordingUrl   String? // If recorded
-  transcript     String? // Speech-to-text
-  createdAt      DateTime            @default(now())
-  updatedAt      DateTime            @updatedAt
-  technologies   SessionTechnology[]
-  feedback       Feedback?
-  responses      QuestionResponse[]
-  pauses         SessionPause[]
+  id           String             @id @default(uuid())
+  userId       String
+  versionId    String?
+  user         User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  version      InterviewVersion?  @relation(fields: [versionId], references: [id], onDelete: SetNull)
+  startedAt    DateTime           @default(now())
+  endedAt      DateTime?
+  status       SessionStatus      @default(PLANNED)
+  overallScore Float? // 0-100
+  createdAt    DateTime           @default(now())
+  updatedAt    DateTime           @updatedAt
+  responses    QuestionResponse[]
+  feedback     Feedback?
 
-  @@index([userId, interviewId]) // Index for user and interview queries
-}
-
-// SessionTechnology: Links technologies to sessions
-model SessionTechnology {
-  sessionId    String
-  technologyId String
-  session      Session    @relation(fields: [sessionId], references: [id], onDelete: Cascade)
-  technology   Technology @relation(fields: [technologyId], references: [id], onDelete: Cascade)
-
-  @@id([sessionId, technologyId])
+  @@index([userId, versionId]) // For user and version queries
 }
 
 // QuestionResponse: User answers to questions
 model QuestionResponse {
-  id              String             @id @default(uuid())
-  sessionId       String
-  questionId      String?
-  session         Session            @relation(fields: [sessionId], references: [id], onDelete: Cascade)
-  question        InterviewQuestion? @relation(fields: [questionId], references: [id], onDelete: SetNull)
-  questionText    String // For persistence
-  userAnswer      String // Text, code, or transcript
-  expectedAnswer  String?
-  score           Float? // 0-100
-  timeTaken       Int? // Seconds spent answering
-  feedback        String? // AI notes
-  improvementTips String[] // e.g., ["Explain useEffect better"]
-  createdAt       DateTime           @default(now())
-  updatedAt       DateTime           @updatedAt
+  id           String             @id @default(uuid())
+  sessionId    String
+  questionId   String?
+  session      Session            @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  question     InterviewQuestion? @relation(fields: [questionId], references: [id], onDelete: SetNull)
+  questionText String // For persistence
+  userAnswer   String? // Text
+  expectedAnswer String?
+  score        Float? // 0-100
+  feedback     String? // Brief AI notes
+  createdAt    DateTime           @default(now())
+  updatedAt    DateTime           @updatedAt
 
-  @@index([sessionId]) // Index for session-specific responses
+  @@unique([sessionId, questionId]) // Add composite unique constraint
+  @@index([sessionId])
+  @@index([questionId])
 }
 
-// SessionPause: Tracks pauses during sessions
-model SessionPause {
-  id         String    @id @default(uuid())
-  sessionId  String
-  session    Session   @relation(fields: [sessionId], references: [id], onDelete: Cascade)
-  pauseStart DateTime
-  pauseEnd   DateTime?
-  duration   Int? // Seconds
-  createdAt  DateTime  @default(now())
-
-  @@index([sessionId]) // Index for session-specific pauses
-}
-
-// Feedback: AI-generated feedback for a session
+// Feedback: Basic AI-generated feedback for a session
 model Feedback {
-  id              String               @id @default(uuid())
-  sessionId       String               @unique
-  session         Session              @relation(fields: [sessionId], references: [id], onDelete: Cascade)
-  technical       Float? // 0-100
-  problemSolving  Float? // 0-100
-  communication   Float? // 0-100
-  clarity         Float? // 0-100
-  confidence      Float? // 0-100
-  fillerWords     Float? // % of speech
-  pacing          Float? // Words/min or 0-100
-  summary         String? // General feedback
-  improvementPlan String? // Actionable steps
-  createdAt       DateTime             @default(now())
-  techScores      FeedbackTechnology[]
+  id            String   @id @default(uuid())
+  sessionId     String   @unique
+  session       Session  @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  technical     Float? // 0-100
+  communication Float? // 0-100
+  summary       String? // Brief feedback
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
-  @@index([sessionId]) // Index for session-specific feedback
-}
-
-// FeedbackTechnology: Per-technology feedback
-model FeedbackTechnology {
-  feedbackId   String
-  technologyId String
-  feedback     Feedback   @relation(fields: [feedbackId], references: [id], onDelete: Cascade)
-  technology   Technology @relation(fields: [technologyId], references: [id], onDelete: Cascade)
-  score        Float // 0-100
-  strengths    String[] // e.g., ["Good state management"]
-  weaknesses   String[] // e.g., ["Missed hooks"]
-
-  @@id([feedbackId, technologyId])
-}
-
-// Goal: Tracks user goals
-model Goal {
-  id          String     @id @default(uuid())
-  userId      String
-  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  type        GoalType
-  target      Int // e.g., 5 sessions
-  current     Int        @default(0)
-  period      GoalPeriod
-  startDate   DateTime
-  endDate     DateTime?
-  isCompleted Boolean    @default(false)
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
-
-  @@index([userId]) // Index for user-specific goals
+  @@index([sessionId]) // For session-specific feedback
 }
 
 // Enums
@@ -274,50 +166,9 @@ enum SessionStatus {
   CANCELLED
 }
 
-enum SessionMode {
-  MANUAL
-  AGENT_GUIDED
-}
-
 enum QuestionType {
   TECHNICAL
   BEHAVIORAL
   SYSTEM_DESIGN
   PROBLEM_SOLVING
-}
-
-enum TechCategory {
-  FRONTEND
-  BACKEND
-  DATABASE
-  DEVOPS
-  PROGRAMMING_LANGUAGE
-  FRAMEWORK
-}
-
-enum StrengthCategory {
-  TECHNICAL
-  COMMUNICATION
-  PROBLEM_SOLVING
-  KNOWLEDGE
-}
-
-enum WeaknessCategory {
-  TECHNICAL
-  COMMUNICATION
-  PROBLEM_SOLVING
-  CONFIDENCE
-  CLARITY
-}
-
-enum GoalType {
-  SESSIONS_COMPLETED
-  SCORE_IMPROVEMENT
-  SKILL_IMPROVEMENT
-}
-
-enum GoalPeriod {
-  WEEKLY
-  MONTHLY
-  QUARTERLY
 }
