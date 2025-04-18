@@ -191,7 +191,7 @@ export default function LowestScoreInterviews() {
                 
                 <Link
                   href={`/interviews/${interview.id}/retry`}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-small bg-secondary/10 text-secondary font-medium text-tiny transition-colors hover:bg-secondary/20"
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-small bg-foreground/5 text-foreground/80 font-medium text-tiny transition-colors hover:bg-foreground/10"
                 >
                   <RotateCcw size={14} />
                   <span>Re-attempt</span>
