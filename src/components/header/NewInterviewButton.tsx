@@ -16,15 +16,15 @@ const NewInterviewButton = () => {
   return (
     <Button
       as={Link}
-      className="text-black"
+      className="font-semibold"
       color="primary"
       href="/interviews"
-      radius="lg"
+      radius="full"
       size="md"
       variant="solid"
     >
       <PlusIcon />
-      Create Interview
+      Create
     </Button>
   );
 };

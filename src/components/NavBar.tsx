@@ -12,6 +12,7 @@ import { usePathname } from "next/navigation";
 import HeaderRightActions from "./header/HeaderRightActions";
 
 import { useAuth } from "@/providers/AuthProvider";
+import { ChartPie } from "lucide-react";
 
 export const Navbar = () => {
   const { user, loading } = useAuth();
@@ -22,7 +23,7 @@ export const Navbar = () => {
   };
 
   return (
-    <HeroUINavbar className="bg-background" maxWidth="2xl" position="sticky">
+    <HeroUINavbar className="bg-background" maxWidth="full" position="sticky">
       <NavbarContent className="basis-1/5 sm:basis-full" justify="start">
         <NavbarBrand as="li" className="gap-3 max-w-fit mr-8">
           <Link className="flex justify-start items-center gap-1" href="/">
@@ -35,8 +36,8 @@ export const Navbar = () => {
           <>
             <NavbarItem className="h-full">
               <Link
-                className={`transition-all duration-200 font-semibold h-full flex items-center gap-2 px-2 ${
-                  isActive("/dashboard") ? "text-foreground" : "text-secondary"
+                className={`transition-all duration-200 h-full flex items-center gap-2 px-2 ${
+                  isActive("/dashboard") ? "" : "text-foreground"
                 }`}
                 href="/dashboard"
               >
@@ -45,8 +46,8 @@ export const Navbar = () => {
             </NavbarItem>
             <NavbarItem className="h-full">
               <Link
-                className={`transition-all duration-200 font-semibold h-full flex items-center gap-2 px-2 ${
-                  isActive("/interviews") ? "text-foreground" : "text-secondary"
+                className={`transition-all duration-200 h-full flex items-center gap-2 px-2 ${
+                  isActive("/interviews") ? "" : "text-foreground"
                 }`}
                 href="/interviews"
               >

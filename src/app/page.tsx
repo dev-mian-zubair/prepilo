@@ -78,7 +78,7 @@ export default function Home() {
             Master Interviews with{" "}
             <span className="text-primary">AI Precision</span>
           </h1>
-          <p className="text-lg text-secondary max-w-2xl">
+          <p className="text-lg  max-w-2xl">
             Practice lifelike video interviews powered by AI. Receive detailed
             feedback on your technical, communication, and problem-solving
             skills.
@@ -86,7 +86,7 @@ export default function Home() {
           <div className="flex gap-4 flex-wrap justify-center">
             <Button
               as={Link}
-              className="text-black"
+              className="font-semibold"
               color="primary"
               href="/interviews"
               radius="lg"
@@ -121,7 +121,7 @@ export default function Home() {
           {stats.map((stat) => (
             <div key={stat.label} className="flex flex-col gap-1">
               <h3 className="text-4xl font-bold text-primary">{stat.value}</h3>
-              <p className="text-secondary text-sm">{stat.label}</p>
+              <p className=" text-sm">{stat.label}</p>
             </div>
           ))}
         </div>
@@ -133,7 +133,7 @@ export default function Home() {
           <h2 className="text-3xl font-bold mb-4">
             Why Choose Our AI Platform?
           </h2>
-          <p className="text-secondary max-w-xl mx-auto mb-12 text-base">
+          <p className=" max-w-xl mx-auto mb-12 text-base">
             Experience the most realistic interview practice with cutting-edge
             AI.
           </p>
@@ -145,7 +145,7 @@ export default function Home() {
               >
                 <div className="text-4xl mb-4">{feature.icon}</div>
                 <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>
-                <p className="text-secondary text-sm">{feature.description}</p>
+                <p className=" text-sm">{feature.description}</p>
               </div>
             ))}
           </div>
@@ -172,7 +172,7 @@ export default function Home() {
                   />
                   <div>
                     <p className="font-semibold">{t.name}</p>
-                    <p className="text-sm text-secondary">{t.role}</p>
+                    <p className="text-sm ">{t.role}</p>
                   </div>
                 </div>
                 <p className="text-sm text-gray-700 italic">“{t.quote}”</p>
@@ -192,7 +192,7 @@ export default function Home() {
             {faqs.map((faq, index) => (
               <div key={index} className="border-b pb-4">
                 <h4 className="text-lg font-medium mb-2">{faq.q}</h4>
-                <p className="text-sm text-secondary">{faq.a}</p>
+                <p className="text-sm">{faq.a}</p>
               </div>
             ))}
           </div>
@@ -205,13 +205,13 @@ export default function Home() {
           <h2 className="text-3xl font-bold mb-4">
             Ready to ace your next interview?
           </h2>
-          <p className="text-secondary mb-6">
+          <p className="mb-6">
             Start practicing today and build your confidence with AI-powered
             simulations.
           </p>
           <Button
             as={Link}
-            className="text-black"
+            className="font-semibold"
             color="primary"
             href="/interviews"
             radius="lg"

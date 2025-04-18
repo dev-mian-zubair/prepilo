@@ -34,10 +34,10 @@ const SignInButton = () => {
 
   return (
     <Button
-      className="text-black"
+      className="font-semibold"
       color="primary"
       disabled={loading}
-      radius="lg"
+      radius="full"
       size="md"
       onPress={() => signIn("google")}
     >
