@@ -11,11 +11,11 @@ export default function DashboardPage() {
     <div className="min-h-screen">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-4">
         <PerformanceOverview />
-        <KeyMetrics />
+        {/* <KeyMetrics />
         <RecommendedActions />
         <StrengthsWeaknesses />
         <TechnologyBreakdown />
-        <GoalProgress />
+        <GoalProgress /> */}
         <RecentActivity />
       </div>
     </div>

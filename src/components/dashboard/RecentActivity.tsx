@@ -4,7 +4,8 @@ import { useState } from "react";
 import { Card, CardBody, CardHeader } from "@heroui/card";
 import { format, formatDistanceStrict } from "date-fns";
 import { Session, Difficulty } from "@/types/dashboard";
-import { Clock } from "lucide-react";
+import { Clock, ArrowRight } from "lucide-react";
+import Link from "next/link";
 
 export default function RecentActivity() {
   const [showAll, setShowAll] = useState(false);
@@ -102,7 +103,12 @@ export default function RecentActivity() {
     }
   ];
 
-  const displaySessions = showAll ? sessions : sessions.slice(0, 3);
+  // Sort sessions by date (newest first)
+  const sortedSessions = sessions.sort((a, b) => 
+    new Date(b.startedAt).getTime() - new Date(a.startedAt).getTime()
+  );
+
+  const displaySessions = showAll ? sortedSessions : sortedSessions.slice(0, 3);
 
   const getScoreColor = (score: number) => {
     if (score >= 90) return 'from-success to-success/80';
@@ -152,18 +158,26 @@ export default function RecentActivity() {
   return (
     <Card className="col-span-2 bg-content1 rounded-large shadow-none overflow-hidden transition-all duration-300">
       <CardHeader className="pb-2">
-        <div className="flex items-center gap-2">
-          <h2 className="text-large font-bold text-foreground tracking-tight">Practice Interview History</h2>
-          <div className="flex items-center gap-2 px-2 py-1 rounded-small bg-default-100 dark:bg-default-50">
-            <span className="text-tiny font-medium text-default-600">{sessions.length}</span>
-            <span className="text-tiny text-default-500">Total Sessions</span>
+        <div className="flex items-center justify-between">
+          <h2 className="text-large font-bold text-foreground tracking-tight">This Week's Interviews</h2>
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 px-1 py-1 rounded-small bg-default-100 dark:bg-default-50">
+              <span className="text-tiny font-medium text-default-600">{sessions.length}</span>
+            </div>
+            <Link 
+              href="/interviews" 
+              className="flex items-center gap-1 text-tiny font-medium text-primary hover:text-primary-500 transition-colors"
+            >
+              <span>View All</span>
+              <ArrowRight size={16} />
+            </Link>
           </div>
         </div>
       </CardHeader>
       <CardBody>
         <div className="space-y-3">
-          {sessions.length === 0 ? (
-            <p className="text-center text-foreground/70">No recent activities</p>
+          {sortedSessions.length === 0 ? (
+            <p className="text-center text-foreground/70">No interviews this week</p>
           ) : (
             <>
               {displaySessions.map((session) => (
@@ -212,12 +226,12 @@ export default function RecentActivity() {
                   </div>
                 </div>
               ))}
-              {sessions.length > 3 && (
+              {sortedSessions.length > 3 && (
                 <button
                   onClick={() => setShowAll(!showAll)}
                   className="w-full py-2 text-tiny font-medium text-foreground/70 hover:text-foreground transition-colors rounded-medium hover:bg-hover/40"
                 >
-                  {showAll ? 'Show Less' : `Show ${sessions.length - 3} More`}
+                  {showAll ? 'Show Less' : `Show ${sortedSessions.length - 3} More`}
                 </button>
               )}
             </>
