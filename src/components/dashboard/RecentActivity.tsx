@@ -117,13 +117,6 @@ export default function RecentActivity() {
     return 'from-danger to-danger/80';
   };
 
-  const getScoreBackground = (score: number) => {
-    if (score >= 90) return 'bg-success/5 border-success/20';
-    if (score >= 75) return 'bg-warning/5 border-warning/20';
-    if (score >= 60) return 'bg-primary/5 border-primary/20';
-    return 'bg-danger/5 border-danger/20';
-  };
-
   const getScoreText = (score: number) => {
     if (score >= 90) return 'Excellent';
     if (score >= 75) return 'Good';
@@ -159,19 +152,19 @@ export default function RecentActivity() {
     <Card className="col-span-2 bg-content1 rounded-large shadow-none overflow-hidden transition-all duration-300">
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between">
-          <h2 className="text-large font-bold text-foreground tracking-tight">This Week's Interviews</h2>
-          <div className="flex items-center gap-2">
-            <div className="flex items-center gap-2 px-1 py-1 rounded-small bg-default-100 dark:bg-default-50">
-              <span className="text-tiny font-medium text-default-600">{sessions.length}</span>
+          <div className="flex items-center gap-3">
+            <h2 className="text-large font-bold text-foreground tracking-tight">This Week's Interviews</h2>
+            <div className="flex items-center gap-1 px-2 py-1 rounded-small bg-foreground/5 text-foreground/80 dark:text-foreground/70">
+              <span className="text-tiny font-medium">{sessions.length}</span>
             </div>
-            <Link 
-              href="/interviews" 
-              className="flex items-center gap-1 text-tiny font-medium text-primary hover:text-primary-500 transition-colors"
-            >
-              <span>View All</span>
-              <ArrowRight size={16} />
-            </Link>
           </div>
+          <Link 
+            href="/interviews" 
+            className="flex items-center gap-1.5 px-2 py-1.5 rounded-small bg-foreground/5 text-foreground/80 dark:text-foreground/70 font-medium text-tiny transition-colors hover:bg-foreground/10"
+          >
+            <span>View All</span>
+            <ArrowRight size={14} />
+          </Link>
         </div>
       </CardHeader>
       <CardBody>
@@ -183,9 +176,7 @@ export default function RecentActivity() {
               {displaySessions.map((session) => (
                 <div 
                   key={session.id} 
-                  className={`group border rounded-medium p-4 transition-all duration-300 ${
-                    session.overallScore ? getScoreBackground(session.overallScore) : 'border-border'
-                  }`}
+                  className="group border border-border rounded-medium p-4 transition-all duration-300"
                 >
                   <div className="flex items-center justify-between">
                     <div className="space-y-1">
@@ -221,7 +212,6 @@ export default function RecentActivity() {
                           </div>
                         </div>
                       )}
-                      {/* <div className={`w-3 h-3 rounded-full ${getStatusColor(session.status)}`} /> */}
                     </div>
                   </div>
                 </div>
