@@ -15,13 +15,17 @@ const HeaderRightActions = () => {
   return (
     <div className="flex items-center gap-3">
       <ThemeSwitch />
-      {!loading && user ? (
+      {!loading && (
         <>
-          <NewInterviewButton />
-          <UserDropdown user={user} />
+          {user ? (
+            <>
+              <NewInterviewButton />
+              <UserDropdown user={user} />
+            </>
+          ) : (
+            <SignInButton />
+          )}
         </>
-      ) : (
-        <SignInButton />
       )}
     </div>
   );
