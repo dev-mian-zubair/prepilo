@@ -38,11 +38,15 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           fontSans.variable,
         )}
       >
-        <Providers themeProps={{ attribute: "class", defaultTheme: "dark" }}>
-          <div className="relative flex flex-col h-screen">
-            <Navbar />
-            <main className="flex-grow">{children}</main>
-            <Footer />
+        <Providers themeProps={{ attribute: "class", defaultTheme: "light" }}>
+          <div className="relative flex flex-col min-h-screen">
+            <div className="container mx-auto px-4">
+              <Navbar />
+            </div>
+            <main className="flex-grow container mx-auto px-4">{children}</main>
+            <div className="container mx-auto px-4">
+              <Footer />
+            </div>
           </div>
         </Providers>
       </body>
