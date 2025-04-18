@@ -1,8 +1,7 @@
 "use client";
 import React, { useState } from "react";
-
+import { Card, CardBody, CardHeader } from "@heroui/card";
 import InterviewCard from "./InterviewCard";
-
 import { Interview } from "@/types/interview";
 
 const interviews: Interview[] = [
@@ -81,9 +80,14 @@ const InterviewGrid = () => {
   };
 
   return (
-    <section className="w-full py-24 px-6">
-      <div className="container mx-auto">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 auto-rows-min">
+    <Card className="col-span-2 bg-content1 rounded-large shadow-none overflow-hidden transition-all duration-300">
+      <CardHeader>
+        <h2 className="text-large font-bold text-foreground tracking-tight">
+          Available Interviews
+        </h2>
+      </CardHeader>
+      <CardBody>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {interviews.map((interview) => (
             <div
               key={interview.id}
@@ -98,8 +102,8 @@ const InterviewGrid = () => {
             </div>
           ))}
         </div>
-      </div>
-    </section>
+      </CardBody>
+    </Card>
   );
 };
 
