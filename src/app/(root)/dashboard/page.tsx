@@ -7,6 +7,7 @@ import GoalProgress from "@/components/dashboard/GoalProgress";
 import RecommendedActions from "@/components/dashboard/RecommendedActions";
 import InterviewMetrics from "@/components/dashboard/InterviewMetrics";
 import LowestScoreInterviews from "@/components/dashboard/LowestScoreInterviews";
+import InterviewList from "@/components/interview/listing/InterviewList";
 
 export default function DashboardPage() {
   return (
@@ -21,6 +22,7 @@ export default function DashboardPage() {
         <TechnologyBreakdown />
         <GoalProgress /> */}
         <RecentActivity />
+        <InterviewList />
       </div>
     </div>
   );
