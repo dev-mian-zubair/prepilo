@@ -1,10 +1,9 @@
 import InterviewGrid from "@/components/interview/listing/InterviewGrid";
-import InterviewLayout from "@/components/interview/listing/InterviewLayout";
 
 export default function InterviewsPage() {
   return (
-    <InterviewLayout>
+    <div className="my-8">
       <InterviewGrid />
-    </InterviewLayout>
+    </div>
   );
 }
