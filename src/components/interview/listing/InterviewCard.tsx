@@ -1,120 +1,139 @@
 import { Avatar } from "@heroui/avatar";
 import { Card, CardBody } from "@heroui/card";
 import { Chip } from "@heroui/chip";
-import { Clock } from "lucide-react";
+import { Button } from "@heroui/button";
+import { ExternalLinkIcon } from "lucide-react";
 import React from "react";
-import { format } from "date-fns";
 
 import { Interview } from "@/types/interview";
+
+const technologyOptions = [
+  { key: "JavaScript", label: "JavaScript", emoji: "🌐" },
+  { key: "Python", label: "Python", emoji: "🐍" },
+  { key: "React", label: "React", emoji: "⚛️" },
+  { key: "Node.js", label: "Node.js", emoji: "🖥️" },
+  { key: "Java", label: "Java", emoji: "☕" },
+  { key: "TypeScript", label: "TypeScript", emoji: "📜" },
+  { key: "SQL", label: "SQL", emoji: "🗃️" },
+  { key: "AWS", label: "AWS", emoji: "☁️" },
+  { key: "Docker", label: "Docker", emoji: "🐳" },
+  { key: "Kubernetes", label: "Kubernetes", emoji: "☸️" },
+];
+
+const focusAreaOptions = [
+  { key: "TECHNICAL", label: "Technical Skills", emoji: "💻" },
+  { key: "SYSTEM_DESIGN", label: "System Design", emoji: "🏗️" },
+  { key: "BEHAVIORAL", label: "Behavioral Skills", emoji: "🤝" },
+  { key: "COMMUNICATION", label: "Communication Skills", emoji: "💬" },
+  { key: "PROBLEM_SOLVING", label: "Problem Solving", emoji: "🧩" },
+];
 
 interface InterviewCardProps {
   interview: Interview;
 }
 
 const InterviewCard = ({ interview }: InterviewCardProps) => {
-  const getDifficultyColor = (difficulty: string) => {
-    switch (difficulty) {
-      case "BEGINNER":
-        return "text-success bg-success/10";
-      case "INTERMEDIATE":
-        return "text-warning bg-warning/10";
-      case "ADVANCED":
-        return "text-danger bg-danger/10";
-      default:
-        return "text-secondary bg-secondary/10";
-    }
+  const getTechEmoji = (tech: string) => {
+    const option = technologyOptions.find((opt) => opt.key === tech);
+
+    return option ? option.emoji : "🌟";
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "COMPLETED":
-        return "text-success bg-success/10";
-      case "LEFT_IN_MID":
-        return "text-danger bg-danger/10";
-      default:
-        return "text-secondary bg-secondary/10";
-    }
-  };
+  const getFocusAreaLabel = (area: string) => {
+    const option = focusAreaOptions.find((opt) => opt.key === area);
 
-  const getScoreColor = (score: number) => {
-    if (score >= 90) return "from-success to-success/80";
-    if (score >= 75) return "from-warning to-warning/80";
-    if (score >= 60) return "from-primary to-primary/80";
-    return "from-danger to-danger/80";
-  };
-
-  const getScoreText = (score: number) => {
-    if (score >= 90) return "Excellent";
-    if (score >= 75) return "Good";
-    if (score >= 60) return "Fair";
-    return "Needs Improvement";
+    return option
+      ? { label: option.label, emoji: option.emoji }
+      : { label: area.replace("_", " "), emoji: "🌟" };
   };
 
   return (
-    <Card
-      className="border bg-background shadow-sm rounded-large hover:shadow-none hover:-translate-y-1 transition-all duration-300 h-full"
-      radius="none"
-    >
-      <CardBody className="p-6 flex flex-col gap-4">
-        {/* Title and Score */}
-        <div className="flex items-center justify-between">
-          <h2 className="text-xl font-semibold line-clamp-2">
-            {interview.title}
-          </h2>
-          <div className={`px-2 py-1 rounded-small bg-gradient-to-r ${getScoreColor(interview.overallScore)} text-white font-medium text-tiny transition-all duration-300`}>
-            Score: {interview.overallScore}% - {getScoreText(interview.overallScore)}
-          </div>
+    <Card className="group border border-divider bg-transparent rounded-md transition-all duration-200 h-full shadow-none hover:shadow-md hover:scale-[1.01]">
+      <CardBody className="p-4 flex flex-col gap-4">
+        {/* Attempted by and Try Now */}
+        <div className="flex justify-between items-center">
+          {interview.participants && interview.participants.length > 0 && (
+            <div>
+              <p className="text-sm font-medium text-muted-foreground mb-2">
+                Attempted by
+              </p>
+              <div className="flex items-center -space-x-2">
+                {interview.participants
+                  .slice(0, 3)
+                  .map((participant, index) => (
+                    <Avatar
+                      key={index}
+                      className="border-2 border-background hover:scale-110 transition-all duration-200"
+                      name={participant.user}
+                      size="sm"
+                      src={participant.avatar}
+                    />
+                  ))}
+                {interview.participants.length > 3 && (
+                  <span className="text-sm text-muted-foreground ml-3">
+                    +{interview.participants.length - 3} more
+                  </span>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Hidden until hover */}
+          <Button
+            aria-label="Try this interview"
+            className="bg-teal-400 text-white hover:bg-teal-500 rounded-md transition-all duration-300 transform opacity-0 scale-95 group-hover:opacity-100 group-hover:scale-100"
+            endContent={<ExternalLinkIcon className="w-4 h-4" />}
+            radius="md"
+            size="sm"
+          >
+            Try Now
+          </Button>
         </div>
 
-        {/* Difficulty and Status */}
-        <div className="flex items-center gap-2">
-          <span className={`text-tiny px-2 py-0.5 rounded-full font-medium ${getDifficultyColor(interview.difficulty)}`}>
-            {interview.difficulty.charAt(0) + interview.difficulty.slice(1).toLowerCase()}
-          </span>
-          <span className={`text-tiny px-2 py-0.5 rounded-full font-medium ${getStatusColor(interview.status)}`}>
-            {interview.status === "COMPLETED" ? "Completed" : "Left in Mid"}
-          </span>
-        </div>
+        {/* Title */}
+        <h2 className="text-xl font-bold line-clamp-2">{interview.title}</h2>
 
         {/* Description */}
-        <p className="text-sm line-clamp-2">{interview.description}</p>
+        <p className="text-sm text-foreground line-clamp-2">
+          {interview.description}
+        </p>
 
         {/* Technologies */}
-        <div className="flex flex-col gap-1">
-          <div className="flex flex-wrap gap-1">
-            <span className="text-tiny font-medium text-foreground/70">Technologies:</span>
-            {interview.technologies.map((tech) => (
-              <Chip key={tech} radius="full" size="sm">
-                {tech}
-              </Chip>
-            ))}
-          </div>
+        <div className="flex flex-wrap gap-3">
+          {interview.technologies.map((tech) => (
+            <Chip
+              key={tech}
+              className="hover:scale-105 transition-all duration-200"
+              radius="md"
+              size="sm"
+              startContent={
+                <span aria-hidden="true">{getTechEmoji(tech)}</span>
+              }
+              variant="bordered"
+            >
+              {tech}
+            </Chip>
+          ))}
         </div>
 
         {/* Focus Areas */}
-        <div className="flex flex-col gap-1">
-          <div className="flex flex-wrap gap-1">
-            <span className="text-tiny font-medium text-foreground/70">Focus Areas:</span>
-            {interview.focusAreas.map((area) => (
+        <div className="flex flex-wrap gap-3">
+          {interview.focusAreas.map((area) => {
+            const { label, emoji } = getFocusAreaLabel(area);
+
+            return (
               <Chip
                 key={area}
-                className="bg-background text-tiny"
-                radius="full"
+                className="hover:scale-105 transition-all duration-200"
+                radius="md"
                 size="sm"
+                startContent={<span aria-hidden="true">{emoji}</span>}
+                variant="bordered"
               >
-                {area.replace("_", " ")}
+                {label}
               </Chip>
-            ))}
-          </div>
-        </div>
-
-        {/* Duration and Timestamp */}
-        <div className="flex items-center gap-2 text-xs text-muted-foreground">
-          <div className="flex items-center gap-1">
-            <Clock size={12} />
-            <span>{interview.duration} minutes</span>
-          </div>
-          <span>{format(interview.startedAt, "MMM d, yyyy h:mm a")}</span>
+            );
+          })}
         </div>
       </CardBody>
     </Card>
