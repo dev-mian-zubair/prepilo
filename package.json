@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@ai-sdk/google": "^1.2.10",
+    "@heroicons/react": "^2.2.0",
     "@heroui/accordion": "^2.2.14",
     "@heroui/avatar": "^2.2.13",
     "@heroui/badge": "^2.2.10",
@@ -28,6 +29,7 @@
     "@heroui/navbar": "2.2.15",
     "@heroui/progress": "^2.2.13",
     "@heroui/radio": "^2.3.16",
+    "@heroui/react": "^2.7.6",
     "@heroui/select": "^2.4.17",
     "@heroui/snippet": "2.2.18",
     "@heroui/switch": "2.2.15",

@@ -17,7 +17,7 @@ const UserVideoArea = ({ isCameraOn }: UserVideoAreaProps) => {
         className={cn(
           "flex flex-col items-center justify-center p-8 z-20 relative max-h-[800px]",
           !isCameraOn
-            ? "m-8 rounded-xl shadow-sm bg-gradient-to-tl from-blue-50 to-gray-50 w-[calc(100%-65px)] max-h-[740px]"
+            ? "m-8 rounded-xl shadow-sm bg-gradient-to-tl from-blue-400 to-gray-300 w-[calc(100%-65px)] max-h-[740px]"
             : "",
         )}
       >

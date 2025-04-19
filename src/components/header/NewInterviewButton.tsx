@@ -2,30 +2,28 @@
 import React from "react";
 import { Button } from "@heroui/button";
 import { useDisclosure } from "@heroui/modal";
-import { Link } from "@heroui/link";
 import { PlusIcon } from "lucide-react";
 
-export enum InterviewType {
-  manually = "manually",
-  agent = "agent",
-}
+import InterviewGeneratorModal from "../modals/InterviewGeneratorModal";
 
 const NewInterviewButton = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   return (
-    <Button
-      as={Link}
-      className="font-semibold"
-      color="primary"
-      href="/interviews"
-      radius="full"
-      size="md"
-      variant="solid"
-    >
-      <PlusIcon />
-      Create
-    </Button>
+    <>
+      <Button
+        className="font-semibold"
+        color="primary"
+        radius="full"
+        size="md"
+        variant="solid"
+        onPress={onOpen}
+      >
+        <PlusIcon />
+        Create
+      </Button>
+      <InterviewGeneratorModal isOpen={isOpen} onClose={onClose} />
+    </>
   );
 };
 

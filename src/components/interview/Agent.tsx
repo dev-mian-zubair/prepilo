@@ -23,7 +23,7 @@ const Agent = ({ onClose }: AgentProps) => {
   return (
     <>
       {/* Top Section */}
-      <div className="flex flex-1 overflow-hidden">
+      <div className="flex flex-1 p-0 m-0 overflow-hidden min-h-screen bg-background">
         {/* Video Area */}
         <div className="flex-1 relative">
           <UserVideoArea isCameraOn={isCameraOn} />

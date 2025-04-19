@@ -4,3 +4,8 @@ export enum CallStatus {
   ACTIVE = "ACTIVE",
   FINISHED = "FINISHED",
 }
+
+export enum InterviewType {
+  manually = "manually",
+  agent = "agent",
+}
