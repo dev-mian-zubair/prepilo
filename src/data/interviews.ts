@@ -1,6 +1,6 @@
 import { Interview } from "@/types/interview";
 
-export const mockInterviews: Interview[] = [
+export const interviews: Interview[] = [
   {
     id: "1",
     title: "React Advanced Interview",

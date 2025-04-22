@@ -7,12 +7,8 @@ import {
 } from "@heroui/navbar";
 import { Link } from "@heroui/link";
 import { usePathname } from "next/navigation";
-
-// import { title } from "./primitives";
 import HeaderRightActions from "./header/HeaderRightActions";
-
 import { useAuth } from "@/providers/AuthProvider";
-import { ChartPie } from "lucide-react";
 
 export const Navbar = () => {
   const { user, loading } = useAuth();
@@ -47,16 +43,6 @@ export const Navbar = () => {
             <NavbarItem className="h-full">
               <Link
                 className={`transition-all duration-200 h-full flex items-center gap-2 px-2 ${
-                  isActive("/discover") ? "" : "text-foreground"
-                }`}
-                href="/discover"
-              >
-                Discover
-              </Link>
-            </NavbarItem>
-            <NavbarItem className="h-full">
-              <Link
-                className={`transition-all duration-200 h-full flex items-center gap-2 px-2 ${
                   isActive("/interviews") ? "" : "text-foreground"
                 }`}
                 href="/interviews"
@@ -64,6 +50,16 @@ export const Navbar = () => {
                 Interviews
               </Link>
             </NavbarItem>
+            <NavbarItem className="h-full">
+              <Link
+                className={`transition-all duration-200 h-full flex items-center gap-2 px-2 ${
+                  isActive("/discover") ? "" : "text-foreground"
+                }`}
+                href="/discover"
+              >
+                Discover
+              </Link>
+            </NavbarItem> 
           </>
         )}
       </NavbarContent>

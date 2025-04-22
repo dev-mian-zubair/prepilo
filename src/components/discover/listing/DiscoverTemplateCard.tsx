@@ -32,7 +32,7 @@ interface DiscoverCardProps {
   template: Template;
 }
 
-export default function DiscoverInterviewCard({ template }: DiscoverCardProps) {
+export default function DiscoverTemplateCard({ template }: DiscoverCardProps) {
   const getTechEmoji = (tech: string) => {
     const option = technologyOptions.find((opt) => opt.key === tech);
 
