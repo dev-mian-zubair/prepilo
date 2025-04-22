@@ -1,6 +1,30 @@
 import { Clock } from "lucide-react";
 import { format } from "date-fns";
 import { Interview } from "@/types/interview";
+import { Chip } from "@heroui/chip";
+
+// Technology options with emojis
+const technologyOptions = [
+  { key: "JavaScript", label: "JavaScript", emoji: "🌐" },
+  { key: "Python", label: "Python", emoji: "🐍" },
+  { key: "React", label: "React", emoji: "⚛️" },
+  { key: "Node.js", label: "Node.js", emoji: "🖥️" },
+  { key: "Java", label: "Java", emoji: "☕" },
+  { key: "TypeScript", label: "TypeScript", emoji: "📜" },
+  { key: "SQL", label: "SQL", emoji: "🗃️" },
+  { key: "AWS", label: "AWS", emoji: "☁️" },
+  { key: "Docker", label: "Docker", emoji: "🐳" },
+  { key: "Kubernetes", label: "Kubernetes", emoji: "☸️" },
+];
+
+// Focus area options with emojis
+const focusAreaOptions = [
+  { key: "TECHNICAL", label: "Technical Skills", emoji: "💻" },
+  { key: "SYSTEM_DESIGN", label: "System Design", emoji: "🏗️" },
+  { key: "BEHAVIORAL", label: "Behavioral Skills", emoji: "🤝" },
+  { key: "COMMUNICATION", label: "Communication Skills", emoji: "💬" },
+  { key: "PROBLEM_SOLVING", label: "Problem Solving", emoji: "🧩" },
+];
 
 interface InterviewListCardProps {
   interview: Interview;
@@ -45,6 +69,25 @@ export default function InterviewListCard({ interview }: InterviewListCardProps)
     return "Needs Improvement";
   };
 
+  const getScoreColorForCircle = (score: number) => {
+    if (score >= 90) return "stroke-success";
+    if (score >= 75) return "stroke-warning";
+    if (score >= 60) return "stroke-primary";
+    return "stroke-danger";
+  };
+
+  const getTechEmoji = (tech: string) => {
+    const option = technologyOptions.find((opt) => opt.key === tech);
+    return option ? option.emoji : "🌟";
+  };
+
+  const getFocusAreaLabel = (area: string) => {
+    const option = focusAreaOptions.find((opt) => opt.key === area);
+    return option
+      ? { label: option.label, emoji: option.emoji }
+      : { label: area.replace("_", " "), emoji: "🌟" };
+  };
+
   return (
     <div 
       className="group border border-border rounded-medium p-4 transition-all duration-300"
@@ -62,33 +105,81 @@ export default function InterviewListCard({ interview }: InterviewListCardProps)
           </div>
           <p className="text-sm text-foreground/70 line-clamp-1">{interview.description}</p>
           <div className="flex flex-col gap-2 mt-2">
-            <div className="flex flex-wrap gap-1">
+            <div className="flex flex-wrap items-center gap-2">
               <span className="text-tiny font-medium text-foreground/70">Technologies:</span>
               {interview.technologies.map((tech) => (
-                <span 
-                  key={tech} 
-                  className="text-tiny px-2 py-0.5 rounded-full bg-foreground/5 text-foreground/70"
+                <Chip
+                  key={tech}
+                  className="hover:scale-105 transition-all duration-200"
+                  radius="md"
+                  size="sm"
+                  startContent={
+                    <span aria-hidden="true">{getTechEmoji(tech)}</span>
+                  }
+                  variant="bordered"
                 >
                   {tech}
-                </span>
+                </Chip>
               ))}
             </div>
-            <div className="flex flex-wrap gap-1">
+            <div className="flex flex-wrap items-center gap-2">
               <span className="text-tiny font-medium text-foreground/70">Focus Areas:</span>
-              {interview.focusAreas.map((area) => (
-                <span 
-                  key={area} 
-                  className="text-tiny px-2 py-0.5 rounded-full bg-foreground/5 text-foreground/70"
-                >
-                  {area.replace("_", " ")}
-                </span>
-              ))}
+              {interview.focusAreas.map((area) => {
+                const { label, emoji } = getFocusAreaLabel(area);
+                return (
+                  <Chip
+                    key={area}
+                    className="hover:scale-105 transition-all duration-200"
+                    radius="md"
+                    size="sm"
+                    startContent={<span aria-hidden="true">{emoji}</span>}
+                    variant="bordered"
+                  >
+                    {label}
+                  </Chip>
+                );
+              })}
             </div>
           </div>
         </div>
         <div className="text-right space-y-2">
-          <div className={`px-2 py-1 rounded-small bg-gradient-to-r ${getScoreColor(interview.overallScore)} text-white font-medium text-tiny transition-all duration-300`}>
-            Score: {interview.overallScore}% - {getScoreText(interview.overallScore)}
+          {/* Circular progress indicator */}
+          <div className="flex justify-end">
+            <div className="w-10 h-10">
+              <svg className="w-full h-full" viewBox="0 0 36 36">
+                {/* Background circle */}
+                <circle
+                  cx="18"
+                  cy="18"
+                  r="16"
+                  fill="none"
+                  className="stroke-default-200/50 dark:stroke-default-500/20"
+                  strokeWidth="3"
+                />
+                {/* Progress circle */}
+                <circle
+                  cx="18"
+                  cy="18"
+                  r="16"
+                  fill="none"
+                  className={`${getScoreColorForCircle(interview.overallScore)} transition-all duration-500`}
+                  strokeWidth="3"
+                  strokeDasharray={`${(interview.overallScore / 100) * 100} 100`}
+                  strokeDashoffset="25"
+                  transform="rotate(-90 18 18)"
+                />
+                {/* Score text */}
+                <text
+                  x="18"
+                  y="18"
+                  textAnchor="middle"
+                  dominantBaseline="central"
+                  className="text-[8px] font-bold fill-foreground"
+                >
+                  {interview.overallScore}%
+                </text>
+              </svg>
+            </div>
           </div>
           <div className="flex flex-col items-end gap-1 text-tiny text-foreground/70">
             <div className="flex items-center gap-1">
