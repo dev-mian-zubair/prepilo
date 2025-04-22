@@ -165,7 +165,7 @@ export default function RecentActivity() {
           </div>
           <Link
             className="flex items-center gap-1.5 px-2 py-1.5 rounded-small bg-foreground/5 text-foreground/80 dark:text-foreground/70 font-medium text-tiny transition-colors hover:bg-foreground/10"
-            href="/interviews"
+            href="/discover"
           >
             <span>View All</span>
             <ArrowRight size={14} />

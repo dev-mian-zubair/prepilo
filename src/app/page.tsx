@@ -88,7 +88,7 @@ export default function Home() {
               as={Link}
               className="font-semibold"
               color="primary"
-              href="/interviews"
+              href="/discover"
               radius="lg"
               size="md"
               variant="solid"
@@ -213,7 +213,7 @@ export default function Home() {
             as={Link}
             className="font-semibold"
             color="primary"
-            href="/interviews"
+            href="/discover"
             radius="lg"
             size="md"
             variant="solid"

@@ -13,8 +13,8 @@ export const siteConfig = {
   },
   navItems: [
     {
-      label: "Interviews",
-      href: "/interviews",
+      label: "Discover",
+      href: "/discover",
     },
     {
       label: "Guides",

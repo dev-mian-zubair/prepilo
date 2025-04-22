@@ -124,7 +124,7 @@ export async function createInterview(data: CreateInterviewInput | null) {
       },
     });
 
-    revalidatePath("/dashboard/interviews");
+    revalidatePath("/dashboard/discover");
 
     return { success: true, interview };
   } catch (error) {
