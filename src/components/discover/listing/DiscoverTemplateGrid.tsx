@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { Card, CardBody, CardHeader } from "@heroui/card";
-import DiscoverInterviewCard from "./DiscoverInterviewCard";
+import DiscoverTemplateCard from "./DiscoverTemplateCard";
 import { Template } from "@/types/template";
 
 const templates: Template[] = [
@@ -91,7 +91,7 @@ export default function DiscoverTemplateGrid() {
           onClick={() => handleCardClick(template)}
           onKeyDown={(e) => handleCardKeyDown(e, template)}
         >
-          <DiscoverInterviewCard template={template} />
+          <DiscoverTemplateCard template={template} />
         </div>
       ))}
     </div>

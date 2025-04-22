@@ -28,11 +28,11 @@ const focusAreaOptions = [
   { key: "PROBLEM_SOLVING", label: "Problem Solving", emoji: "🧩" },
 ];
 
-interface InterviewCardProps {
+interface InterviewGridCardProps {
   interview: Interview;
 }
 
-const InterviewCard = ({ interview }: InterviewCardProps) => {
+export default function InterviewGridCard({ interview }: InterviewGridCardProps) {
   const getTechEmoji = (tech: string) => {
     const option = technologyOptions.find((opt) => opt.key === tech);
 
@@ -48,7 +48,7 @@ const InterviewCard = ({ interview }: InterviewCardProps) => {
   };
 
   return (
-    <Card className="group border border-divider bg-transparent rounded-md transition-all duration-200 h-full shadow-none hover:shadow-sm hover:scale-[1.01]">
+    <Card className="group border border-divider bg-transparent rounded-md transition-all duration-200 h-full min-h-[400px] shadow-none hover:shadow-sm hover:scale-[1.01]">
       <CardBody className="p-4 flex flex-col gap-4">
         {/* Attempted by and Try Now */}
         <div className="flex justify-between items-center">
@@ -138,6 +138,4 @@ const InterviewCard = ({ interview }: InterviewCardProps) => {
       </CardBody>
     </Card>
   );
-};
-
-export default InterviewCard;
+} 
