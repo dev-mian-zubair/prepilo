@@ -90,7 +90,7 @@ export default function InterviewListCard({ interview }: InterviewListCardProps)
 
   return (
     <div 
-      className="group border border-border rounded-medium p-4 transition-all duration-300"
+      className="group border border-divider bg-transparent rounded-md transition-all duration-200 shadow-none hover:shadow-sm hover:scale-[1.01] p-4"
     >
       <div className="flex items-center justify-between">
         <div className="space-y-1">
