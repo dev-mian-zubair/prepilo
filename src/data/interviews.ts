@@ -5,13 +5,13 @@ export const interviews: Interview[] = [
     id: "1",
     title: "React Advanced Interview",
     description: "Advanced React concepts and performance optimization",
-    technologies: ["React", "TypeScript", "Redux", "Next.js", "GraphQL", "Webpack", "Jest", "React Testing Library", "CSS-in-JS"],
+    technologies: ["React", "TypeScript", "Redux", "Next.js"],
     duration: 45,
     focusAreas: ["TECHNICAL", "PROBLEM_SOLVING", "CODE_QUALITY", "PERFORMANCE", "TESTING", "ARCHITECTURE"],
     difficulty: "ADVANCED",
     startedAt: new Date("2024-03-15T10:00:00"),
     status: "COMPLETED",
-    overallScore: 85
+    overallScore: 100
   },
   {
     id: "2",
@@ -19,7 +19,7 @@ export const interviews: Interview[] = [
     description: "Design scalable systems and architecture patterns",
     technologies: ["System Design", "Microservices", "Cloud Architecture", "Kubernetes", "Docker", "AWS", "Azure", "GCP", "Terraform", "CI/CD"],
     duration: 60,
-    focusAreas: ["SYSTEM_DESIGN", "TECHNICAL", "SCALABILITY", "RELIABILITY", "SECURITY", "COST_OPTIMIZATION"],
+    focusAreas: ["SYSTEM_DESIGN", "TECHNICAL", "SCALABILITY"],
     difficulty: "INTERMEDIATE",
     startedAt: new Date("2024-03-14T14:30:00"),
     status: "LEFT_IN_MID",
