@@ -54,6 +54,16 @@ export const Navbar = () => {
                 Discover
               </Link>
             </NavbarItem>
+            <NavbarItem className="h-full">
+              <Link
+                className={`transition-all duration-200 h-full flex items-center gap-2 px-2 ${
+                  isActive("/interviews") ? "" : "text-foreground"
+                }`}
+                href="/interviews"
+              >
+                Interviews
+              </Link>
+            </NavbarItem>
           </>
         )}
       </NavbarContent>
