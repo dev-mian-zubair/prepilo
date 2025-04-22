@@ -1,10 +1,10 @@
-import InterviewGrid from "@/components/interview/listing/InterviewGrid";
+import InterviewViewToggle from "@/components/interview/listing/InterviewViewToggle";
 import InterviewLayout from "@/components/interview/listing/InterviewLayout";
 
 export default function InterviewsPage() {
   return (
     <InterviewLayout>
-      <InterviewGrid />
+      <InterviewViewToggle />
     </InterviewLayout>
   );
 }
