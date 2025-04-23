@@ -11,31 +11,43 @@ export const interviews: Interview[] = [
     difficulty: "ADVANCED",
     startedAt: new Date("2024-03-15T10:00:00"),
     status: "COMPLETED",
-    overallScore: 100
+    scores: [
+      { difficulty: "ADVANCED", score: 85 },
+      { difficulty: "INTERMEDIATE", score: 90 },
+      { difficulty: "BEGINNER", score: 95 }
+    ]
   },
   {
     id: "2",
-    title: "System Design Practice",
-    description: "Design scalable systems and architecture patterns",
-    technologies: ["System Design", "Microservices", "Cloud Architecture", "Kubernetes", "Docker", "AWS", "Azure", "GCP", "Terraform", "CI/CD"],
+    title: "System Design Fundamentals",
+    description: "Core system design principles and patterns",
+    technologies: ["System Design", "AWS", "Docker", "Kubernetes"],
     duration: 60,
-    focusAreas: ["SYSTEM_DESIGN", "TECHNICAL", "SCALABILITY"],
+    focusAreas: ["SYSTEM_DESIGN", "ARCHITECTURE", "SCALABILITY", "RELIABILITY"],
     difficulty: "INTERMEDIATE",
-    startedAt: new Date("2024-03-14T14:30:00"),
-    status: "LEFT_IN_MID",
-    overallScore: 45
+    startedAt: new Date("2024-03-10T14:30:00"),
+    status: "COMPLETED",
+    scores: [
+      { difficulty: "ADVANCED", score: null },
+      { difficulty: "INTERMEDIATE", score: 75 },
+      { difficulty: "BEGINNER", score: 88 }
+    ]
   },
   {
     id: "3",
-    title: "Data Structures & Algorithms",
-    description: "Core computer science concepts and problem-solving",
-    technologies: ["Algorithms", "Data Structures", "Problem Solving", "Python", "Java", "C++", "JavaScript", "SQL", "NoSQL", "Graph Theory", "Dynamic Programming"],
-    duration: 50,
-    focusAreas: ["TECHNICAL", "PROBLEM_SOLVING", "OPTIMIZATION", "COMPLEXITY_ANALYSIS", "ALGORITHM_DESIGN", "DATA_STRUCTURES"],
-    difficulty: "ADVANCED",
-    startedAt: new Date("2024-03-13T09:15:00"),
-    status: "COMPLETED",
-    overallScore: 92
+    title: "JavaScript Basics",
+    description: "Fundamental JavaScript concepts and patterns",
+    technologies: ["JavaScript", "ES6+", "DOM", "Async"],
+    duration: 30,
+    focusAreas: ["TECHNICAL", "PROBLEM_SOLVING", "CODE_QUALITY"],
+    difficulty: "BEGINNER",
+    startedAt: new Date("2024-03-05T09:15:00"),
+    status: "LEFT_IN_MID",
+    scores: [
+      { difficulty: "ADVANCED", score: null },
+      { difficulty: "INTERMEDIATE", score: null },
+      { difficulty: "BEGINNER", score: 65 }
+    ]
   },
   {
     id: "4",
@@ -47,7 +59,11 @@ export const interviews: Interview[] = [
     difficulty: "INTERMEDIATE",
     startedAt: new Date("2024-03-12T13:00:00"),
     status: "LEFT_IN_MID",
-    overallScore: 35
+    scores: [
+      { difficulty: "ADVANCED", score: null },
+      { difficulty: "INTERMEDIATE", score: 35 },
+      { difficulty: "BEGINNER", score: null }
+    ]
   },
   {
     id: "5",
@@ -59,6 +75,10 @@ export const interviews: Interview[] = [
     difficulty: "BEGINNER",
     startedAt: new Date("2024-03-11T11:30:00"),
     status: "COMPLETED",
-    overallScore: 78
+    scores: [
+      { difficulty: "ADVANCED", score: null },
+      { difficulty: "INTERMEDIATE", score: null },
+      { difficulty: "BEGINNER", score: 78 }
+    ]
   }
 ]; 

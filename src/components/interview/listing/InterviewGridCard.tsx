@@ -90,7 +90,8 @@ export default function InterviewGridCard({ interview }: InterviewGridCardProps)
     return "Needs Improvement";
   };
 
-  const getScoreColorForCircle = (score: number) => {
+  const getScoreColorForCircle = (score: number | null) => {
+    if (score === null) return "stroke-default-200/50";
     if (score >= 90) return "stroke-success";
     if (score >= 75) return "stroke-warning";
     if (score >= 60) return "stroke-primary";
@@ -113,39 +114,48 @@ export default function InterviewGridCard({ interview }: InterviewGridCardProps)
           <h2 className="text-xl font-bold line-clamp-2 pr-12">{interview.title}</h2>
           
           {/* Score positioned absolutely in the top right */}
-          <div className="absolute top-0 right-0 w-10 h-10">
-            <svg className="w-full h-full" viewBox="0 0 36 36">
-              {/* Background circle */}
-              <circle
-                cx="18"
-                cy="18"
-                r="16"
-                fill="none"
-                className="stroke-default-200/50 dark:stroke-default-500/20"
-                strokeWidth="3"
-              />
-              {/* Progress circle */}
-              <circle
-                cx="18"
-                cy="18"
-                r="16"
-                fill="none"
-                className={`${getScoreColorForCircle(interview.overallScore)} transition-all duration-500`}
-                strokeWidth="3"
-                strokeDasharray={`${(interview.overallScore / 100) * 100} 100`}
-                transform="rotate(-90 18 18)"
-              />
-              {/* Score text */}
-              <text
-                x="18"
-                y="18"
-                textAnchor="middle"
-                dominantBaseline="central"
-                className="text-[8px] font-bold fill-foreground"
-              >
-                {interview.overallScore}%
-              </text>
-            </svg>
+          <div className="absolute top-0 right-0 flex gap-1">
+            {interview.scores
+              .sort((a, b) => {
+                const order = { BEGINNER: 0, INTERMEDIATE: 1, ADVANCED: 2 };
+                return order[a.difficulty] - order[b.difficulty];
+              })
+              .map(({ difficulty, score }) => (
+              <div key={difficulty} className="w-8 h-8">
+                <svg className="w-full h-full" viewBox="0 0 36 36">
+                  {/* Background circle */}
+                  <circle
+                    cx="18"
+                    cy="18"
+                    r="16"
+                    fill="none"
+                    className="stroke-default-200/50 dark:stroke-default-500/20"
+                    strokeWidth="3"
+                  />
+                  {/* Progress circle */}
+                  <circle
+                    cx="18"
+                    cy="18"
+                    r="16"
+                    fill="none"
+                    className={`${getScoreColorForCircle(score)} transition-all duration-500`}
+                    strokeWidth="3"
+                    strokeDasharray={`${score ? (score / 100) * 100 : 0} 100`}
+                    transform="rotate(-90 18 18)"
+                  />
+                  {/* Score text */}
+                  <text
+                    x="18"
+                    y="18"
+                    textAnchor="middle"
+                    dominantBaseline="central"
+                    className="text-[6px] font-bold fill-foreground"
+                  >
+                    {score ? `${score}%` : '-'}
+                  </text>
+                </svg>
+              </div>
+            ))}
           </div>
         </div>
 
