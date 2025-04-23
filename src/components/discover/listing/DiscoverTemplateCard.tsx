@@ -58,17 +58,15 @@ export default function DiscoverTemplateCard({ template }: DiscoverCardProps) {
                 Attempted by
               </p>
               <div className="flex items-center -space-x-2">
-                {template.participants
-                  .slice(0, 3)
-                  .map((participant, index) => (
-                    <Avatar
-                      key={index}
-                      className="border-2 border-background hover:scale-110 transition-all duration-200"
-                      name={participant.user}
-                      size="sm"
-                      src={participant.avatar}
-                    />
-                  ))}
+                {template.participants.slice(0, 3).map((participant, index) => (
+                  <Avatar
+                    key={index}
+                    className="border-2 border-background hover:scale-110 transition-all duration-200"
+                    name={participant.user}
+                    size="sm"
+                    src={participant.avatar}
+                  />
+                ))}
                 {template.participants.length > 3 && (
                   <span className="text-sm text-muted-foreground ml-3">
                     +{template.participants.length - 3} more
@@ -81,7 +79,8 @@ export default function DiscoverTemplateCard({ template }: DiscoverCardProps) {
           {/* Hidden until hover */}
           <Button
             aria-label="Try this interview"
-            className="bg-teal-400 text-white hover:bg-teal-500 rounded-md transition-all duration-300 transform opacity-0 scale-95 group-hover:opacity-100 group-hover:scale-100"
+            className="rounded-md transition-all duration-300 transform opacity-0 scale-95 group-hover:opacity-100 group-hover:scale-100"
+            color="primary"
             endContent={<ExternalLinkIcon className="w-4 h-4" />}
             radius="md"
             size="sm"

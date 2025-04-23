@@ -8,10 +8,12 @@ import { useAuth } from "@/providers/AuthProvider";
 
 interface GenerateInterviewByAgentProps {
   onClose: () => void;
+  onGenerate: (interview: any) => void;
 }
 
 const GenerateInterviewByAgent = ({
   onClose,
+  onGenerate,
 }: GenerateInterviewByAgentProps) => {
   const { user } = useAuth();
 

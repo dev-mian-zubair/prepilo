@@ -1,8 +1,11 @@
 "use client";
 import React, { useState } from "react";
-import { Card, CardBody, CardHeader } from "@heroui/card";
+import { useDisclosure } from "@heroui/modal";
+
 import DiscoverTemplateCard from "./DiscoverTemplateCard";
+
 import { Template } from "@/types/template";
+import InterviewLauncherModal from "@/components/modals/InterviewLauncherModal";
 
 const templates: Template[] = [
   {
@@ -61,12 +64,14 @@ const templates: Template[] = [
 ];
 
 export default function DiscoverTemplateGrid() {
+  const { isOpen, onOpen, onClose } = useDisclosure();
   const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(
     null,
   );
 
   const handleCardClick = (template: Template) => {
     setSelectedTemplate(template);
+    onOpen();
   };
 
   const handleCardKeyDown = (
@@ -80,20 +85,24 @@ export default function DiscoverTemplateGrid() {
   };
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4">
-      {templates.map((template) => (
-        <div
-          key={template.id}
-          aria-label={`Open ${template.title} interview details`}
-          className="cursor-pointer outline-none focus:ring-1 focus:ring-primary focus:ring-offset-1 rounded-large"
-          role="button"
-          tabIndex={0}
-          onClick={() => handleCardClick(template)}
-          onKeyDown={(e) => handleCardKeyDown(e, template)}
-        >
-          <DiscoverTemplateCard template={template} />
-        </div>
-      ))}
-    </div>
+    <>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        {templates.map((template) => (
+          <div
+            key={template.id}
+            aria-label={`Open ${template.title} interview details`}
+            className="cursor-pointer outline-none focus:ring-1 focus:ring-primary focus:ring-offset-1 rounded-large"
+            role="button"
+            tabIndex={0}
+            onClick={() => handleCardClick(template)}
+            onKeyDown={(e) => handleCardKeyDown(e, template)}
+          >
+            <DiscoverTemplateCard template={template} />
+          </div>
+        ))}
+      </div>
+
+      <InterviewLauncherModal isOpen={isOpen} onClose={onClose} />
+    </>
   );
-} 
+}
