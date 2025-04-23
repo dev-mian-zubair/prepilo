@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { Card, CardHeader, CardBody } from "@heroui/card";
+import { Card, CardBody } from "@heroui/card";
 import { Input } from "@heroui/input";
 import { Button } from "@heroui/button";
 import { Chip } from "@heroui/chip";
@@ -8,7 +8,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 
-// Define types for focus areas
+// Define types and constants (unchanged from original)
 enum FocusArea {
   TECHNICAL = "TECHNICAL",
   SYSTEM_DESIGN = "SYSTEM_DESIGN",
@@ -17,12 +17,10 @@ enum FocusArea {
   PROBLEM_SOLVING = "PROBLEM_SOLVING",
 }
 
-// Define duration options
 const predefinedDurations = [10, 30, 45, 60, 90, 120] as const;
 
 type Duration = number;
 
-// Define technology options
 const predefinedTechnologies = [
   "JavaScript",
   "Python",
@@ -36,7 +34,6 @@ const predefinedTechnologies = [
   "Kubernetes",
 ] as const;
 
-// Define form schema
 const formSchema = z.object({
   title: z.string().min(1, "Interview Title is required").max(100),
   duration: z.number().int().positive("Duration must be a positive integer"),
@@ -56,10 +53,8 @@ const formSchema = z.object({
     .min(1, "At least one technology is required"),
 });
 
-// Extract form values type
 type FormValues = z.infer<typeof formSchema>;
 
-// Define option interfaces
 interface FocusAreaOption {
   key: FocusArea;
   label: string;
@@ -78,13 +73,11 @@ interface TechnologyOption {
   emoji: string;
 }
 
-// Define template interface
 interface Template {
   name: string;
   values: Partial<FormValues>;
 }
 
-// Define createInterview action type
 interface CreateInterviewParams {
   title: string;
   duration: number;
@@ -97,7 +90,6 @@ interface CreateInterviewResult {
   error?: string;
 }
 
-// Mock createInterview action (replace with actual import)
 const createInterview = async (
   params: CreateInterviewParams,
 ): Promise<CreateInterviewResult> => {
@@ -106,7 +98,6 @@ const createInterview = async (
   return { success: true };
 };
 
-// Define options
 const focusAreaOptions: FocusAreaOption[] = [
   { key: FocusArea.TECHNICAL, label: "Technical Skills", emoji: "💻" },
   { key: FocusArea.SYSTEM_DESIGN, label: "System Design", emoji: "🏗️" },
@@ -116,12 +107,12 @@ const focusAreaOptions: FocusAreaOption[] = [
 ];
 
 const durationOptions: DurationOption[] = [
-  { key: 10, label: "Fast 10-Min Blitz", emoji: "🏃‍♂️" },
-  { key: 30, label: "Quick 30-Min Sprint", emoji: "⚡" },
-  { key: 45, label: "Swift 45-Min Dash", emoji: "🚀" },
-  { key: 60, label: "Solid 60-Min Grind", emoji: "⏰" },
-  { key: 90, label: "Deep 90-Min Dive", emoji: "🌊" },
-  { key: 120, label: "Epic 120-Min Quest", emoji: "🗻" },
+  { key: 10, label: "10 Min", emoji: "🏃‍♂️" },
+  { key: 30, label: "30 Min", emoji: "⚡" },
+  { key: 45, label: "45 Min", emoji: "🚀" },
+  { key: 60, label: "60 Min", emoji: "⏰" },
+  { key: 90, label: "90 Min", emoji: "🌊" },
+  { key: 120, label: "120 Min", emoji: "🗻" },
 ];
 
 const technologyOptions: TechnologyOption[] = [
@@ -139,7 +130,7 @@ const technologyOptions: TechnologyOption[] = [
 
 const templates: Template[] = [
   {
-    name: "Frontend Developer",
+    name: "Frontend",
     values: {
       duration: 60,
       focusAreas: [FocusArea.TECHNICAL, FocusArea.COMMUNICATION],
@@ -147,7 +138,7 @@ const templates: Template[] = [
     },
   },
   {
-    name: "Backend Developer",
+    name: "Backend",
     values: {
       duration: 90,
       focusAreas: [FocusArea.SYSTEM_DESIGN, FocusArea.TECHNICAL],
@@ -155,7 +146,7 @@ const templates: Template[] = [
     },
   },
   {
-    name: "Full-Stack Developer",
+    name: "Full-Stack",
     values: {
       duration: 120,
       focusAreas: [
@@ -170,10 +161,12 @@ const templates: Template[] = [
 
 interface GenerateInterviewManuallyProps {
   onClose: () => void;
+  onGenerate: (interview: FormValues) => void;
 }
 
 const GenerateInterviewManually: React.FC<GenerateInterviewManuallyProps> = ({
   onClose,
+  onGenerate,
 }) => {
   const {
     register,
@@ -186,18 +179,18 @@ const GenerateInterviewManually: React.FC<GenerateInterviewManuallyProps> = ({
     resolver: zodResolver(formSchema),
     defaultValues: {
       title: "",
-      duration: 30,
-      focusAreas: [FocusArea.TECHNICAL],
-      technologies: [],
+      duration: 60,
+      focusAreas: [FocusArea.TECHNICAL, FocusArea.COMMUNICATION],
+      technologies: ["JavaScript", "React", "TypeScript"],
     },
   });
 
   const currentFocusAreas = watch("focusAreas");
   const currentDuration = watch("duration");
   const currentTechnologies = watch("technologies");
-  const currentTitle = watch("title");
   const [customTech, setCustomTech] = useState("");
   const [customDuration, setCustomDuration] = useState("");
+  const [selectedTemplate, setSelectedTemplate] = useState("Frontend");
 
   // Auto-populate title
   useEffect(() => {
@@ -205,25 +198,10 @@ const GenerateInterviewManually: React.FC<GenerateInterviewManuallyProps> = ({
       focusAreaOptions.find((opt) => opt.key === currentFocusAreas[0])?.label ||
       "Technical";
     const techLabel = currentTechnologies[0] || "Coding";
-    const title = `${focusAreaLabel} ${techLabel} ${currentDuration}-Min Interview`;
+    const title = `${focusAreaLabel} ${techLabel} ${currentDuration} Min`;
 
     setValue("title", title, { shouldValidate: true });
   }, [currentFocusAreas, currentTechnologies, currentDuration, setValue]);
-
-  // Generate title suggestions
-  const titleSuggestions = [
-    `${focusAreaOptions.find((opt) => opt.key === currentFocusAreas[0])?.label || "Technical"} ${
-      currentTechnologies[0] || "Coding"
-    } ${currentDuration}-Min Challenge`,
-    `${currentTechnologies[0] || "Developer"} ${currentDuration}-Min Assessment`,
-    `${focusAreaOptions.find((opt) => opt.key === currentFocusAreas[0])?.label || "Technical"} ${
-      currentTechnologies[1] || "Tech"
-    } Interview`,
-  ].filter(
-    (title) =>
-      title !== currentTitle &&
-      title.includes(currentTechnologies[0] || "Coding"),
-  );
 
   const handleFocusAreaToggle = (area: FocusArea): void => {
     const updatedAreas = currentFocusAreas.includes(area)
@@ -280,160 +258,159 @@ const GenerateInterviewManually: React.FC<GenerateInterviewManuallyProps> = ({
   const applyTemplate = (template: Template): void => {
     reset({
       ...template.values,
-      title: "", // Let useEffect generate title
+      title: "",
     });
-  };
-
-  const applyTitleSuggestion = (title: string): void => {
-    setValue("title", title, { shouldValidate: true });
+    setSelectedTemplate(template.name);
   };
 
   const handleFormSubmit = async (data: FormValues): Promise<void> => {
     try {
-      const result = await createInterview({
-        title: data.title,
-        duration: data.duration,
-        focusAreas: data.focusAreas,
-        technologyNames: data.technologies,
-      });
+      onGenerate(data);
+      console.log("Form submitted:", data);
+      // const result = await createInterview({
+      //   title: data.title,
+      //   duration: data.duration,
+      //   focusAreas: data.focusAreas,
+      //   technologyNames: data.technologies,
+      // });
 
-      if (result.success) {
-        onClose();
-        // Optional: Show success notification
-      } else {
-        console.error(result.error);
-      }
+      // if (result.success) {
+      //   onClose();
+      // } else {
+      //   console.error(result.error);
+      // }
     } catch (error) {
       console.error("Failed to submit form:", error);
     }
   };
 
   return (
-    <Card className="w-full max-w-3xl mx-auto mt-10 rounded-2xl shadow-none border border-default bg-background mb-20">
-      <CardHeader className="rounded-t-2xl p-6 ">
-        <h2 className="text-2xl font-semibold text-center">
-          🎉 Create Interview
-        </h2>
-      </CardHeader>
-      <CardBody className="p-6 flex flex-col gap-6">
+    <Card className="group border border-divider bg-transparent rounded-md transition-all duration-200 w-full max-w-3xl mx-auto mt-10 shadow-none hover:shadow-sm hover:scale-[1.01]">
+      <CardBody className="p-4 flex flex-col gap-4">
+        {/* Title */}
+        <h2 className="text-xl font-bold text-center">Create Interview</h2>
+
+        {/* Templates */}
         <div>
-          <p className="font-medium text-sm mb-2 text-default-600">
-            Use a Template
-          </p>
-          <div className="flex flex-wrap gap-2">
+          <p className="text-tiny text-foreground/70 mb-2">Use a Template</p>
+          <div className="flex flex-wrap gap-3">
             {templates.map((template) => (
-              <Button
+              <Chip
                 key={template.name}
-                className="rounded-full border border-default-200 hover:bg-primary"
+                className="hover:scale-105 transition-all duration-200 cursor-pointer"
+                color={
+                  selectedTemplate === template.name ? "primary" : "default"
+                }
+                radius="md"
                 size="sm"
-                variant="light"
-                onPress={() => applyTemplate(template)}
+                variant={
+                  selectedTemplate === template.name ? "solid" : "bordered"
+                }
+                onClick={() => applyTemplate(template)}
               >
                 {template.name}
-              </Button>
+              </Chip>
             ))}
           </div>
         </div>
+
         <form
-          className="flex flex-col space-y-4"
+          className="flex flex-col gap-4"
           onSubmit={handleSubmit(handleFormSubmit)}
         >
+          {/* Interview Title */}
           <div className="space-y-2">
             <Input
-              className="rounded-xl"
+              className="rounded-md"
               errorMessage={errors.title?.message}
               isInvalid={!!errors.title}
-              label="Interview Title ✨"
-              placeholder="e.g., Technical Skills JavaScript 60-Min Interview"
-              variant="faded"
+              label="Interview Title"
+              placeholder="e.g., Technical JavaScript 60 Min"
+              variant="bordered"
               {...register("title")}
             />
-            {titleSuggestions.length > 0 && (
-              <div className="flex flex-wrap gap-2">
-                {titleSuggestions.map((suggestion, idx) => (
-                  <Chip
-                    key={idx}
-                    className="bg-default-200 text-sm cursor-pointer px-4 py-2 rounded-full"
-                    onClick={() => applyTitleSuggestion(suggestion)}
-                  >
-                    {suggestion}
-                  </Chip>
-                ))}
-              </div>
-            )}
           </div>
 
+          {/* Duration */}
           <div>
-            <p className="font-medium text-sm mb-2 text-default-600">
-              Duration ⏰
-            </p>
-            <div className="flex flex-wrap gap-2">
+            <p className="text-tiny text-foreground/70 mb-2">Duration</p>
+            <div className="flex flex-wrap gap-3">
               {durationOptions.map(({ key, label, emoji }) => (
                 <Chip
                   key={key}
-                  className={`cursor-pointer px-4 py-2 rounded-full ${
-                    currentDuration === key
-                      ? "bg-primary text-white"
-                      : "bg-default-100"
-                  }`}
+                  className="hover:scale-105 transition-all duration-200 cursor-pointer"
+                  color={currentDuration === key ? "primary" : "default"}
+                  radius="md"
+                  size="sm"
+                  startContent={<span aria-hidden="true">{emoji}</span>}
+                  variant={currentDuration === key ? "solid" : "bordered"}
                   onClick={() => handleDurationSelect(key)}
                 >
-                  {emoji} {label}
+                  {label}
                 </Chip>
               ))}
               <Input
-                className="w-24 rounded-md"
+                className="w-32 rounded-md"
                 placeholder="Custom (min)"
                 size="sm"
                 value={customDuration}
+                variant="bordered"
                 onChange={(e) => setCustomDuration(e.target.value)}
                 onKeyDown={handleCustomDurationKeyDown}
               />
             </div>
           </div>
 
+          {/* Focus Areas */}
           <div>
-            <p className="font-medium text-sm mb-2 text-default-600">
-              Focus Areas 🌈
-            </p>
-            <div className="flex flex-wrap gap-2">
+            <p className="text-tiny text-foreground/70 mb-2">Focus Areas</p>
+            <div className="flex flex-wrap gap-3">
               {focusAreaOptions.map(({ key, label, emoji }) => (
                 <Chip
                   key={key}
-                  className={`cursor-pointer px-4 py-2 rounded-full ${
-                    currentFocusAreas.includes(key)
-                      ? "bg-secondary text-white"
-                      : "bg-default-100"
-                  }`}
+                  className="hover:scale-105 transition-all duration-200 cursor-pointer"
+                  color={
+                    currentFocusAreas.includes(key) ? "primary" : "default"
+                  }
+                  radius="md"
+                  size="sm"
+                  startContent={<span aria-hidden="true">{emoji}</span>}
+                  variant={
+                    currentFocusAreas.includes(key) ? "solid" : "bordered"
+                  }
                   onClick={() => handleFocusAreaToggle(key)}
                 >
-                  {emoji} {label}
+                  {label}
                 </Chip>
               ))}
             </div>
             {errors.focusAreas && (
-              <p className="text-red-500 text-sm mt-1">
+              <p className="text-danger text-tiny mt-1">
                 {errors.focusAreas.message}
               </p>
             )}
           </div>
 
+          {/* Technologies */}
           <div>
-            <p className="font-medium text-sm mb-2 text-default-600">
-              Technologies ⚙️
-            </p>
-            <div className="flex flex-wrap gap-2">
+            <p className="text-tiny text-foreground/70 mb-2">Technologies</p>
+            <div className="flex flex-wrap gap-3">
               {technologyOptions.map(({ key, label, emoji }) => (
                 <Chip
                   key={key}
-                  className={`cursor-pointer px-4 py-2 rounded-full ${
-                    currentTechnologies.includes(key)
-                      ? "bg-success text-white"
-                      : "bg-default-100"
-                  }`}
+                  className="hover:scale-105 transition-all duration-200 cursor-pointer"
+                  color={
+                    currentTechnologies.includes(key) ? "primary" : "default"
+                  }
+                  radius="md"
+                  size="sm"
+                  startContent={<span aria-hidden="true">{emoji}</span>}
+                  variant={
+                    currentTechnologies.includes(key) ? "solid" : "bordered"
+                  }
                   onClick={() => handleTechnologyToggle(key)}
                 >
-                  {emoji} {label}
+                  {label}
                 </Chip>
               ))}
               {currentTechnologies
@@ -446,7 +423,11 @@ const GenerateInterviewManually: React.FC<GenerateInterviewManuallyProps> = ({
                 .map((tech, index) => (
                   <Chip
                     key={`${tech}-${index}`}
-                    className="text-sm cursor-pointer px-4 py-2 rounded-full bg-success text-white"
+                    className="hover:scale-105 transition-all duration-200 cursor-pointer"
+                    color="primary"
+                    radius="md"
+                    size="sm"
+                    variant="solid"
                     onClick={() => handleTechnologyToggle(tech)}
                   >
                     {tech}
@@ -457,36 +438,39 @@ const GenerateInterviewManually: React.FC<GenerateInterviewManuallyProps> = ({
                 placeholder="Custom tech"
                 size="sm"
                 value={customTech}
+                variant="bordered"
                 onChange={(e) => setCustomTech(e.target.value)}
                 onKeyDown={handleCustomTechKeyDown}
               />
             </div>
             {errors.technologies && (
-              <p className="text-red-500 text-sm mt-1">
+              <p className="text-danger text-tiny mt-1">
                 {errors.technologies.message}
               </p>
             )}
           </div>
 
-          <div className="flex justify-end gap-4">
+          {/* Form Actions */}
+          <div className="flex justify-end gap-3 mt-4">
             <Button
-              className="rounded-full px-6"
+              className="rounded-md border-divider hover:bg-default-100"
               isDisabled={isSubmitting}
               radius="md"
-              size="lg"
+              size="sm"
               variant="bordered"
               onPress={onClose}
             >
               Cancel
             </Button>
             <Button
-              className="rounded-full px-6"
+              className="rounded-md"
               color="primary"
               isLoading={isSubmitting}
-              size="lg"
+              radius="md"
+              size="sm"
               type="submit"
             >
-              {isSubmitting ? "Generating..." : "Generate Interview 🚀"}
+              {isSubmitting ? "Generating..." : "Generate Interview"}
             </Button>
           </div>
         </form>
