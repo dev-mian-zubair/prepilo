@@ -69,7 +69,8 @@ export default function InterviewListCard({ interview }: InterviewListCardProps)
     return "Needs Improvement";
   };
 
-  const getScoreColorForCircle = (score: number) => {
+  const getScoreColorForCircle = (score: number | null) => {
+    if (score === null) return "stroke-default-200/50";
     if (score >= 90) return "stroke-success";
     if (score >= 75) return "stroke-warning";
     if (score >= 60) return "stroke-primary";
@@ -89,9 +90,7 @@ export default function InterviewListCard({ interview }: InterviewListCardProps)
   };
 
   return (
-    <div 
-      className="group border border-divider bg-transparent rounded-md transition-all duration-200 shadow-none hover:shadow-sm hover:scale-[1.01] p-4"
-    >
+    <div className="group border border-divider bg-transparent rounded-md transition-all duration-200 shadow-none hover:shadow-sm hover:scale-[1.01] p-4">
       <div className="flex items-center justify-between">
         <div className="space-y-1">
           <div className="flex items-center gap-2">
@@ -143,52 +142,65 @@ export default function InterviewListCard({ interview }: InterviewListCardProps)
           </div>
         </div>
         <div className="text-right space-y-2">
-          {/* Circular progress indicator */}
-          <div className="flex justify-end">
-            <div className="w-10 h-10">
-              <svg className="w-full h-full" viewBox="0 0 36 36">
-                {/* Background circle */}
-                <circle
-                  cx="18"
-                  cy="18"
-                  r="16"
-                  fill="none"
-                  className="stroke-default-200/50 dark:stroke-default-500/20"
-                  strokeWidth="3"
-                />
-                {/* Progress circle */}
-                <circle
-                  cx="18"
-                  cy="18"
-                  r="16"
-                  fill="none"
-                  className={`${getScoreColorForCircle(interview.overallScore)} transition-all duration-500`}
-                  strokeWidth="3"
-                  strokeDasharray={`${(interview.overallScore / 100) * 100} 100`}
-                  strokeDashoffset="25"
-                  transform="rotate(-90 18 18)"
-                />
-                {/* Score text */}
-                <text
-                  x="18"
-                  y="18"
-                  textAnchor="middle"
-                  dominantBaseline="central"
-                  className="text-[8px] font-bold fill-foreground"
-                >
-                  {interview.overallScore}%
-                </text>
-              </svg>
+          {/* Circular progress indicators */}
+          <div className="flex flex-col items-end gap-1">
+            <div className="flex justify-end gap-2">
+              {interview.scores
+                .sort((a, b) => {
+                  const order = { BEGINNER: 0, INTERMEDIATE: 1, ADVANCED: 2 };
+                  return order[a.difficulty] - order[b.difficulty];
+                })
+                .map(({ difficulty, score }) => (
+                <div key={difficulty} className="flex flex-col items-center">
+                  <div className="w-12 h-12">
+                    <svg className="w-full h-full" viewBox="0 0 36 36">
+                      {/* Background circle */}
+                      <circle
+                        cx="18"
+                        cy="18"
+                        r="16"
+                        fill="none"
+                        className="stroke-default-200/50 dark:stroke-default-500/20"
+                        strokeWidth="3"
+                      />
+                      {/* Progress circle */}
+                      <circle
+                        cx="18"
+                        cy="18"
+                        r="16"
+                        fill="none"
+                        className={`${getScoreColorForCircle(score)} transition-all duration-500`}
+                        strokeWidth="3"
+                        strokeDasharray={`${score ? (score / 100) * 100 : 0} 100`}
+                        transform="rotate(-90 18 18)"
+                      />
+                      {/* Score text */}
+                      <text
+                        x="18"
+                        y="18"
+                        textAnchor="middle"
+                        dominantBaseline="central"
+                        className="text-[8px] font-bold fill-foreground"
+                      >
+                        {score ? `${score}%` : '-'}
+                      </text>
+                    </svg>
+                  </div>
+                  <span className="text-tiny text-foreground/70 mt-1">
+                    {difficulty.charAt(0) + difficulty.slice(1).toLowerCase()}
+                  </span>
+                </div>
+              ))}
             </div>
-          </div>
-          <div className="flex flex-col items-end gap-1 text-tiny text-foreground/70">
-            <div className="flex items-center gap-1">
-              <Clock size={12} />
-              <span>{interview.duration} minutes</span>
+            <div className="flex flex-col items-end gap-1 text-tiny text-foreground/70">
+              <div className="flex items-center gap-1">
+                <Clock size={12} />
+                <span>{interview.duration} minutes</span>
+              </div>
+              <span>
+                {format(interview.startedAt, "MMM d, yyyy h:mm a")}
+              </span>
             </div>
-            <span>
-              {format(interview.startedAt, "MMM d, yyyy h:mm a")}
-            </span>
           </div>
         </div>
       </div>
