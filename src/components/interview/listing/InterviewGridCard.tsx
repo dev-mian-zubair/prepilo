@@ -107,67 +107,74 @@ export default function InterviewGridCard({ interview }: InterviewGridCardProps)
     : interview.focusAreas.slice(0, 3);
 
   return (
-    <Card className="group border border-divider bg-transparent rounded-md transition-all duration-200 h-full min-h-[400px] shadow-none hover:shadow-sm hover:scale-[1.01]">
-      <CardBody className="p-4 flex flex-col gap-4">
-        {/* Title and Score */}
-        <div className="relative">
-          <h2 className="text-xl font-bold line-clamp-2 pr-12">{interview.title}</h2>
-          
-          {/* Score positioned absolutely in the top right */}
-          <div className="absolute top-0 right-0 flex gap-1">
+    <Card className="group border border-divider bg-transparent rounded-md transition-all duration-200 h-full min-h-[370px] shadow-none hover:shadow-sm hover:scale-[1.01]">
+      <CardBody className="p-4 flex flex-col gap-2">
+        {/*Score circles and Try Now button */}
+        <div className="flex justify-between items-start">
+          <div className="flex justify-start gap-1">
             {interview.scores
               .sort((a, b) => {
                 const order = { BEGINNER: 0, INTERMEDIATE: 1, ADVANCED: 2 };
                 return order[a.difficulty] - order[b.difficulty];
               })
               .map(({ difficulty, score }) => (
-              <div key={difficulty} className="w-8 h-8">
-                <svg className="w-full h-full" viewBox="0 0 36 36">
-                  {/* Background circle */}
-                  <circle
-                    cx="18"
-                    cy="18"
-                    r="16"
-                    fill="none"
-                    className="stroke-default-200/50 dark:stroke-default-500/20"
-                    strokeWidth="3"
-                  />
-                  {/* Progress circle */}
-                  <circle
-                    cx="18"
-                    cy="18"
-                    r="16"
-                    fill="none"
-                    className={`${getScoreColorForCircle(score)} transition-all duration-500`}
-                    strokeWidth="3"
-                    strokeDasharray={`${score ? (score / 100) * 100 : 0} 100`}
-                    transform="rotate(-90 18 18)"
-                  />
-                  {/* Score text */}
-                  <text
-                    x="18"
-                    y="18"
-                    textAnchor="middle"
-                    dominantBaseline="central"
-                    className="text-[6px] font-bold fill-foreground"
-                  >
-                    {score ? `${score}%` : '-'}
-                  </text>
-                </svg>
-              </div>
-            ))}
+                <div key={difficulty} className="flex flex-col items-center">
+                  <div className="w-12 h-12">
+                    <svg className="w-full h-full" viewBox="0 0 36 36">
+                      {/* Background circle */}
+                      <circle
+                        cx="18"
+                        cy="18"
+                        r="16"
+                        fill="none"
+                        className="stroke-default-200/50 dark:stroke-default-500/20"
+                        strokeWidth="3"
+                      />
+                      {/* Progress circle */}
+                      <circle
+                        cx="18"
+                        cy="18"
+                        r="16"
+                        fill="none"
+                        className={`${getScoreColorForCircle(score)} transition-all duration-500`}
+                        strokeWidth="3"
+                        strokeDasharray={`${score ? (score / 100) * 100 : 0} 100`}
+                        transform="rotate(-90 18 18)"
+                      />
+                      {/* Score text */}
+                      <text
+                        x="18"
+                        y="18"
+                        textAnchor="middle"
+                        dominantBaseline="central"
+                        className="text-[8px] font-bold fill-foreground"
+                      >
+                        {score ? `${score}%` : '-'}
+                      </text>
+                    </svg>
+                  </div>
+                  <span className="text-[8px] text-foreground/70">
+                    {difficulty.charAt(0) + difficulty.slice(1).toLowerCase()}
+                  </span>
+                </div>
+              ))}
           </div>
+          
+          {/* Try Now button */}
+          <Button
+            aria-label="Try this interview"
+            className="bg-primary/5 text-primary hover:bg-primary/10 border border-primary/10 hover:border-primary/20 rounded-md transition-all duration-300 transform opacity-0 scale-95 group-hover:opacity-100 group-hover:scale-100 px-2 py-1 h-auto"
+            endContent={<ExternalLinkIcon className="w-3 h-3" />}
+            radius="sm"
+            size="sm"
+            variant="light"
+          >
+            <span className="text-tiny font-medium">Try Now</span>
+          </Button>
         </div>
-
-        {/* Difficulty and Status */}
-        <div className="flex flex-wrap gap-2">
-          <span className={`text-tiny px-2 py-0.5 rounded-full font-medium ${getDifficultyColor(interview.difficulty)}`}>
-            {interview.difficulty.charAt(0) + interview.difficulty.slice(1).toLowerCase()}
-          </span>
-          <span className={`text-tiny px-2 py-0.5 rounded-full font-medium ${getStatusColor(interview.status)}`}>
-            {interview.status === "COMPLETED" ? "Completed" : "Left in Mid"}
-          </span>
-        </div>
+        
+        {/* Title */}
+        <h2 className="text-xl font-bold line-clamp-2">{interview.title}</h2>
 
         {/* Description */}
         <p className="text-sm text-foreground line-clamp-2">
@@ -241,27 +248,13 @@ export default function InterviewGridCard({ interview }: InterviewGridCardProps)
         </div>
 
         {/* Duration, Date and Try Now */}
-        <div className="flex justify-between items-center mt-auto">
-          <div className="flex flex-col gap-1 text-tiny text-foreground/70">
-            <div className="flex items-center gap-1">
-              <Clock size={12} />
-              <span>{interview.duration} minutes</span>
-            </div>
-            <span>
-              {format(interview.startedAt, "MMM d, yyyy h:mm a")}
-            </span>
+        <div className="relative flex items-center mt-auto">
+          <div className="flex items-center gap-2 text-tiny text-foreground/70">
+            <Clock size={12} />
+            <span>{interview.duration} minutes</span>
+            <span>•</span>
+            <span>{format(interview.startedAt, "MMM d, yyyy h:mm a")}</span>
           </div>
-          
-          {/* Try Now button */}
-          <Button
-            aria-label="Try this interview"
-            className="bg-teal-400 text-white hover:bg-teal-500 rounded-md transition-all duration-300 transform opacity-0 scale-95 group-hover:opacity-100 group-hover:scale-100"
-            endContent={<ExternalLinkIcon className="w-4 h-4" />}
-            radius="md"
-            size="sm"
-          >
-            Try Now
-          </Button>
         </div>
       </CardBody>
     </Card>
