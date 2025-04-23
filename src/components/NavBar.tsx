@@ -28,40 +28,6 @@ export const Navbar = () => {
             </h1>
           </Link>
         </NavbarBrand>
-        {!loading && user && (
-          <>
-            <NavbarItem className="h-full">
-              <Link
-                className={`transition-all duration-200 h-full flex items-center gap-2 px-2 ${
-                  isActive("/dashboard") ? "" : "text-foreground"
-                }`}
-                href="/dashboard"
-              >
-                Dashboard
-              </Link>
-            </NavbarItem>
-            <NavbarItem className="h-full">
-              <Link
-                className={`transition-all duration-200 h-full flex items-center gap-2 px-2 ${
-                  isActive("/interviews") ? "" : "text-foreground"
-                }`}
-                href="/interviews"
-              >
-                Interviews
-              </Link>
-            </NavbarItem>
-            <NavbarItem className="h-full">
-              <Link
-                className={`transition-all duration-200 h-full flex items-center gap-2 px-2 ${
-                  isActive("/discover") ? "" : "text-foreground"
-                }`}
-                href="/discover"
-              >
-                Discover
-              </Link>
-            </NavbarItem> 
-          </>
-        )}
       </NavbarContent>
 
       <NavbarContent className="flex basis-1/5 sm:basis-full" justify="end">

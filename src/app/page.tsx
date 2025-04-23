@@ -88,7 +88,7 @@ export default function Home() {
               as={Link}
               className="font-semibold"
               color="primary"
-              href="/discover"
+              href="/auth/signup"
               radius="lg"
               size="md"
               variant="solid"
@@ -175,7 +175,7 @@ export default function Home() {
                     <p className="text-sm ">{t.role}</p>
                   </div>
                 </div>
-                <p className="text-sm text-gray-700 italic">“{t.quote}”</p>
+                <p className="text-sm text-gray-700 italic">"{t.quote}"</p>
               </div>
             ))}
           </div>
@@ -213,7 +213,7 @@ export default function Home() {
             as={Link}
             className="font-semibold"
             color="primary"
-            href="/discover"
+            href="/auth/signup"
             radius="lg"
             size="md"
             variant="solid"
