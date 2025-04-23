@@ -19,17 +19,17 @@ const UserDropdown = ({ user }: { user: any }) => {
           className="cursor-pointer border border-gray-200"
           color="primary"
           size="md"
-          src={user.user_metadata.avatar_url}
+          src={user?.user_metadata?.avatar_url || "/default-avatar.png"}
         />
       </DropdownTrigger>
       <DropdownMenu aria-label="User Actions" variant="flat">
         <DropdownItem
-          key="dashboard"
+          key="portal"
           className="p-2"
-          href="/dashboard"
+          href="/portal"
           startContent={<ChartPie className={iconClasses} />}
         >
-          <span>Dashboard</span>
+          <span>Portal</span>
         </DropdownItem>
         <DropdownItem
           key="progress"
