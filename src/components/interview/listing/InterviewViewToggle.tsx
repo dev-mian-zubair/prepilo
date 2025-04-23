@@ -14,7 +14,7 @@ export default function InterviewViewToggle({ viewMode, onViewModeChange }: Inte
       <div className="flex items-center gap-2 p-1">
         <Button
           aria-label="Grid view"
-          className={`px-3 py-1 rounded-md transition-all ${
+          className={`px-2 py-1 rounded-md transition-all ${
             viewMode === "grid"
               ? "bg-primary text-white"
               : "bg-transparent text-foreground/70 hover:bg-foreground/5"
@@ -24,11 +24,11 @@ export default function InterviewViewToggle({ viewMode, onViewModeChange }: Inte
           size="sm"
           variant="light"
         >
-          <GridIcon className="w-4 h-4" />
+          <GridIcon className="w-5 h-5" />
         </Button>
         <Button
           aria-label="List view"
-          className={`px-3 py-1 rounded-md transition-all ${
+          className={`px-2 py-1 rounded-md transition-all ${
             viewMode === "list"
               ? "bg-primary text-white"
               : "bg-transparent text-foreground/70 hover:bg-foreground/5"
@@ -38,7 +38,7 @@ export default function InterviewViewToggle({ viewMode, onViewModeChange }: Inte
           size="sm"
           variant="light"
         >
-          <ListIcon className="w-4 h-4" />
+          <ListIcon className="w-5 h-5" />
         </Button>
       </div>
     </div>
