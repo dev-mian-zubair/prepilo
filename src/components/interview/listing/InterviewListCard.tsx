@@ -95,12 +95,6 @@ export default function InterviewListCard({ interview }: InterviewListCardProps)
         <div className="space-y-1">
           <div className="flex items-center gap-2">
             <h3 className="font-medium text-foreground">{interview.title}</h3>
-            <span className={`text-tiny px-2 py-0.5 rounded-full font-medium ${getDifficultyColor(interview.difficulty)}`}>
-              {interview.difficulty.charAt(0) + interview.difficulty.slice(1).toLowerCase()}
-            </span>
-            <span className={`text-tiny px-2 py-0.5 rounded-full font-medium ${getStatusColor(interview.status)}`}>
-              {interview.status === "COMPLETED" ? "Completed" : "Left in Mid"}
-            </span>
           </div>
           <p className="text-sm text-foreground/70 line-clamp-1">{interview.description}</p>
           <div className="flex flex-col gap-2 mt-2">
@@ -186,7 +180,7 @@ export default function InterviewListCard({ interview }: InterviewListCardProps)
                       </text>
                     </svg>
                   </div>
-                  <span className="text-tiny text-foreground/70 mt-1">
+                  <span className="text-[8px] text-foreground/70 mt-1">
                     {difficulty.charAt(0) + difficulty.slice(1).toLowerCase()}
                   </span>
                 </div>
