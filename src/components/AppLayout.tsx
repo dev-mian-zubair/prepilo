@@ -90,15 +90,22 @@ export function AppLayout({ children }: AppLayoutProps) {
             {/* Navigation */}
             <nav className="flex-1 space-y-1 p-2">
               {menuItems.map(({ icon: Icon, label, href }) => (
-                <Link key={href} href={href} className="block" onClick={(e) => e.stopPropagation()}>
-                  <Button
-                    isIconOnly={isCollapsed}
-                    variant="light"
-                    className={buttonStyles}
-                    startContent={!isCollapsed && <Icon className="w-5 h-5 shrink-0" />}
-                  >
-                    {isCollapsed ? <Icon className="w-5 h-5" /> : <span className="truncate">{label}</span>}
-                  </Button>
+                <Link
+                  key={href}
+                  href={href}
+                  onClick={(e) => e.stopPropagation()}
+                  className={cn(
+                    "flex items-center gap-3 rounded-medium px-3 py-2 text-foreground transition-colors",
+                    pathname === href 
+                      ? "bg-default-100 dark:bg-default-300/30 text-foreground font-medium" 
+                      : "hover:bg-hover/40"
+                  )}
+                >
+                  <Icon className={cn(
+                    "h-5 w-5 shrink-0",
+                    pathname === href ? "text-foreground" : "text-foreground/70"
+                  )} />
+                  {!isCollapsed && <span className="truncate">{label}</span>}
                 </Link>
               ))}
             </nav>
