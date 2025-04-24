@@ -21,7 +21,7 @@ export default function DashboardPage() {
         <StrengthsWeaknesses />
         <TechnologyBreakdown />
         <GoalProgress /> */}
-        <RecentActivity />
+        {/* <RecentActivity /> */}
         <InterviewList />
       </div>
     </div>

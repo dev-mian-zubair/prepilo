@@ -4,6 +4,7 @@ import clsx from "clsx";
 import { Providers } from "@/providers";
 import { fontSans } from "@/config/fonts";
 import { AppSidebar } from "@/components/AppSidebar";
+import { AppNavBar } from "@/components/AppNavBar";
 import { ThemeProvider } from "next-themes";
 
 export const metadata: Metadata = {
@@ -39,12 +40,15 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       <body className={clsx(fontSans.className)}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <Providers>
-            <div className="flex h-screen">
-              <AppSidebar />
-              <div className="flex-1 flex flex-col">
-                <main className="flex-1 overflow-auto p-6">
-                  {children}
-                </main>
+            <div className="flex flex-col h-screen">
+              <AppNavBar />
+              <div className="flex flex-1">
+                <AppSidebar />
+                <div className="flex-1 flex flex-col">
+                  <main className="flex-1 overflow-auto p-6">
+                    {children}
+                  </main>
+                </div>
               </div>
             </div>
           </Providers>
