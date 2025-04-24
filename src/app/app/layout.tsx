@@ -40,12 +40,12 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       <body className={clsx(fontSans.className)}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <Providers>
-            <div className="flex flex-col h-screen">
+            <div className="flex flex-col h-screen overflow-hidden">
               <AppNavBar />
-              <div className="flex flex-1">
+              <div className="flex flex-1 overflow-hidden">
                 <AppSidebar />
-                <div className="flex-1 flex flex-col">
-                  <main className="flex-1 overflow-auto p-6">
+                <div className="flex-1 flex flex-col overflow-auto">
+                  <main className="flex-1 p-6">
                     {children}
                   </main>
                 </div>
