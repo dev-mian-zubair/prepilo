@@ -126,14 +126,14 @@ export default function LowestScoreInterviews() {
   };
 
   return (
-    <Card className="col-span-2 bg-content1 rounded-large shadow-none overflow-hidden transition-all duration-300">
+    <Card className="col-span-2 bg-background rounded-large shadow-none overflow-hidden transition-all duration-300">
       <CardHeader>
         <h2 className="text-large font-bold text-foreground tracking-tight">
-          Interviews Needing Improvement
+          Lowest Score Interviews
         </h2>
       </CardHeader>
       <CardBody>
-        <div className="space-y-4">
+        <div className="space-y-6">
           {displayInterviews.map((interview) => (
             <div
               key={interview.id}
