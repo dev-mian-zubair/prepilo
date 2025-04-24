@@ -110,7 +110,7 @@ export default function InterviewMetrics() {
   };
 
   return (
-    <Card className="col-span-2 bg-background rounded-large shadow-none overflow-hidden transition-all duration-300">
+    <Card className="col-span-2 border-none shadow-none bg-transparent overflow-hidden transition-all duration-300">
       <CardHeader>
         <h2 className="text-large font-bold text-foreground tracking-tight">
           Interview Metrics
@@ -121,7 +121,7 @@ export default function InterviewMetrics() {
           {metrics.map((metric) => (
             <div
               key={metric.difficulty}
-              className="group border border-border rounded-medium p-4 hover:bg-hover/40 transition-all duration-300"
+              className="group border border-divider rounded-medium p-4 hover:bg-hover/40 transition-all duration-300"
             >
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
