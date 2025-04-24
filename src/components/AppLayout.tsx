@@ -57,7 +57,7 @@ export function AppLayout({ children }: AppLayoutProps) {
   return (
     <div className="flex flex-col h-screen overflow-hidden">
       {/* Navbar */}
-      <div className="sticky top-0 z-40 w-full bg-background border-b">
+      <div className="sticky top-0 z-40 w-full bg-background border-b border-divider">
         <div className="flex h-16 items-center px-3">
           <div className="flex items-center gap-2">
             <Button
@@ -83,7 +83,7 @@ export function AppLayout({ children }: AppLayoutProps) {
       <div className="flex flex-1 overflow-hidden">
         {/* Sidebar */}
         <div className={cn(
-          "bg-background border-r transition-all duration-300",
+          "bg-background border-r border-divider transition-all duration-300",
           isCollapsed ? "w-16" : "w-64"
         )}>
           <div className="flex flex-col h-full">
@@ -104,7 +104,7 @@ export function AppLayout({ children }: AppLayoutProps) {
             </nav>
 
             {/* Logout */}
-            <div className="border-t p-2">
+            <div className="border-t border-divider p-2">
               <Button
                 isIconOnly={isCollapsed}
                 variant="light"
