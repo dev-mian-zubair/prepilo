@@ -1,10 +1,4 @@
 import PerformanceOverview from "@/components/dashboard/PerformanceOverview";
-import RecentActivity from "@/components/dashboard/RecentActivity";
-import KeyMetrics from "@/components/dashboard/KeyMetrics";
-import TechnologyBreakdown from "@/components/dashboard/TechnologyBreakdown";
-import StrengthsWeaknesses from "@/components/dashboard/StrengthsWeaknesses";
-import GoalProgress from "@/components/dashboard/GoalProgress";
-import RecommendedActions from "@/components/dashboard/RecommendedActions";
 import InterviewMetrics from "@/components/dashboard/InterviewMetrics";
 import LowestScoreInterviews from "@/components/dashboard/LowestScoreInterviews";
 import InterviewList from "@/components/interview/listing/InterviewList";
@@ -16,12 +10,6 @@ export default function DashboardPage() {
         <PerformanceOverview />
         <LowestScoreInterviews />
         <InterviewMetrics />
-        {/* <KeyMetrics />
-        <RecommendedActions />
-        <StrengthsWeaknesses />
-        <TechnologyBreakdown />
-        <GoalProgress /> */}
-        {/* <RecentActivity /> */}
         <InterviewList />
       </div>
     </div>

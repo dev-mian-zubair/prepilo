@@ -27,7 +27,7 @@ export default function PerformanceOverview() {
   const latestFeedback = recentFeedback[0];
 
   return (
-    <Card className="col-span-2 bg-content1 rounded-large shadow-none overflow-hidden transition-all duration-300">
+    <Card className="col-span-2 bg-background rounded-large shadow-none overflow-hidden transition-all duration-300">
       <CardHeader>
         <h2 className="text-large font-bold text-foreground tracking-tight">
           Performance Overview
@@ -36,7 +36,7 @@ export default function PerformanceOverview() {
       <CardBody>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* Progress Snapshot */}
-          <div className="space-y-6 bg-default-100 dark:bg-default-50/50 border border-border rounded-medium p-6">
+          <div className="space-y-6 bg-background border border-border rounded-medium p-6">
             <h3 className="text-medium font-semibold text-foreground">
               Progress Snapshot
             </h3>

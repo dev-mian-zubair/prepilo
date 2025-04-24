@@ -110,10 +110,10 @@ export default function InterviewMetrics() {
   };
 
   return (
-    <Card className="col-span-2 bg-content1 rounded-large shadow-none overflow-hidden transition-all duration-300">
+    <Card className="col-span-2 bg-background rounded-large shadow-none overflow-hidden transition-all duration-300">
       <CardHeader>
         <h2 className="text-large font-bold text-foreground tracking-tight">
-          Interview Metrics by Difficulty
+          Interview Metrics
         </h2>
       </CardHeader>
       <CardBody>
