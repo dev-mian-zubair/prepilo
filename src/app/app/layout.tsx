@@ -3,10 +3,8 @@ import { Metadata, Viewport } from "next";
 import clsx from "clsx";
 import { Providers } from "@/providers";
 import { fontSans } from "@/config/fonts";
-import { AppSidebar } from "@/components/AppSidebar";
-import { AppNavBar } from "@/components/AppNavBar";
 import { ThemeProvider } from "next-themes";
-import { SidebarProvider } from "@/contexts/SidebarContext";
+import { AppLayout } from "@/components/AppLayout";
 
 export const metadata: Metadata = {
   title: "App - Prepilo",
@@ -20,7 +18,7 @@ export const viewport: Viewport = {
   ],
 };
 
-export default function AppLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
@@ -41,19 +39,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       <body className={clsx(fontSans.className)}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <Providers>
-            <SidebarProvider>
-              <div className="flex flex-col h-screen overflow-hidden">
-                <AppNavBar />
-                <div className="flex flex-1 overflow-hidden">
-                  <AppSidebar />
-                  <div className="flex-1 flex flex-col overflow-auto transition-all duration-300">
-                    <main className="flex-1 p-6">
-                      {children}
-                    </main>
-                  </div>
-                </div>
-              </div>
-            </SidebarProvider>
+            <AppLayout>
+              {children}
+            </AppLayout>
           </Providers>
         </ThemeProvider>
       </body>
