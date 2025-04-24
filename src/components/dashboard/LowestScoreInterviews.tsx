@@ -126,7 +126,7 @@ export default function LowestScoreInterviews() {
   };
 
   return (
-    <Card className="col-span-2 bg-background rounded-large shadow-none overflow-hidden transition-all duration-300">
+    <Card className="col-span-2 border-none shadow-none bg-transparent overflow-hidden transition-all duration-300">
       <CardHeader>
         <h2 className="text-large font-bold text-foreground tracking-tight">
           Lowest Score Interviews
@@ -137,7 +137,7 @@ export default function LowestScoreInterviews() {
           {displayInterviews.map((interview) => (
             <div
               key={interview.id}
-              className="group border border-border rounded-medium p-4 hover:bg-hover/40 transition-all duration-300"
+              className="group border border-divider rounded-medium p-4 hover:bg-hover/40 transition-all duration-300"
             >
               <div className="flex items-center justify-between mb-3">
                 <div className="space-y-1">

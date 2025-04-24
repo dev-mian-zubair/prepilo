@@ -27,7 +27,7 @@ export default function PerformanceOverview() {
   const latestFeedback = recentFeedback[0];
 
   return (
-    <Card className="col-span-2 bg-background rounded-large shadow-none overflow-hidden transition-all duration-300">
+    <Card className="col-span-2 border-none shadow-none bg-transparent overflow-hidden transition-all duration-300">
       <CardHeader>
         <h2 className="text-large font-bold text-foreground tracking-tight">
           Performance Overview
@@ -36,7 +36,7 @@ export default function PerformanceOverview() {
       <CardBody>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* Progress Snapshot */}
-          <div className="space-y-6 bg-background border border-border rounded-medium p-6">
+          <div className="space-y-6 bg-transparent border border-divider rounded-medium p-6">
             <h3 className="text-medium font-semibold text-foreground">
               Progress Snapshot
             </h3>
@@ -72,7 +72,7 @@ export default function PerformanceOverview() {
               Skill Assessment
             </h3>
             <div className="grid grid-cols-2 gap-6">
-              <div className="group border border-border rounded-medium p-4 hover:bg-hover/40 transition-all duration-300">
+              <div className="group border border-divider rounded-medium p-4 hover:bg-hover/40 transition-all duration-300">
                 <p className="text-tiny text-foreground/80 mb-1">Technical</p>
                 <p className="text-small font-medium text-foreground mb-2">
                   {latestFeedback?.technical || 0}%
@@ -86,7 +86,7 @@ export default function PerformanceOverview() {
                   value={latestFeedback?.technical || 0}
                 />
               </div>
-              <div className="group border border-border rounded-medium p-4 hover:bg-hover/40 transition-all duration-300">
+              <div className="group border border-divider rounded-medium p-4 hover:bg-hover/40 transition-all duration-300">
                 <p className="text-tiny text-foreground/80 mb-1">Communication</p>
                 <p className="text-small font-medium text-foreground mb-2">
                   {latestFeedback?.communication || 0}%
@@ -100,7 +100,7 @@ export default function PerformanceOverview() {
                   value={latestFeedback?.communication || 0}
                 />
               </div>
-              <div className="group border border-border rounded-medium p-4 hover:bg-hover/40 transition-all duration-300">
+              <div className="group border border-divider rounded-medium p-4 hover:bg-hover/40 transition-all duration-300">
                 <p className="text-tiny text-foreground/80 mb-1">Problem Solving</p>
                 <p className="text-small font-medium text-foreground mb-2">
                   {latestFeedback?.problemSolving || 0}%
@@ -114,7 +114,7 @@ export default function PerformanceOverview() {
                   value={latestFeedback?.problemSolving || 0}
                 />
               </div>
-              <div className="group border border-border rounded-medium p-4 hover:bg-hover/40 transition-all duration-300">
+              <div className="group border border-divider rounded-medium p-4 hover:bg-hover/40 transition-all duration-300">
                 <p className="text-tiny text-foreground/80 mb-1">Confidence</p>
                 <p className="text-small font-medium text-foreground mb-2">
                   {latestFeedback?.confidence || 0}%
