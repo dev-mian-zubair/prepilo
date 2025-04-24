@@ -3,12 +3,12 @@ import { Metadata, Viewport } from "next";
 import clsx from "clsx";
 import { Providers } from "@/providers";
 import { fontSans } from "@/config/fonts";
-import { PortalSidebar } from "@/components/PortalSidebar";
+import { AppSidebar } from "@/components/AppSidebar";
 import { ThemeProvider } from "next-themes";
 
 export const metadata: Metadata = {
-  title: "Portal - Prepilo",
-  description: "Your interview preparation portal",
+  title: "App - Prepilo",
+  description: "Your interview preparation app",
 };
 
 export const viewport: Viewport = {
@@ -18,7 +18,7 @@ export const viewport: Viewport = {
   ],
 };
 
-export default function PortalLayout({ children }: { children: React.ReactNode }) {
+export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
@@ -40,7 +40,7 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <Providers>
             <div className="flex h-screen">
-              <PortalSidebar />
+              <AppSidebar />
               <div className="flex-1 flex flex-col">
                 <main className="flex-1 overflow-auto p-6">
                   {children}

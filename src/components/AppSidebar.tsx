@@ -11,14 +11,14 @@ import {
 } from "@heroicons/react/24/outline";
 import { Search } from "lucide-react";
 
-export function PortalSidebar() {
+export function AppSidebar() {
   const menuItems = [
-    { icon: HomeIcon, label: "Dashboard", href: "/portal" },
-    { icon: VideoCameraIcon, label: "Interviews", href: "/portal/interviews" },
-    { icon: MagnifyingGlassIcon, label: "Discover", href: "/portal/discover" },
-    // { icon: UserIcon, label: "Profile", href: "/portal/profile" },
-    // { icon: ChartBarIcon, label: "Analytics", href: "/portal/analytics" },
-    // { icon: Cog6ToothIcon, label: "Settings", href: "/portal/settings" },
+    { icon: HomeIcon, label: "Dashboard", href: "/app" },
+    { icon: VideoCameraIcon, label: "Interviews", href: "/app/interviews" },
+    { icon: MagnifyingGlassIcon, label: "Discover", href: "/app/discover" },
+    { icon: UserIcon, label: "Profile", href: "/app/profile" },
+    { icon: ChartBarIcon, label: "Analytics", href: "/app/analytics" },
+    { icon: Cog6ToothIcon, label: "Settings", href: "/app/settings" },
   ];
 
   return (
