@@ -24,12 +24,12 @@ const UserDropdown = ({ user }: { user: any }) => {
       </DropdownTrigger>
       <DropdownMenu aria-label="User Actions" variant="flat">
         <DropdownItem
-          key="portal"
+          key="app"
           className="p-2"
-          href="/portal"
+          href="/app"
           startContent={<ChartPie className={iconClasses} />}
         >
-          <span>Portal</span>
+          <span>App</span>
         </DropdownItem>
         <DropdownItem
           key="progress"
