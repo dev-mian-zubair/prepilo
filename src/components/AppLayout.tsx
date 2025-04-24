@@ -57,35 +57,27 @@ export function AppLayout({ children }: AppLayoutProps) {
   return (
     <div className="flex flex-col h-screen overflow-hidden">
       {/* Navbar */}
-      <HeroUINavbar 
-        className="bg-background border-b [&>header]:px-3" 
-        maxWidth="full" 
-        position="sticky"
-      >
-        <NavbarContent className="basis-1/5 sm:basis-full" justify="start">
-          <NavbarBrand as="li" className="gap-3 max-w-fit mr-4">
+      <div className="sticky top-0 z-40 w-full bg-background border-b">
+        <div className="flex h-16 items-center px-3">
+          <div className="flex items-center gap-2">
             <Button
               isIconOnly
               variant="light"
-              className="mr-2"
               onClick={handleSidebarToggle}
             >
               <Bars3Icon className="w-5 h-5" />
             </Button>
-            <Link className="flex justify-start items-center gap-1" href="/app">
+            <Link href="/app">
               <h1 className="text-2xl font-bold tracking-tight">
                 <span className="text-foreground">Prep</span>ilo
               </h1>
             </Link>
-          </NavbarBrand>
-        </NavbarContent>
-
-        <NavbarContent className="flex basis-1/5 sm:basis-full" justify="end">
-          <NavbarItem className="flex gap-2 items-center">
+          </div>
+          <div className="flex flex-1 justify-end">
             <HeaderRightActions />
-          </NavbarItem>
-        </NavbarContent>
-      </HeroUINavbar>
+          </div>
+        </div>
+      </div>
 
       {/* Main Content */}
       <div className="flex flex-1 overflow-hidden">
