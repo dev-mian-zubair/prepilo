@@ -9,7 +9,6 @@ import {
   MagnifyingGlassIcon,
   ArrowLeftOnRectangleIcon 
 } from "@heroicons/react/24/outline";
-import { Search } from "lucide-react";
 
 export function AppSidebar() {
   const menuItems = [
@@ -22,7 +21,7 @@ export function AppSidebar() {
   ];
 
   return (
-    <div className="w-64 h-[calc(100vh-64px)] bg-background border-r">
+    <div className="w-64 bg-background border-r">
       <div className="flex flex-col h-full">
         {/* Navigation */}
         <nav className="flex-1 p-4 space-y-2">
