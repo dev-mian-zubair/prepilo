@@ -13,7 +13,7 @@ import { Search } from "lucide-react";
 
 export function AppSidebar() {
   const menuItems = [
-    { icon: HomeIcon, label: "Dashboard", href: "/app" },
+    { icon: HomeIcon, label: "Dashboard", href: "/app/dashboard" },
     { icon: VideoCameraIcon, label: "Interviews", href: "/app/interviews" },
     { icon: MagnifyingGlassIcon, label: "Discover", href: "/app/discover" },
     { icon: UserIcon, label: "Profile", href: "/app/profile" },
