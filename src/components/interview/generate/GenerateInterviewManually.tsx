@@ -7,6 +7,7 @@ import { Chip } from "@heroui/chip";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { X } from "lucide-react";
 
 // Define types and constants (unchanged from original)
 enum FocusArea {
@@ -457,6 +458,7 @@ const GenerateInterviewManually: React.FC<GenerateInterviewManuallyProps> = ({
               isDisabled={isSubmitting}
               radius="md"
               size="sm"
+              startContent={<X className="w-4 h-4" />}
               variant="bordered"
               onPress={onClose}
             >

@@ -10,6 +10,8 @@ import { CustomRadio } from "../CustomRadio";
 
 import { InterviewType } from "@/enums";
 import { cn } from "@/lib/utils";
+import SelectCreationMethod from "../interview/generate/SelectCreationMethod";
+import GenerateInterviewByJD from "../interview/generate/GenerateInterviewByJD";
 
 // Define Interview type (reused from GenerateInterviewManually and LaunchInterview)
 enum FocusArea {
@@ -104,44 +106,26 @@ const InterviewGeneratorModal = ({
                   orientation="horizontal"
                   onValueChange={handleTypeChange}
                 >
-                  <div className="flex flex-col md:flex-row gap-6 justify-center">
-                    <CustomRadio
-                      className="bg-background border border-divider rounded-lg shadow-md p-6 transition-all duration-200 hover:shadow-lg hover:scale-[1.02] data-[selected=true]:border-primary"
-                      description="Fill out a form to customize questions and settings for your interview."
-                      value={InterviewType.manually}
-                    >
-                      <div className="flex items-center gap-2">
-                        <span className="text-xl transition-colors">📝</span>
-                        <span className="text-lg font-semibold">
-                          Create Manually
-                        </span>
-                      </div>
-                    </CustomRadio>
-                    <CustomRadio
-                      className="bg-background border border-divider rounded-lg shadow-md p-6 transition-all duration-200 hover:shadow-lg hover:scale-[1.02] data-[selected=true]:border-primary"
-                      description="Answer questions from our AI agent to generate a tailored interview."
-                      value={InterviewType.agent}
-                    >
-                      <div className="flex items-center gap-2">
-                        <span className="text-xl transition-colors">✨</span>
-                        <span className="text-lg font-semibold">
-                          Create with AI Agent
-                        </span>
-                      </div>
-                    </CustomRadio>
-                  </div>
+                  <SelectCreationMethod />
                 </RadioGroup>
               </div>
             )}
             {step === "generate" && (
               <div className="animate-fade-in transition-opacity duration-300 ease-out w-full">
-                {type === InterviewType.agent ? (
+                {type === InterviewType.agent && (
                   <GenerateInterviewByAgent
                     onClose={handleClose}
                     onGenerate={handleGenerate}
                   />
-                ) : (
+                )}
+                {type === InterviewType.manually && (
                   <GenerateInterviewManually
+                    onClose={handleClose}
+                    onGenerate={handleGenerate}
+                  />
+                )}
+                {type === InterviewType.byJd && (
+                  <GenerateInterviewByJD
                     onClose={handleClose}
                     onGenerate={handleGenerate}
                   />
