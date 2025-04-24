@@ -1,3 +1,5 @@
+export type DifficultyLevel = "BEGINNER" | "INTERMEDIATE" | "ADVANCED";
+
 export interface Interview {
   id: string;
   title: string;
@@ -7,7 +9,7 @@ export interface Interview {
   focusAreas: string[];
   startedAt: Date;
   scores: {
-    difficulty: "BEGINNER" | "INTERMEDIATE" | "ADVANCED";
+    difficulty: DifficultyLevel;
     score: number | null;
   }[];
   participants?: {

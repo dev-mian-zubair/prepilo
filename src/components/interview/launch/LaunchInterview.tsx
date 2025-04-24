@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { Card, CardBody } from "@heroui/card";
 import { Button } from "@heroui/button";
 import { Chip } from "@heroui/chip";
-import { Clock, Rocket } from "lucide-react";
+import { Clock, Rocket, X } from "lucide-react";
 
 import Agent from "../Agent";
 
@@ -227,6 +227,7 @@ const LaunchInterview: React.FC<LaunchInterviewProps> = ({
                 isDisabled={isLaunching}
                 radius="md"
                 size="sm"
+                startContent={<X className="w-4 h-4" />}
                 variant="bordered"
                 onPress={onClose}
               >
