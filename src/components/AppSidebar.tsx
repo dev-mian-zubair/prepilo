@@ -1,3 +1,4 @@
+"use client";
 import Link from "next/link";
 import { Button } from "@heroui/button";
 import { 
@@ -7,10 +8,13 @@ import {
   ChartBarIcon, 
   Cog6ToothIcon,
   MagnifyingGlassIcon,
-  ArrowLeftOnRectangleIcon 
+  ArrowLeftOnRectangleIcon
 } from "@heroicons/react/24/outline";
+import { cn } from "@/lib/utils";
+import { useSidebar } from "@/contexts/SidebarContext";
 
 export function AppSidebar() {
+  const { isCollapsed } = useSidebar();
   const menuItems = [
     { icon: HomeIcon, label: "Dashboard", href: "/app/dashboard" },
     { icon: VideoCameraIcon, label: "Interviews", href: "/app/interviews" },
@@ -21,32 +25,58 @@ export function AppSidebar() {
   ];
 
   return (
-    <div className="w-64 bg-background border-r">
+    <div className={cn(
+      "bg-background border-r transition-all duration-300",
+      isCollapsed ? "w-16" : "w-64"
+    )}>
       <div className="flex flex-col h-full">
         {/* Navigation */}
-        <nav className="flex-1 p-4 space-y-2">
+        <nav className={cn(
+          "flex-1 space-y-2 p-2",
+        )}>
           {menuItems.map((item) => (
-            <Link key={item.href} href={item.href}>
+            <Link 
+              key={item.href} 
+              href={item.href}
+            >
               <Button
-                className="w-full justify-start"
+                isIconOnly={isCollapsed}
                 variant="light"
-                startContent={<item.icon className="w-5 h-5" />}
+                className={cn(
+                  "w-full transition-all duration-200",
+                  !isCollapsed && "justify-start"
+                )}
+                startContent={!isCollapsed && <item.icon className="w-5 h-5" />}
               >
-                {item.label}
+                {isCollapsed ? (
+                  <item.icon className="w-5 h-5" />
+                ) : (
+                  item.label
+                )}
               </Button>
             </Link>
           ))}
         </nav>
 
         {/* Logout */}
-        <div className="p-4 border-t">
+        <div className={cn(
+          "border-t p-2",
+        )}>
           <Button
-            className="w-full justify-start"
+            isIconOnly={isCollapsed}
             variant="light"
             color="danger"
-            startContent={<ArrowLeftOnRectangleIcon className="w-5 h-5" />}
+            className={cn(
+              "w-full transition-all duration-200",
+              !isCollapsed && "justify-start"
+            )}
+            startContent={!isCollapsed && <ArrowLeftOnRectangleIcon className="w-5 h-5" />}
           >
-            Logout
+            {isCollapsed ? (
+              <ArrowLeftOnRectangleIcon className="w-5 h-5" />
+            ) : (
+              "Logout"
+            )}
           </Button>
         </div>
       </div>
