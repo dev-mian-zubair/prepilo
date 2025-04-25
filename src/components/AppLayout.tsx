@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Navbar as HeroUINavbar,
   NavbarContent,
@@ -22,6 +22,8 @@ import {
   ArrowLeftOnRectangleIcon
 } from "@heroicons/react/24/outline";
 import { cn } from "@/lib/utils";
+import SubscriptionMinutes from "./header/SubscriptionMinutes";
+import { getSubscriptionMinutes } from "@/services/mock/subscription";
 
 interface AppLayoutProps {
   children: React.ReactNode;
@@ -31,6 +33,20 @@ export function AppLayout({ children }: AppLayoutProps) {
   const { user, loading } = useAuth();
   const pathname = usePathname();
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const [subscription, setSubscription] = useState<{ used: number; total: number } | null>(null);
+
+  useEffect(() => {
+    const fetchSubscription = async () => {
+      try {
+        const data = await getSubscriptionMinutes();
+        setSubscription(data);
+      } catch (error) {
+        console.error("Failed to fetch subscription data:", error);
+      }
+    };
+
+    fetchSubscription();
+  }, []);
 
   const isActive = (path: string) => {
     return pathname === path;
@@ -73,7 +89,12 @@ export function AppLayout({ children }: AppLayoutProps) {
               </h1>
             </Link>
           </div>
-          <div className="flex flex-1 justify-end">
+          <div className="flex flex-1 justify-end items-center gap-4">
+            {subscription && (
+              <SubscriptionMinutes 
+                subscription={subscription} 
+              />
+            )}
             <HeaderRightActions />
           </div>
         </div>
