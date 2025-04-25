@@ -37,8 +37,8 @@ const MeetingControls = ({
   };
 
   return (
-    <div className="controls-container transition-all duration-300 pr-[360px]">
-      <div className="meeting-info flex items-center">
+    <div className="fixed bottom-0 left-0 right-0 p-3 sm:p-4 flex flex-col sm:flex-row items-center justify-between gap-2 sm:gap-4">
+      <div className="meeting-info flex items-center text-xs sm:text-sm">
         <span>{meetingInfo.time}</span>
         <span className="mx-2">|</span>
         <span>{meetingInfo.title}</span>
@@ -52,9 +52,9 @@ const MeetingControls = ({
           onPress={toggleMute}
         >
           {isMuted ? (
-            <Mic className="w-5 h-5" />
+            <Mic className="w-4 h-4" />
           ) : (
-            <MicOff className="w-5 h-5" />
+            <MicOff className="w-4 h-4" />
           )}
         </Button>
         <Button
@@ -64,9 +64,9 @@ const MeetingControls = ({
           onPress={toggleVideo}
         >
           {isVideoOff ? (
-            <Video className="w-5 h-5" />
+            <Video className="w-4 h-4" />
           ) : (
-            <VideoOff className="w-5 h-5" />
+            <VideoOff className="w-4 h-4" />
           )}
         </Button>
         <Button
@@ -75,7 +75,7 @@ const MeetingControls = ({
           color="danger"
           onPress={handleEndCall}
         >
-          <PhoneOff className="w-5 h-5" />
+          <PhoneOff className="w-4 h-4" />
         </Button>
       </div>
 
@@ -87,7 +87,7 @@ const MeetingControls = ({
             variant="flat"
             onPress={() => handleSidebarAction("info")}
           >
-            <Info className="w-5 h-5" />
+            <Info className="w-4 h-4" />
           </Button>
         )}
         <Button
@@ -96,7 +96,7 @@ const MeetingControls = ({
           variant="flat"
           onPress={() => handleSidebarAction("conversation")}
         >
-          <MessageSquare className="w-5 h-5" />
+          <MessageSquare className="w-4 h-4" />
         </Button>
       </div>
     </div>
