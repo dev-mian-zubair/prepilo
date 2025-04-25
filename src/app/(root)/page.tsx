@@ -145,7 +145,7 @@ export default function Home() {
               >
                 <div className="text-4xl mb-4">{feature.icon}</div>
                 <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>
-                <p className=" text-sm">{feature.description}</p>
+                <p className="text-sm">{feature.description}</p>
               </div>
             ))}
           </div>

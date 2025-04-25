@@ -8,7 +8,7 @@ export async function getSubscriptionMinutes(): Promise<Subscription> {
   await new Promise(resolve => setTimeout(resolve, 500));
   
   return {
-    used: 980,
+    used: 999,
     total: 1000
   };
 } 
