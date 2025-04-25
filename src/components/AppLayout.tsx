@@ -19,7 +19,8 @@ import {
   ChartBarIcon, 
   Cog6ToothIcon,
   MagnifyingGlassIcon,
-  ArrowLeftOnRectangleIcon
+  ArrowLeftOnRectangleIcon,
+  CreditCardIcon
 } from "@heroicons/react/24/outline";
 import { cn } from "@/lib/utils";
 import SubscriptionMinutes from "./header/SubscriptionMinutes";
@@ -56,6 +57,7 @@ export function AppLayout({ children }: AppLayoutProps) {
     { icon: HomeIcon, label: "Dashboard", href: "/app" },
     { icon: VideoCameraIcon, label: "Interviews", href: "/app/interviews" },
     { icon: MagnifyingGlassIcon, label: "Discover", href: "/app/discover" },
+    { icon: CreditCardIcon, label: "Pricing", href: "/app/pricing" },
     { icon: UserIcon, label: "Profile", href: "/app/profile" },
     { icon: ChartBarIcon, label: "Analytics", href: "/app/analytics" },
     { icon: Cog6ToothIcon, label: "Settings", href: "/app/settings" },
