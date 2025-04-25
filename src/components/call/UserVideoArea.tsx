@@ -2,12 +2,13 @@
 import { Avatar } from "@heroui/avatar";
 import { Card, CardBody } from "@heroui/card";
 import Webcam from "react-webcam";
-import { useMemo } from "react";
+import React, { useMemo } from "react";
 
 import { cn } from "@/lib/utils";
 
 interface UserVideoAreaProps {
   isVideoOff: boolean;
+  isMicOn: boolean;
 }
 
 const colorPalette = [
@@ -28,16 +29,30 @@ const avatarBorderColors = [
   "border-pink-500",
 ];
 
-const UserVideoArea = ({ isVideoOff }: UserVideoAreaProps) => {
+const speakingPulseColors = [
+  "bg-blue-200",
+  "bg-green-200",
+  "bg-purple-200",
+  "bg-red-200",
+  "bg-teal-200",
+  "bg-pink-200",
+];
+
+const UserVideoArea = ({ isVideoOff, isMicOn }: UserVideoAreaProps) => {
   const randomGradient = useMemo(() => {
     return colorPalette[Math.floor(Math.random() * colorPalette.length)];
-  }, [isVideoOff]);
+  }, [isMicOn]);
 
-  const randomBorderColor = useMemo(() => {
-    return avatarBorderColors[
-      Math.floor(Math.random() * avatarBorderColors.length)
-    ];
-  }, [isVideoOff]);
+  const randomEffectColors = useMemo(() => {
+    const borderColor =
+      avatarBorderColors[Math.floor(Math.random() * avatarBorderColors.length)];
+    const pulseColor =
+      speakingPulseColors[
+        Math.floor(Math.random() * speakingPulseColors.length)
+      ];
+
+    return { borderColor, pulseColor };
+  }, [isMicOn, isMicOn]);
 
   return (
     <Card className="absolute inset-0 rounded-none border-none shadow-none transition-all duration-300">
@@ -56,9 +71,17 @@ const UserVideoArea = ({ isVideoOff }: UserVideoAreaProps) => {
             videoConstraints={{ facingMode: "user" }}
           />
         ) : (
-          <div className="flex flex-col items-center">
+          <div
+            className={cn(
+              "rounded-full p-8",
+              isMicOn ? `animate-pulse ${randomEffectColors.pulseColor}` : "",
+            )}
+          >
             <Avatar
-              className={`w-40 h-40 border-4 ${randomBorderColor}`}
+              className={cn(
+                "w-40 h-40 border-2",
+                randomEffectColors.borderColor,
+              )}
               radius="full"
               src="https://i.pravatar.cc/150?u=a042581f4e29026704d"
             />
