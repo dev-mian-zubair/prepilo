@@ -26,7 +26,7 @@ const UserDropdown = ({ user }: { user: any }) => {
         <DropdownItem
           key="app"
           className="p-2"
-          href="/app/dashboard"
+          href="/app"
           startContent={<ChartPie className={iconClasses} />}
         >
           <span>Dashboard</span>

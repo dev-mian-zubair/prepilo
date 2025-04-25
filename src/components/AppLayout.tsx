@@ -37,7 +37,7 @@ export function AppLayout({ children }: AppLayoutProps) {
   };
 
   const menuItems = [
-    { icon: HomeIcon, label: "Dashboard", href: "/app/dashboard" },
+    { icon: HomeIcon, label: "Dashboard", href: "/app" },
     { icon: VideoCameraIcon, label: "Interviews", href: "/app/interviews" },
     { icon: MagnifyingGlassIcon, label: "Discover", href: "/app/discover" },
     { icon: UserIcon, label: "Profile", href: "/app/profile" },
