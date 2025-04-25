@@ -1,45 +1,56 @@
 import React from "react";
 
+import MeetingControls from "./MeetingControls";
+import ActionSidebar from "./ActionSidebar";
+
 import UserVideoArea from "@/components/call/UserVideoArea";
-import ConversationBox from "@/components/call/ConversationBox";
 import AgentCard from "@/components/call/AgentCard";
-import CallAction from "@/components/call/CallAction";
 import { useVapiCall } from "@/hooks/useVapiCall";
+import { MeetingType, SidebarType } from "@/types/interview";
 
 interface AgentProps {
   onClose: () => void;
+  interview?: any;
+  meetingType?: MeetingType;
 }
 
-const Agent = ({ onClose }: AgentProps) => {
+const Agent = ({ onClose, interview, meetingType }: AgentProps) => {
   const {
     callStatus,
     messages,
-    isCameraOn,
+    isVideoOff,
     isSpeaking,
-    toggleCamera,
+    toggleVideo,
     handleLeaveCall,
   } = useVapiCall({ onClose });
+  const [isMuted, setIsMuted] = React.useState(false);
+  const [sidebarType, setSidebarType] =
+    React.useState<SidebarType>("conversation");
+
+  const toggleMute = () => setIsMuted(!isMuted);
 
   return (
     <>
-      {/* Top Section */}
-      <div className="flex flex-1 p-0 m-0 overflow-hidden min-h-screen bg-background">
-        {/* Video Area */}
-        <div className="flex-1 relative">
-          <UserVideoArea isCameraOn={isCameraOn} />
+      <div className="video-container flex-grow transition-all duration-300 pr-[360px]">
+        <UserVideoArea isVideoOff={isVideoOff} />
 
-          <AgentCard isSpeaking={isSpeaking} status={callStatus} />
+        <AgentCard isSpeaking={isSpeaking} status={callStatus} />
 
-          {/* Control Buttons */}
-          <CallAction
-            handleLeaveCall={handleLeaveCall}
-            isCameraOn={isCameraOn}
-            toggleCamera={toggleCamera}
-          />
-        </div>
+        <ActionSidebar
+          interview={interview}
+          messages={messages}
+          type={sidebarType}
+        />
 
-        {/* Messages Sidebar */}
-        <ConversationBox messages={messages} />
+        <MeetingControls
+          handleEndCall={handleLeaveCall}
+          handleSidebarAction={setSidebarType}
+          isMuted={isMuted}
+          isVideoOff={isVideoOff}
+          meetingType={meetingType}
+          toggleMute={toggleMute}
+          toggleVideo={toggleVideo}
+        />
       </div>
     </>
   );

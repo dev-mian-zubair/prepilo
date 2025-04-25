@@ -7,4 +7,4 @@ export interface Template {
   focusAreas: string[];
   versions: { difficulty: string }[];
   participants?: { user: string; score: number; avatar: string }[];
-} 
+}

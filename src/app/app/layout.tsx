@@ -1,9 +1,10 @@
 import "@/styles/globals.css";
 import { Metadata, Viewport } from "next";
 import clsx from "clsx";
+import { ThemeProvider } from "next-themes";
+
 import { Providers } from "@/providers";
 import { fontSans } from "@/config/fonts";
-import { ThemeProvider } from "next-themes";
 import { AppLayout } from "@/components/AppLayout";
 
 export const metadata: Metadata = {
@@ -18,9 +19,13 @@ export const viewport: Viewport = {
   ],
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html suppressHydrationWarning lang="en">
       <head>
         <script
           dangerouslySetInnerHTML={{
@@ -37,14 +42,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
       <body className={clsx(fontSans.className)}>
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+        <ThemeProvider enableSystem attribute="class" defaultTheme="system">
           <Providers>
-            <AppLayout>
-              {children}
-            </AppLayout>
+            <AppLayout>{children}</AppLayout>
           </Providers>
         </ThemeProvider>
       </body>
     </html>
   );
-} 
+}

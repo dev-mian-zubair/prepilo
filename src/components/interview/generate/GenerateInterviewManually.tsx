@@ -6,159 +6,18 @@ import { Button } from "@heroui/button";
 import { Chip } from "@heroui/chip";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 import { X } from "lucide-react";
 
-// Define types and constants (unchanged from original)
-enum FocusArea {
-  TECHNICAL = "TECHNICAL",
-  SYSTEM_DESIGN = "SYSTEM_DESIGN",
-  BEHAVIORAL = "BEHAVIORAL",
-  COMMUNICATION = "COMMUNICATION",
-  PROBLEM_SOLVING = "PROBLEM_SOLVING",
-}
-
-const predefinedDurations = [10, 30, 45, 60, 90, 120] as const;
-
-type Duration = number;
-
-const predefinedTechnologies = [
-  "JavaScript",
-  "Python",
-  "React",
-  "Node.js",
-  "Java",
-  "TypeScript",
-  "SQL",
-  "AWS",
-  "Docker",
-  "Kubernetes",
-] as const;
-
-const formSchema = z.object({
-  title: z.string().min(1, "Interview Title is required").max(100),
-  duration: z.number().int().positive("Duration must be a positive integer"),
-  focusAreas: z
-    .array(
-      z.enum([
-        FocusArea.TECHNICAL,
-        FocusArea.SYSTEM_DESIGN,
-        FocusArea.BEHAVIORAL,
-        FocusArea.COMMUNICATION,
-        FocusArea.PROBLEM_SOLVING,
-      ]),
-    )
-    .min(1, "At least one focus area is required"),
-  technologies: z
-    .array(z.string().min(1, "Technology name cannot be empty"))
-    .min(1, "At least one technology is required"),
-});
-
-type FormValues = z.infer<typeof formSchema>;
-
-interface FocusAreaOption {
-  key: FocusArea;
-  label: string;
-  emoji: string;
-}
-
-interface DurationOption {
-  key: Duration;
-  label: string;
-  emoji: string;
-}
-
-interface TechnologyOption {
-  key: string;
-  label: string;
-  emoji: string;
-}
-
-interface Template {
-  name: string;
-  values: Partial<FormValues>;
-}
-
-interface CreateInterviewParams {
-  title: string;
-  duration: number;
-  focusAreas: FocusArea[];
-  technologyNames: string[];
-}
-
-interface CreateInterviewResult {
-  success: boolean;
-  error?: string;
-}
-
-const createInterview = async (
-  params: CreateInterviewParams,
-): Promise<CreateInterviewResult> => {
-  console.log("Creating interview:", params);
-
-  return { success: true };
-};
-
-const focusAreaOptions: FocusAreaOption[] = [
-  { key: FocusArea.TECHNICAL, label: "Technical Skills", emoji: "💻" },
-  { key: FocusArea.SYSTEM_DESIGN, label: "System Design", emoji: "🏗️" },
-  { key: FocusArea.BEHAVIORAL, label: "Behavioral Skills", emoji: "🤝" },
-  { key: FocusArea.COMMUNICATION, label: "Communication Skills", emoji: "💬" },
-  { key: FocusArea.PROBLEM_SOLVING, label: "Problem Solving", emoji: "🧩" },
-];
-
-const durationOptions: DurationOption[] = [
-  { key: 10, label: "10 Min", emoji: "🏃‍♂️" },
-  { key: 30, label: "30 Min", emoji: "⚡" },
-  { key: 45, label: "45 Min", emoji: "🚀" },
-  { key: 60, label: "60 Min", emoji: "⏰" },
-  { key: 90, label: "90 Min", emoji: "🌊" },
-  { key: 120, label: "120 Min", emoji: "🗻" },
-];
-
-const technologyOptions: TechnologyOption[] = [
-  { key: "JavaScript", label: "JavaScript", emoji: "🌐" },
-  { key: "Python", label: "Python", emoji: "🐍" },
-  { key: "React", label: "React", emoji: "⚛️" },
-  { key: "Node.js", label: "Node.js", emoji: "🖥️" },
-  { key: "Java", label: "Java", emoji: "☕" },
-  { key: "TypeScript", label: "TypeScript", emoji: "📜" },
-  { key: "SQL", label: "SQL", emoji: "🗃️" },
-  { key: "AWS", label: "AWS", emoji: "☁️" },
-  { key: "Docker", label: "Docker", emoji: "🐳" },
-  { key: "Kubernetes", label: "Kubernetes", emoji: "☸️" },
-];
-
-const templates: Template[] = [
-  {
-    name: "Frontend",
-    values: {
-      duration: 60,
-      focusAreas: [FocusArea.TECHNICAL, FocusArea.COMMUNICATION],
-      technologies: ["JavaScript", "React", "TypeScript"],
-    },
-  },
-  {
-    name: "Backend",
-    values: {
-      duration: 90,
-      focusAreas: [FocusArea.SYSTEM_DESIGN, FocusArea.TECHNICAL],
-      technologies: ["Node.js", "SQL", "Docker"],
-    },
-  },
-  {
-    name: "Full-Stack",
-    values: {
-      duration: 120,
-      focusAreas: [
-        FocusArea.TECHNICAL,
-        FocusArea.SYSTEM_DESIGN,
-        FocusArea.PROBLEM_SOLVING,
-      ],
-      technologies: ["JavaScript", "React", "Node.js", "AWS"],
-    },
-  },
-];
+import { Duration, FormValues, Template } from "@/types/interview";
+import { formSchema } from "@/schema/interview";
+import { FocusArea } from "@/enums";
+import {
+  durationOptions,
+  focusAreaOptions,
+  predefinedTechnologies,
+  technologyOptions,
+  templates,
+} from "@/helpers/interview.helper";
 
 interface GenerateInterviewManuallyProps {
   onClose: () => void;
