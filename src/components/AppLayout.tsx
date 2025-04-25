@@ -57,7 +57,7 @@ export function AppLayout({ children }: AppLayoutProps) {
   return (
     <div className="flex flex-col h-screen overflow-hidden">
       {/* Navbar */}
-      <div className="sticky top-0 z-40 w-full bg-background border-b border-divider">
+      <div className="sticky top-0 z-40 w-full bg-background border-b border-default-100">
         <div className="flex h-16 items-center px-3">
           <div className="flex items-center gap-2">
             <Button
@@ -83,8 +83,8 @@ export function AppLayout({ children }: AppLayoutProps) {
       <div className="flex flex-1 overflow-hidden">
         {/* Sidebar */}
         <div className={cn(
-          "bg-background border-r border-divider transition-all duration-300",
-          isCollapsed ? "w-16" : "w-64"
+          "bg-background border-r border-default-100 transition-all duration-300",
+          isCollapsed ? "w-14" : "w-56"
         )}>
           <div className="flex flex-col h-full">
             {/* Navigation */}
@@ -105,13 +105,13 @@ export function AppLayout({ children }: AppLayoutProps) {
                     "h-5 w-5 shrink-0",
                     pathname === href ? "text-foreground" : "text-foreground/70"
                   )} />
-                  {!isCollapsed && <span className="truncate">{label}</span>}
+                  {!isCollapsed && <span className="truncate text-sm">{label}</span>}
                 </Link>
               ))}
             </nav>
 
             {/* Logout */}
-            <div className="border-t border-divider p-2">
+            <div className="p-2">
               <Button
                 isIconOnly={isCollapsed}
                 variant="light"
@@ -120,7 +120,7 @@ export function AppLayout({ children }: AppLayoutProps) {
                 startContent={!isCollapsed && <ArrowLeftOnRectangleIcon className="w-5 h-5 shrink-0" />}
                 onClick={(e) => e.stopPropagation()}
               >
-                {isCollapsed ? <ArrowLeftOnRectangleIcon className="w-5 h-5" /> : <span className="truncate">Logout</span>}
+                {isCollapsed ? <ArrowLeftOnRectangleIcon className="w-5 h-5" /> : <span className="truncate text-sm">Logout</span>}
               </Button>
             </div>
           </div>
