@@ -32,7 +32,7 @@ const Agent = ({ onClose, interview, meetingType }: AgentProps) => {
   return (
     <>
       <div className="video-container flex-grow transition-all duration-300 pr-[360px]">
-        <UserVideoArea isVideoOff={isVideoOff} />
+        <UserVideoArea isMicOn={!isMuted} isVideoOff={isVideoOff} />
 
         <AgentCard isSpeaking={isSpeaking} status={callStatus} />
 
