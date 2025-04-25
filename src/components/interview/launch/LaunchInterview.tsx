@@ -7,69 +7,13 @@ import { Clock, Rocket, X } from "lucide-react";
 
 import Agent from "../Agent";
 
-// Define types (reused from GenerateInterviewManually)
-enum FocusArea {
-  TECHNICAL = "TECHNICAL",
-  SYSTEM_DESIGN = "SYSTEM_DESIGN",
-  BEHAVIORAL = "BEHAVIORAL",
-  COMMUNICATION = "COMMUNICATION",
-  PROBLEM_SOLVING = "PROBLEM_SOLVING",
-}
-
-type DifficultyLevel = "Beginner" | "Intermediate" | "Advanced";
-
-interface Interview {
-  title: string;
-  duration: number;
-  focusAreas: FocusArea[];
-  technologies: string[];
-  description?: string;
-}
-
-interface FocusAreaOption {
-  key: FocusArea;
-  label: string;
-  emoji: string;
-}
-
-interface TechnologyOption {
-  key: string;
-  label: string;
-  emoji: string;
-}
-
-interface DifficultyOption {
-  key: DifficultyLevel;
-  label: string;
-  emoji: string;
-}
-
-const focusAreaOptions: FocusAreaOption[] = [
-  { key: FocusArea.TECHNICAL, label: "Technical Skills", emoji: "💻" },
-  { key: FocusArea.SYSTEM_DESIGN, label: "System Design", emoji: "🏗️" },
-  { key: FocusArea.BEHAVIORAL, label: "Behavioral Skills", emoji: "🤝" },
-  { key: FocusArea.COMMUNICATION, label: "Communication Skills", emoji: "💬" },
-  { key: FocusArea.PROBLEM_SOLVING, label: "Problem Solving", emoji: "🧩" },
-];
-
-const technologyOptions: TechnologyOption[] = [
-  { key: "JavaScript", label: "JavaScript", emoji: "🌐" },
-  { key: "Python", label: "Python", emoji: "🐍" },
-  { key: "React", label: "React", emoji: "⚛️" },
-  { key: "Node.js", label: "Node.js", emoji: "🖥️" },
-  { key: "Java", label: "Java", emoji: "☕" },
-  { key: "TypeScript", label: "TypeScript", emoji: "📜" },
-  { key: "SQL", label: "SQL", emoji: "🗃️" },
-  { key: "AWS", label: "AWS", emoji: "☁️" },
-  { key: "Docker", label: "Docker", emoji: "🐳" },
-  { key: "Kubernetes", label: "Kubernetes", emoji: "☸️" },
-];
-
-const difficultyOptions: DifficultyOption[] = [
-  { key: "Beginner", label: "Beginner", emoji: "🌱" },
-  { key: "Intermediate", label: "Intermediate", emoji: "🚀" },
-  { key: "Advanced", label: "Advanced", emoji: "🧠" },
-];
+import { Difficulty, Interview } from "@/types/interview";
+import { FocusArea } from "@/enums";
+import {
+  difficultyOptions,
+  focusAreaOptions,
+  technologyOptions,
+} from "@/helpers/interview.helper";
 
 interface LaunchInterviewProps {
   interview: Interview;
@@ -82,7 +26,7 @@ const LaunchInterview: React.FC<LaunchInterviewProps> = ({
 }) => {
   const [isLaunching, setIsLaunching] = useState(false);
   const [selectedDifficulty, setSelectedDifficulty] =
-    useState<DifficultyLevel | null>("Beginner");
+    useState<Difficulty | null>("Beginner");
   const [launchInterview, setLaunchInterview] = useState(false);
 
   const getFocusAreaLabel = (area: FocusArea) => {
@@ -110,7 +54,7 @@ const LaunchInterview: React.FC<LaunchInterviewProps> = ({
     }
   };
 
-  const handleDifficultySelect = (difficulty: DifficultyLevel) => {
+  const handleDifficultySelect = (difficulty: Difficulty) => {
     setSelectedDifficulty(difficulty);
   };
 
@@ -118,7 +62,11 @@ const LaunchInterview: React.FC<LaunchInterviewProps> = ({
     <>
       {launchInterview ? (
         <div className="animate-fade-in transition-opacity duration-300 ease-out w-full">
-          <Agent onClose={onClose} />
+          <Agent
+            interview={interview}
+            meetingType="interview"
+            onClose={onClose}
+          />
         </div>
       ) : (
         <Card className="group border border-divider bg-transparent rounded-md transition-all duration-200 w-full max-w-3xl mx-auto mt-10 shadow-none hover:shadow-sm hover:scale-[1.01]">

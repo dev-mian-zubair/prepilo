@@ -6,25 +6,24 @@ import Webcam from "react-webcam";
 import { cn } from "@/lib/utils";
 
 interface UserVideoAreaProps {
-  isCameraOn: boolean;
+  isVideoOff: boolean;
 }
 
-const UserVideoArea = ({ isCameraOn }: UserVideoAreaProps) => {
+const UserVideoArea = ({ isVideoOff }: UserVideoAreaProps) => {
   return (
     <Card className="absolute inset-0 rounded-none border-none shadow-none transition-all duration-300">
-      <div className="absolute inset-0 z-10" />
       <CardBody
         className={cn(
           "flex flex-col items-center justify-center p-8 z-20 relative max-h-[800px]",
-          !isCameraOn
-            ? "m-8 rounded-xl shadow-sm bg-gradient-to-tl from-blue-400 to-gray-300 w-[calc(100%-65px)] max-h-[740px]"
+          isVideoOff
+            ? "m-8 rounded-xl shadow-sm bg-gradient-to-tl from-blue-400 to-gray-300 w-[calc(100%-440px)] mr-[440px] max-h-[735px]"
             : "",
         )}
       >
-        {isCameraOn ? (
+        {!isVideoOff ? (
           <Webcam
             audio={false}
-            className="w-full h-full object-cover rounded-lg shadow-none"
+            className="h-full object-cover rounded-lg shadow-none w-[calc(100%-380px)] mr-[380px]"
             videoConstraints={{ facingMode: "user" }}
           />
         ) : (

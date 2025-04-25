@@ -11,9 +11,9 @@ interface UseVapiCallProps {
 interface UseVapiCallReturn {
   callStatus: CallStatus;
   messages: SavedMessage[];
-  isCameraOn: boolean;
+  isVideoOff: boolean;
   isSpeaking: boolean;
-  toggleCamera: () => void;
+  toggleVideo: () => void;
   handleLeaveCall: () => void;
 }
 
@@ -24,7 +24,7 @@ export const useVapiCall = ({
     CallStatus.CONNECTING,
   );
   const [messages, setMessages] = useState<SavedMessage[]>([]);
-  const [isCameraOn, setIsCameraOn] = useState(true);
+  const [isVideoOff, setIsVideoOff] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
 
   useEffect(() => {
@@ -61,13 +61,11 @@ export const useVapiCall = ({
     };
   }, []);
 
-  const toggleCamera = () => {
-    setIsCameraOn((prev) => !prev);
-  };
+  const toggleVideo = () => setIsVideoOff((prev) => !prev);
 
   const handleLeaveCall = () => {
     setMessages([]);
-    setIsCameraOn(true);
+    setIsVideoOff(true);
     setCallStatus(CallStatus.FINISHED);
     vapi.stop();
     onClose();
@@ -76,9 +74,9 @@ export const useVapiCall = ({
   return {
     callStatus,
     messages,
-    isCameraOn,
+    isVideoOff,
     isSpeaking,
-    toggleCamera,
+    toggleVideo,
     handleLeaveCall,
   };
 };

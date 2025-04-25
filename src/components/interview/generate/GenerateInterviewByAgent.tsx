@@ -31,10 +31,10 @@ const GenerateInterviewByAgent = ({
   };
 
   useEffect(() => {
-    initializeCall();
+    // initializeCall();
   }, []);
 
-  return <Agent onClose={onClose} />;
+  return <Agent meetingType="generate" onClose={onClose} />;
 };
 
 export default GenerateInterviewByAgent;

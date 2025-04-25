@@ -2,6 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 
+body {
+  font-family: 'Google Sans', sans-serif;
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  overflow: hidden;
+}
 
 @keyframes speak-pulse {
   0% {
@@ -23,4 +30,57 @@
   background-color: rgba(0, 153, 255, 0.4);
   animation: speak-pulse 1.2s ease-out infinite;
   z-index: 0;
+}
+
+.video-container {
+  padding: 8px;
+  width: 100%;
+  transition: all 0.3s ease;
+}
+
+.controls-container {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 80px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 16px;
+  z-index: 101;
+}
+
+.control-button {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 4px;
+  cursor: pointer;
+}
+
+.control-button:hover {
+  background-color: #4a4d51;
+}
+
+.end-call {
+  background-color: #ea4335;
+}
+
+.end-call:hover {
+  background-color: #dc3626;
+}
+
+.sidebar {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 360px;
+  height: calc(100vh - 130px);
+  z-index: 100;
+  overflow-y: auto;
+  transition: transform 0.3s ease;
 }

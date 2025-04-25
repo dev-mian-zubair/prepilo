@@ -8,17 +8,7 @@ import { Rocket, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { fontSans } from "@/config/fonts";
 import { Difficulty, FocusArea } from "@/enums";
-import { DifficultyLevel } from "@/types/interview";
-
-interface Interview {
-  title: string;
-  duration: number;
-  focusAreas: FocusArea[];
-  technologies: string[];
-  description?: string;
-  difficulty?: DifficultyLevel;
-  jobDescription: string;
-}
+import { Interview } from "@/types/interview";
 
 interface GenerateInterviewByJDProps {
   onClose: () => void;
@@ -52,12 +42,10 @@ const GenerateInterviewByJD: React.FC<GenerateInterviewByJDProps> = ({
         technologies: ["JavaScript", "React"],
         description: "Generated based on provided job description.",
         difficulty: Difficulty.INTERMEDIATE,
-        jobDescription: jobDescription.trim(),
       };
 
       await onGenerate(interview);
     } catch (error) {
-      console.error("Failed to generate interview:", error);
       setError("Failed to generate interview. Please try again.");
     } finally {
       setIsGenerating(false);
