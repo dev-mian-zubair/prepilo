@@ -2,7 +2,7 @@ import DiscoverTemplateGrid from "@/components/discover/listing/DiscoverTemplate
 
 export default function DiscoverPage() {
   return (
-    <div className="my-8">
+    <div>
       <DiscoverTemplateGrid />
     </div>
   );

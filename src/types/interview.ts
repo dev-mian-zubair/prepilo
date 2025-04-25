@@ -7,6 +7,7 @@ export type DifficultyLevel = "BEGINNER" | "INTERMEDIATE" | "ADVANCED";
 export type Difficulty = "Beginner" | "Intermediate" | "Advanced";
 
 export interface Interview {
+  id: string;
   title: string;
   duration: number;
   focusAreas: FocusArea[];
