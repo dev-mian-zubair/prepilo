@@ -1,6 +1,6 @@
 "use server";
 
-import { SessionStatus } from "@prisma/client";
+import { Difficulty, SessionStatus } from "@prisma/client";
 import { generateText } from "ai";
 import { google } from "@ai-sdk/google";
 
@@ -19,7 +19,10 @@ export interface SessionFilters {
   endDate?: Date | string;
 }
 
-export async function createSession(versionId: string) {
+export async function createSession(
+  interviewId: string,
+  difficulty: Difficulty,
+) {
   try {
     // 1. Get authenticated user
     const user = await getUser();
@@ -29,20 +32,19 @@ export async function createSession(versionId: string) {
     }
 
     // 2. Validate interview version
-    const version = await prisma.interviewVersion.findUnique({
-      where: { id: versionId },
-      include: { interview: true },
+    const interview = await prisma.interview.findUnique({
+      where: { id: interviewId },
+      include: { versions: { where: { difficulty } } },
     });
+
+    const version = interview?.versions[0];
 
     if (!version) {
       throw new Error("Interview version not found");
     }
 
     // 3. Check access (public or creator)
-    if (
-      !version.interview.isPublic &&
-      version.interview.creatorId !== user.id
-    ) {
+    if (!interview.isPublic && interview.creatorId !== user.id) {
       throw new Error(
         "Access denied: Interview is not public and you are not the creator",
       );
@@ -52,19 +54,24 @@ export async function createSession(versionId: string) {
     const session = await prisma.session.create({
       data: {
         userId: user.id,
-        versionId,
+        versionId: version.id,
         startedAt: new Date(),
-        status: "IN_PROGRESS",
       },
       include: {
-        version: { include: { interview: true } },
+        version: { include: { questions: true } },
       },
     });
 
-    return { success: true, session };
+    return {
+      success: true,
+      session: {
+        id: session.id,
+        questions: session.version?.questions,
+        startedAt: session.startedAt,
+        status: session.status,
+      },
+    };
   } catch (error) {
-    console.error("Session creation failed:", error);
-
     return {
       success: false,
       error:

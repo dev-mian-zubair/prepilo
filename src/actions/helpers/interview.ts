@@ -5,11 +5,9 @@ import { Difficulty, FocusArea, QuestionType } from "@prisma/client";
 // Interface for creating an interview, aligned with schema
 export interface CreateInterviewInput {
   title: string;
-  description?: string;
   duration: number;
   focusAreas: FocusArea[];
   technologyNames: string[];
-  isPublic?: boolean;
 }
 
 // Interface for technologies, aligned with schema (no category)

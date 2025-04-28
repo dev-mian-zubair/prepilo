@@ -7,13 +7,15 @@ import { Clock, Rocket, X } from "lucide-react";
 
 import Agent from "../Agent";
 
-import { Difficulty, Interview } from "@/types/interview";
+import { DifficultyLevel, Interview } from "@/types/interview";
 import { FocusArea } from "@/enums";
 import {
   difficultyOptions,
   focusAreaOptions,
   technologyOptions,
 } from "@/helpers/interview.helper";
+import { createSession } from "@/actions/interview-session";
+import { Session } from "@/types/session.types";
 
 interface LaunchInterviewProps {
   interview: Interview;
@@ -26,8 +28,9 @@ const LaunchInterview: React.FC<LaunchInterviewProps> = ({
 }) => {
   const [isLaunching, setIsLaunching] = useState(false);
   const [selectedDifficulty, setSelectedDifficulty] =
-    useState<Difficulty | null>("Beginner");
+    useState<DifficultyLevel | null>("BEGINNER");
   const [launchInterview, setLaunchInterview] = useState(false);
+  const [sessionInfo, setSessionInfo] = useState<Session>();
 
   const getFocusAreaLabel = (area: FocusArea) => {
     const option = focusAreaOptions.find((opt) => opt.key === area);
@@ -43,10 +46,19 @@ const LaunchInterview: React.FC<LaunchInterviewProps> = ({
     return option ? option.emoji : "🌟";
   };
 
+  const handleDifficultySelect = (difficulty: DifficultyLevel) => {
+    setSelectedDifficulty(difficulty);
+  };
+
   const handleLaunch = async () => {
     setIsLaunching(true);
     try {
-      setLaunchInterview(true);
+      const response = await createSession(interview.id, selectedDifficulty!);
+
+      if (response.success && response.session) {
+        setSessionInfo(response.session as Session);
+        setLaunchInterview(true);
+      }
     } catch (error) {
       console.error("Failed to launch interview:", error);
     } finally {
@@ -54,17 +66,14 @@ const LaunchInterview: React.FC<LaunchInterviewProps> = ({
     }
   };
 
-  const handleDifficultySelect = (difficulty: Difficulty) => {
-    setSelectedDifficulty(difficulty);
-  };
-
   return (
     <>
-      {launchInterview ? (
+      {sessionInfo && launchInterview ? (
         <div className="animate-fade-in transition-opacity duration-300 ease-out w-full">
           <Agent
             interview={interview}
             meetingType="interview"
+            session={sessionInfo}
             onClose={onClose}
           />
         </div>
