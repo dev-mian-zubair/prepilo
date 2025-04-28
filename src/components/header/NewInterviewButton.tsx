@@ -12,10 +12,10 @@ const NewInterviewButton = () => {
   return (
     <>
       <Button
-        className="rounded-md"
+        className="font-semibold"
         color="primary"
-        radius="md"
-        size="sm"
+        radius="lg"
+        size="md"
         variant="solid"
         onPress={onOpen}
       >

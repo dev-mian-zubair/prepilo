@@ -1,30 +1,27 @@
 "use client";
 import { useState, useEffect } from "react";
-import {
-  Navbar as HeroUINavbar,
-  NavbarContent,
-  NavbarBrand,
-  NavbarItem,
-} from "@heroui/navbar";
 import { Link } from "@heroui/link";
 import { Button } from "@heroui/button";
 import { usePathname } from "next/navigation";
-import HeaderRightActions from "./header/HeaderRightActions";
-import { useAuth } from "@/providers/AuthProvider";
-import { 
+import {
   Bars3Icon,
   HomeIcon,
-  VideoCameraIcon, 
-  UserIcon, 
-  ChartBarIcon, 
+  VideoCameraIcon,
+  UserIcon,
+  ChartBarIcon,
   Cog6ToothIcon,
   MagnifyingGlassIcon,
   ArrowLeftOnRectangleIcon,
-  CreditCardIcon
+  CreditCardIcon,
 } from "@heroicons/react/24/outline";
-import { cn } from "@/lib/utils";
+
+import HeaderRightActions from "./header/HeaderRightActions";
 import SubscriptionMinutes from "./header/SubscriptionMinutes";
+
+import { useAuth } from "@/providers/AuthProvider";
+import { cn } from "@/lib/utils";
 import { getSubscriptionMinutes } from "@/services/mock/subscription";
+import { handleSignOut } from "@/helpers/auth.helper";
 
 interface AppLayoutProps {
   children: React.ReactNode;
@@ -34,12 +31,16 @@ export function AppLayout({ children }: AppLayoutProps) {
   const { user, loading } = useAuth();
   const pathname = usePathname();
   const [isCollapsed, setIsCollapsed] = useState(false);
-  const [subscription, setSubscription] = useState<{ used: number; total: number } | null>(null);
+  const [subscription, setSubscription] = useState<{
+    used: number;
+    total: number;
+  } | null>(null);
 
   useEffect(() => {
     const fetchSubscription = async () => {
       try {
         const data = await getSubscriptionMinutes();
+
         setSubscription(data);
       } catch (error) {
         console.error("Failed to fetch subscription data:", error);
@@ -69,7 +70,7 @@ export function AppLayout({ children }: AppLayoutProps) {
 
   const buttonStyles = cn(
     "w-full h-10 transition-all duration-200 whitespace-nowrap text-left",
-    !isCollapsed && "justify-start"
+    !isCollapsed && "justify-start",
   );
 
   return (
@@ -78,11 +79,7 @@ export function AppLayout({ children }: AppLayoutProps) {
       <div className="sticky top-0 z-40 w-full bg-background border-b border-default-100">
         <div className="flex h-16 items-center px-3">
           <div className="flex items-center gap-2">
-            <Button
-              isIconOnly
-              variant="light"
-              onClick={handleSidebarToggle}
-            >
+            <Button isIconOnly variant="light" onClick={handleSidebarToggle}>
               <Bars3Icon className="w-5 h-5" />
             </Button>
             <Link href="/app">
@@ -93,9 +90,7 @@ export function AppLayout({ children }: AppLayoutProps) {
           </div>
           <div className="flex flex-1 justify-end items-center gap-4">
             {subscription && (
-              <SubscriptionMinutes 
-                subscription={subscription} 
-              />
+              <SubscriptionMinutes subscription={subscription} />
             )}
             <HeaderRightActions />
           </div>
@@ -105,30 +100,38 @@ export function AppLayout({ children }: AppLayoutProps) {
       {/* Main Content */}
       <div className="flex flex-1 overflow-hidden">
         {/* Sidebar */}
-        <div className={cn(
-          "bg-background border-r border-default-100 transition-all duration-300",
-          isCollapsed ? "w-14" : "w-56"
-        )}>
+        <div
+          className={cn(
+            "bg-background border-r border-default-100 transition-all duration-300",
+            isCollapsed ? "w-14" : "w-56",
+          )}
+        >
           <div className="flex flex-col h-full">
             {/* Navigation */}
             <nav className="flex-1 space-y-1 p-2">
               {menuItems.map(({ icon: Icon, label, href }) => (
                 <Link
                   key={href}
-                  href={href}
-                  onClick={(e) => e.stopPropagation()}
                   className={cn(
                     "flex items-center gap-3 rounded-medium px-3 py-2 text-foreground transition-colors",
-                    pathname === href 
-                      ? "bg-default-100 dark:bg-default-300/30 text-foreground font-medium" 
-                      : "hover:bg-hover/40"
+                    pathname === href
+                      ? "bg-default-100 dark:bg-default-300/30 text-foreground font-medium"
+                      : "hover:bg-hover/40",
                   )}
+                  href={href}
+                  onClick={(e) => e.stopPropagation()}
                 >
-                  <Icon className={cn(
-                    "h-5 w-5 shrink-0",
-                    pathname === href ? "text-foreground" : "text-foreground/70"
-                  )} />
-                  {!isCollapsed && <span className="truncate text-sm">{label}</span>}
+                  <Icon
+                    className={cn(
+                      "h-5 w-5 shrink-0",
+                      pathname === href
+                        ? "text-foreground"
+                        : "text-foreground/70",
+                    )}
+                  />
+                  {!isCollapsed && (
+                    <span className="truncate text-sm">{label}</span>
+                  )}
                 </Link>
               ))}
             </nav>
@@ -136,14 +139,22 @@ export function AppLayout({ children }: AppLayoutProps) {
             {/* Logout */}
             <div className="p-2">
               <Button
-                isIconOnly={isCollapsed}
-                variant="light"
-                color="danger"
                 className={buttonStyles}
-                startContent={!isCollapsed && <ArrowLeftOnRectangleIcon className="w-5 h-5 shrink-0" />}
-                onClick={(e) => e.stopPropagation()}
+                color="danger"
+                isIconOnly={isCollapsed}
+                startContent={
+                  !isCollapsed && (
+                    <ArrowLeftOnRectangleIcon className="w-5 h-5 shrink-0" />
+                  )
+                }
+                variant="light"
+                onPress={handleSignOut}
               >
-                {isCollapsed ? <ArrowLeftOnRectangleIcon className="w-5 h-5" /> : <span className="truncate text-sm">Logout</span>}
+                {isCollapsed ? (
+                  <ArrowLeftOnRectangleIcon className="w-5 h-5" />
+                ) : (
+                  <span className="truncate text-sm">Logout</span>
+                )}
               </Button>
             </div>
           </div>
@@ -151,11 +162,9 @@ export function AppLayout({ children }: AppLayoutProps) {
 
         {/* Content Area */}
         <div className="flex-1 flex flex-col overflow-auto transition-all duration-300">
-          <main className="flex-1 p-6">
-            {children}
-          </main>
+          <main className="flex-1 p-6">{children}</main>
         </div>
       </div>
     </div>
   );
-} 
+}
