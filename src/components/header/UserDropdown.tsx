@@ -9,6 +9,8 @@ import {
 import { Avatar } from "@heroui/avatar";
 import { ChartPie, Settings, CircleHelp, LogOut } from "lucide-react";
 
+import { handleSignOut } from "@/helpers/auth.helper";
+
 const UserDropdown = ({ user }: { user: any }) => {
   const iconClasses = "w-4 h-4";
 
@@ -50,8 +52,8 @@ const UserDropdown = ({ user }: { user: any }) => {
         <DropdownItem
           key="logout"
           className="p-2 text-danger"
-          href="/logout"
           startContent={<LogOut className={iconClasses} />}
+          onPress={handleSignOut}
         >
           <span>Log Out</span>
         </DropdownItem>
