@@ -51,9 +51,9 @@ export const technologyOptions: TechnologyOption[] = [
 ];
 
 export const difficultyOptions: DifficultyOption[] = [
-  { key: "Beginner", label: "Beginner", emoji: "🌱" },
-  { key: "Intermediate", label: "Intermediate", emoji: "🚀" },
-  { key: "Advanced", label: "Advanced", emoji: "🧠" },
+  { key: "BEGINNER", label: "Beginner", emoji: "🌱" },
+  { key: "INTERMEDIATE", label: "Intermediate", emoji: "🚀" },
+  { key: "ADVANCED", label: "Advanced", emoji: "🧠" },
 ];
 
 export const templates: Template[] = [

@@ -1,5 +1,4 @@
 "use server";
-import { revalidatePath } from "next/cache";
 import { Difficulty } from "@prisma/client";
 
 import {
@@ -96,10 +95,9 @@ export async function createInterview(data: CreateInterviewInput | null) {
       data: {
         creatorId: user.id,
         title: data.title,
-        description: data.description || null,
         duration: Number(data.duration),
         focusAreas: data.focusAreas,
-        isPublic: Boolean(data.isPublic ?? false),
+        isPublic: false,
         technologies: {
           create: technologies.map((t) => ({ technologyId: t.id })),
         },
@@ -124,9 +122,16 @@ export async function createInterview(data: CreateInterviewInput | null) {
       },
     });
 
-    revalidatePath("/dashboard/discover");
-
-    return { success: true, interview };
+    return {
+      success: true,
+      interview: {
+        id: interview.id,
+        title: interview.title,
+        duration: interview.duration,
+        focusAreas: interview.focusAreas,
+        technologies: interview.technologies.map((t) => t.technology.name),
+      },
+    };
   } catch (error) {
     console.error("Interview creation failed:", error);
 

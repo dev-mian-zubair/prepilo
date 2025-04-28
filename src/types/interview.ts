@@ -4,7 +4,6 @@ import { FocusArea } from "@/enums";
 import { formSchema } from "@/schema/interview";
 
 export type DifficultyLevel = "BEGINNER" | "INTERMEDIATE" | "ADVANCED";
-export type Difficulty = "Beginner" | "Intermediate" | "Advanced";
 
 export interface Interview {
   id: string;
@@ -56,7 +55,7 @@ export interface CreateInterviewResult {
 }
 
 export interface DifficultyOption {
-  key: Difficulty;
+  key: DifficultyLevel;
   label: string;
   emoji: string;
 }

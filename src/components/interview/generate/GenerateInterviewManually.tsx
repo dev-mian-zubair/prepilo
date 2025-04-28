@@ -6,9 +6,8 @@ import { Button } from "@heroui/button";
 import { Chip } from "@heroui/chip";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { X } from "lucide-react";
 
-import { Duration, FormValues, Template } from "@/types/interview";
+import { Duration, FormValues, Interview, Template } from "@/types/interview";
 import { formSchema } from "@/schema/interview";
 import { FocusArea } from "@/enums";
 import {
@@ -18,10 +17,11 @@ import {
   technologyOptions,
   templates,
 } from "@/helpers/interview.helper";
+import { createInterview } from "@/actions/interview";
 
 interface GenerateInterviewManuallyProps {
   onClose: () => void;
-  onGenerate: (interview: FormValues) => void;
+  onGenerate: (interview: Interview) => void;
 }
 
 const GenerateInterviewManually: React.FC<GenerateInterviewManuallyProps> = ({
@@ -125,20 +125,18 @@ const GenerateInterviewManually: React.FC<GenerateInterviewManuallyProps> = ({
 
   const handleFormSubmit = async (data: FormValues): Promise<void> => {
     try {
-      onGenerate(data);
-      console.log("Form submitted:", data);
-      // const result = await createInterview({
-      //   title: data.title,
-      //   duration: data.duration,
-      //   focusAreas: data.focusAreas,
-      //   technologyNames: data.technologies,
-      // });
+      const result = await createInterview({
+        title: data.title,
+        duration: data.duration,
+        focusAreas: data.focusAreas,
+        technologyNames: data.technologies,
+      });
 
-      // if (result.success) {
-      //   onClose();
-      // } else {
-      //   console.error(result.error);
-      // }
+      if (result.success) {
+        onGenerate(result.interview as Interview);
+      } else {
+        console.error(result.error);
+      }
     } catch (error) {
       console.error("Failed to submit form:", error);
     }
@@ -313,23 +311,23 @@ const GenerateInterviewManually: React.FC<GenerateInterviewManuallyProps> = ({
           {/* Form Actions */}
           <div className="flex justify-end gap-3 mt-4">
             <Button
-              className="rounded-md border-divider hover:bg-default-100"
+              className="font-semibold"
               isDisabled={isSubmitting}
-              radius="md"
-              size="sm"
-              startContent={<X className="w-4 h-4" />}
+              radius="lg"
+              size="md"
               variant="bordered"
               onPress={onClose}
             >
               Cancel
             </Button>
             <Button
-              className="rounded-md"
+              className="font-semibold"
               color="primary"
               isLoading={isSubmitting}
-              radius="md"
-              size="sm"
+              radius="lg"
+              size="md"
               type="submit"
+              variant="solid"
             >
               {isSubmitting ? "Generating..." : "Generate Interview"}
             </Button>

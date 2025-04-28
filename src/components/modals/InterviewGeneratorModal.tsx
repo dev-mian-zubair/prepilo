@@ -6,29 +6,12 @@ import { RadioGroup } from "@heroui/react";
 import GenerateInterviewByAgent from "../interview/generate/GenerateInterviewByAgent";
 import GenerateInterviewManually from "../interview/generate/GenerateInterviewManually";
 import LaunchInterview from "../interview/launch/LaunchInterview";
-import { CustomRadio } from "../CustomRadio";
-
-import { InterviewType } from "@/enums";
-import { cn } from "@/lib/utils";
 import SelectCreationMethod from "../interview/generate/SelectCreationMethod";
 import GenerateInterviewByJD from "../interview/generate/GenerateInterviewByJD";
 
-// Define Interview type (reused from GenerateInterviewManually and LaunchInterview)
-enum FocusArea {
-  TECHNICAL = "TECHNICAL",
-  SYSTEM_DESIGN = "SYSTEM_DESIGN",
-  BEHAVIORAL = "BEHAVIORAL",
-  COMMUNICATION = "COMMUNICATION",
-  PROBLEM_SOLVING = "PROBLEM_SOLVING",
-}
-
-interface Interview {
-  title: string;
-  duration: number;
-  focusAreas: FocusArea[];
-  technologies: string[];
-  description?: string;
-}
+import { InterviewType } from "@/enums";
+import { cn } from "@/lib/utils";
+import { Interview } from "@/types/interview";
 
 interface InterviewGeneratorModalProps {
   isOpen: boolean;
