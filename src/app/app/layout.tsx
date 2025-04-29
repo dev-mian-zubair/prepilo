@@ -26,27 +26,10 @@ export default function RootLayout({
 }) {
   return (
     <html suppressHydrationWarning lang="en">
-      <head>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              try {
-                if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-                  document.documentElement.classList.add('dark')
-                } else {
-                  document.documentElement.classList.remove('dark')
-                }
-              } catch (_) {}
-            `,
-          }}
-        />
-      </head>
       <body className={clsx(fontSans.className)}>
-        <ThemeProvider enableSystem attribute="class" defaultTheme="system">
-          <Providers>
-            <AppLayout>{children}</AppLayout>
-          </Providers>
-        </ThemeProvider>
+        <Providers themeProps={{ attribute: "class", defaultTheme: "system" }}>
+          <AppLayout>{children}</AppLayout>
+        </Providers>
       </body>
     </html>
   );
