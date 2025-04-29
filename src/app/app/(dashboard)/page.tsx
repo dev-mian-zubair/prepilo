@@ -1,6 +1,6 @@
-import PerformanceOverview from "@/components/dashboard/PerformanceOverview";
-import InterviewMetrics from "@/components/dashboard/InterviewMetrics";
-import LowestScoreInterviews from "@/components/dashboard/LowestScoreInterviews";
+import InterviewMetrics from "@/components/dashboard/interviewMetrics";
+import LowestScoreInterviews from "@/components/dashboard/lowestScoreInterviews";
+import PerformanceOverview from "@/components/dashboard/performanceOverview";
 import InterviewList from "@/components/interview/listing/InterviewList";
 
 export default function DashboardPage() {

@@ -3,17 +3,17 @@ export interface InterviewStats {
   completedSessions: number;
   weeklySessions: number;
   highScoreSessions: number;
-  avgTechnicalScore?: number;
-  avgCommunicationScore?: number;
-  avgProblemSolvingScore?: number;
+  avgTechnicalScore: number;
+  avgCommunicationScore: number;
+  avgProblemSolvingScore: number;
 }
 
 export interface Feedback {
-  technical?: number;
-  communication?: number;
-  problemSolving?: number;
-  clarity?: number;
-  confidence?: number;
+  technical: number;
+  communication: number;
+  problemSolving: number;
+  clarity: number;
+  confidence: number;
 }
 
 export type Difficulty = 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED';
