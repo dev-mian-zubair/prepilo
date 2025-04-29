@@ -1,4 +1,6 @@
-import { Card, CardBody, CardHeader } from "@heroui/card";
+'use client';
+
+import { useState } from "react";
 import { Difficulty } from "@/types/dashboard";
 
 interface InterviewMetric {
@@ -12,7 +14,9 @@ interface InterviewMetric {
   }[];
 }
 
-export default function InterviewMetrics() {
+export function InterviewMetricsClient() {
+  const [expandedDifficulty, setExpandedDifficulty] = useState<Difficulty | null>(null);
+
   const metrics: InterviewMetric[] = [
     {
       difficulty: "BEGINNER",
@@ -109,70 +113,68 @@ export default function InterviewMetrics() {
     return `${hours}h ${mins}m`;
   };
 
-  return (
-    <Card className="col-span-2 border-none shadow-none bg-transparent overflow-hidden transition-all duration-300">
-      <CardHeader>
-        <h2 className="text-large font-bold text-foreground tracking-tight">
-          Interview Metrics
-        </h2>
-      </CardHeader>
-      <CardBody>
-        <div className="space-y-6">
-          {metrics.map((metric) => (
-            <div
-              key={metric.difficulty}
-              className="group border border-divider rounded-medium p-4 hover:bg-hover/40 transition-all duration-300"
-            >
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-2">
-                  <span
-                    className={`text-tiny px-2 py-0.5 rounded-full font-medium ${getDifficultyColor(
-                      metric.difficulty
-                    )}`}
-                  >
-                    {metric.difficulty.charAt(0) +
-                      metric.difficulty.slice(1).toLowerCase()}
-                  </span>
-                  <span className="text-tiny text-foreground/70">
-                    {metric.count} interviews
-                  </span>
-                  <span className="text-tiny text-foreground/70">
-                    • {formatTime(metric.totalTimeSpent)}
-                  </span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-tiny text-foreground/70">
-                    Avg Score:
-                  </span>
-                  <div
-                    className={`px-2 py-1 rounded-small bg-gradient-to-r ${getScoreColor(
-                      metric.averageScore
-                    )} text-white font-medium text-tiny`}
-                  >
-                    {metric.averageScore}%
-                  </div>
-                </div>
-              </div>
+  const handleDifficultyClick = (difficulty: Difficulty) => {
+    setExpandedDifficulty(expandedDifficulty === difficulty ? null : difficulty);
+  };
 
-              <div className="flex flex-wrap gap-2">
-                {metric.technologies.map((tech) => (
-                  <div
-                    key={tech.name}
-                    className="flex items-center gap-2 bg-default-100 dark:bg-default-50/50 px-3 py-1.5 rounded-full"
-                  >
-                    <span className="text-tiny font-medium text-foreground">
-                      {tech.name}
-                    </span>
-                    <span className="text-tiny text-foreground/70">
-                      ({tech.sessions})
-                    </span>
-                  </div>
-                ))}
+  return (
+    <div className="space-y-6">
+      {metrics.map((metric) => (
+        <div
+          key={metric.difficulty}
+          className="group border border-divider rounded-medium p-4 hover:bg-hover/40 transition-all duration-300 cursor-pointer"
+          onClick={() => handleDifficultyClick(metric.difficulty)}
+        >
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <span
+                className={`text-tiny px-2 py-0.5 rounded-full font-medium ${getDifficultyColor(
+                  metric.difficulty
+                )}`}
+              >
+                {metric.difficulty.charAt(0) +
+                  metric.difficulty.slice(1).toLowerCase()}
+              </span>
+              <span className="text-tiny text-foreground/70">
+                {metric.count} interviews
+              </span>
+              <span className="text-tiny text-foreground/70">
+                • {formatTime(metric.totalTimeSpent)}
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-tiny text-foreground/70">
+                Avg Score:
+              </span>
+              <div
+                className={`px-2 py-1 rounded-small bg-gradient-to-r ${getScoreColor(
+                  metric.averageScore
+                )} text-white font-medium text-tiny`}
+              >
+                {metric.averageScore}%
               </div>
             </div>
-          ))}
+          </div>
+
+          <div className={`flex flex-wrap gap-2 transition-all duration-300 ${
+            expandedDifficulty === metric.difficulty ? 'opacity-100' : 'opacity-70'
+          }`}>
+            {metric.technologies.map((tech) => (
+              <div
+                key={tech.name}
+                className="flex items-center gap-2 bg-default-100 dark:bg-default-50/50 px-3 py-1.5 rounded-full"
+              >
+                <span className="text-tiny font-medium text-foreground">
+                  {tech.name}
+                </span>
+                <span className="text-tiny text-foreground/70">
+                  ({tech.sessions})
+                </span>
+              </div>
+            ))}
+          </div>
         </div>
-      </CardBody>
-    </Card>
+      ))}
+    </div>
   );
 } 
