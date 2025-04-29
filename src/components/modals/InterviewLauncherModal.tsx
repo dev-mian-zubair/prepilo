@@ -6,21 +6,22 @@ import LaunchInterview from "../interview/launch/LaunchInterview";
 interface InterviewLauncherModalProps {
   isOpen: boolean;
   onClose: () => void;
+  interview?: any;
 }
 
 const InterviewLauncherModal = ({
   isOpen,
   onClose,
+  interview,
 }: InterviewLauncherModalProps) => {
-  const interview = {
-    title: "Technical Skills JavaScript 60 Min",
-    duration: 60,
-    focusAreas: ["TECHNICAL", "COMMUNICATION"],
-    technologies: ["JavaScript", "React", "TypeScript"],
-  };
-
   return (
-    <Modal isOpen={isOpen} shadow="none" size="full" onClose={onClose}>
+    <Modal
+      hideCloseButton
+      isOpen={isOpen}
+      shadow="none"
+      size="full"
+      onClose={onClose}
+    >
       <ModalContent className="bg-background rounded-none shadow-none overflow-hidden">
         <ModalHeader className="hidden" />
         <ModalBody className="p-0 m-0">
