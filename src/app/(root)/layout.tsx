@@ -30,14 +30,13 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html suppressHydrationWarning lang="en">
-      <head />
       <body
         className={clsx(
           "min-h-screen bg-background font-sans antialiased",
           fontSans.variable,
         )}
       >
-        <Providers themeProps={{ attribute: "class", defaultTheme: "light" }}>
+        <Providers themeProps={{ attribute: "class", defaultTheme: "system" }}>
           <div className="relative flex flex-col min-h-screen">
             <div className="container mx-auto px-4">
               <Navbar />
