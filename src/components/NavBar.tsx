@@ -1,4 +1,3 @@
-"use client";
 import {
   Navbar as HeroUINavbar,
   NavbarContent,
@@ -6,18 +5,10 @@ import {
   NavbarItem,
 } from "@heroui/navbar";
 import { Link } from "@heroui/link";
-import { usePathname } from "next/navigation";
+
 import HeaderRightActions from "./header/HeaderRightActions";
-import { useAuth } from "@/providers/AuthProvider";
 
 export const Navbar = () => {
-  const { user, loading } = useAuth();
-  const pathname = usePathname();
-
-  const isActive = (path: string) => {
-    return pathname === path;
-  };
-
   return (
     <HeroUINavbar className="bg-background" maxWidth="full" position="sticky">
       <NavbarContent className="basis-1/5 sm:basis-full" justify="start">

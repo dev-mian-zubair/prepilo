@@ -63,3 +63,28 @@ export interface DifficultyOption {
 export type MeetingType = "generate" | "interview";
 
 export type SidebarType = "conversation" | "info";
+
+export interface PaginationOptions {
+  page?: number;
+  pageSize?: number;
+}
+
+export interface InterviewFilters {
+  technologyName?: string;
+  minDuration?: number;
+  maxDuration?: number;
+}
+
+export type InterviewListType = {
+  id: string;
+  title: string;
+  technologies: string[];
+  focusAreas: string[];
+  createdAt: Date;
+  duration: number;
+  versions: {
+    BEGINNER: number;
+    INTERMEDIATE: number;
+    ADVANCED: number;
+  };
+};

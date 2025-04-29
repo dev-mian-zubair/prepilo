@@ -92,11 +92,10 @@ const GenerateInterviewByJD: React.FC<GenerateInterviewByJDProps> = ({
           {/* Actions */}
           <div className="flex justify-end gap-3">
             <Button
-              className="rounded-md border-divider hover:bg-default-100"
+              className="font-semibold"
               isDisabled={isGenerating}
-              radius="md"
-              size="sm"
-              startContent={<X className="w-4 h-4" />}
+              radius="lg"
+              size="md"
               type="button"
               variant="bordered"
               onPress={onClose}
@@ -104,13 +103,13 @@ const GenerateInterviewByJD: React.FC<GenerateInterviewByJDProps> = ({
               Cancel
             </Button>
             <Button
-              className="rounded-md"
+              className="font-semibold"
               color="primary"
               endContent={<Rocket className="w-4 h-4" />}
               isDisabled={!jobDescription.trim()}
               isLoading={isGenerating}
-              radius="md"
-              size="sm"
+              radius="lg"
+              size="md"
               type="submit"
             >
               {isGenerating ? "Generating..." : "Generate Interview"}

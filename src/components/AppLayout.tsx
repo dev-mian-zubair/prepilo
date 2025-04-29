@@ -14,6 +14,7 @@ import {
   ArrowLeftOnRectangleIcon,
   CreditCardIcon,
 } from "@heroicons/react/24/outline";
+import { PanelLeftClose, PanelRightClose } from "lucide-react";
 
 import HeaderRightActions from "./header/HeaderRightActions";
 import SubscriptionMinutes from "./header/SubscriptionMinutes";
@@ -76,14 +77,19 @@ export function AppLayout({ children }: AppLayoutProps) {
   return (
     <div className="flex flex-col h-screen overflow-hidden">
       {/* Navbar */}
-      <div className="sticky top-0 z-40 w-full bg-background border-b border-default-100">
+      <div className="sticky top-0 z-40 w-full bg-background shadow-md shadow-primary-50">
         <div className="flex h-16 items-center px-3">
           <div className="flex items-center gap-2">
             <Button isIconOnly variant="light" onClick={handleSidebarToggle}>
-              <Bars3Icon className="w-5 h-5" />
+              {/* <Bars3Icon className="w-7 h-7" /> */}
+              {isCollapsed ? (
+                <PanelRightClose className="w-5 h-5" />
+              ) : (
+                <PanelLeftClose className="w-5 h-5" />
+              )}
             </Button>
-            <Link href="/app">
-              <h1 className="text-2xl font-bold tracking-tight">
+            <Link className="flex justify-start items-center gap-1" href="/app">
+              <h1 className="text-3xl font-bold tracking-tight">
                 <span className="text-foreground">Prep</span>ilo
               </h1>
             </Link>
@@ -102,11 +108,11 @@ export function AppLayout({ children }: AppLayoutProps) {
         {/* Sidebar */}
         <div
           className={cn(
-            "bg-background border-r border-default-100 transition-all duration-300",
+            "transition-all duration-300 shadow-md shadow-primary-50 pt-5",
             isCollapsed ? "w-14" : "w-56",
           )}
         >
-          <div className="flex flex-col h-full">
+          <div className="flex flex-col">
             {/* Navigation */}
             <nav className="flex-1 space-y-1 p-2">
               {menuItems.map(({ icon: Icon, label, href }) => (
@@ -137,7 +143,7 @@ export function AppLayout({ children }: AppLayoutProps) {
             </nav>
 
             {/* Logout */}
-            <div className="p-2">
+            <div className="px-2">
               <Button
                 className={buttonStyles}
                 color="danger"

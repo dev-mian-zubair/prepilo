@@ -1,13 +1,11 @@
-import { Avatar } from "@heroui/avatar";
 import { Card, CardBody } from "@heroui/card";
 import { Chip } from "@heroui/chip";
 import { Button } from "@heroui/button";
-import { Progress } from "@heroui/progress";
 import { ExternalLinkIcon, Clock, ChevronDown, ChevronUp } from "lucide-react";
 import React, { useState } from "react";
 import { format } from "date-fns";
 
-import { Interview } from "@/types/interview";
+import { DifficultyLevel, InterviewListType } from "@/types/interview";
 
 const technologyOptions = [
   { key: "JavaScript", label: "JavaScript", emoji: "🌐" },
@@ -31,10 +29,12 @@ const focusAreaOptions = [
 ];
 
 interface InterviewGridCardProps {
-  interview: Interview;
+  interview: InterviewListType;
 }
 
-export default function InterviewGridCard({ interview }: InterviewGridCardProps) {
+export default function InterviewGridCard({
+  interview,
+}: InterviewGridCardProps) {
   const [showAllTechnologies, setShowAllTechnologies] = useState(false);
   const [showAllFocusAreas, setShowAllFocusAreas] = useState(false);
 
@@ -80,6 +80,7 @@ export default function InterviewGridCard({ interview }: InterviewGridCardProps)
     if (score >= 90) return "from-success to-success/80";
     if (score >= 75) return "from-warning to-warning/80";
     if (score >= 60) return "from-primary to-primary/80";
+
     return "from-danger to-danger/80";
   };
 
@@ -87,6 +88,7 @@ export default function InterviewGridCard({ interview }: InterviewGridCardProps)
     if (score >= 90) return "Excellent";
     if (score >= 75) return "Good";
     if (score >= 60) return "Fair";
+
     return "Needs Improvement";
   };
 
@@ -95,61 +97,60 @@ export default function InterviewGridCard({ interview }: InterviewGridCardProps)
     if (score >= 90) return "stroke-success";
     if (score >= 75) return "stroke-warning";
     if (score >= 60) return "stroke-primary";
+
     return "stroke-danger";
   };
 
-  const displayedTechnologies = showAllTechnologies 
-    ? interview.technologies 
+  const displayedTechnologies = showAllTechnologies
+    ? interview.technologies
     : interview.technologies.slice(0, 3);
-  
-  const displayedFocusAreas = showAllFocusAreas 
-    ? interview.focusAreas 
+
+  const displayedFocusAreas = showAllFocusAreas
+    ? interview.focusAreas
     : interview.focusAreas.slice(0, 3);
 
   return (
     <Card className="group border border-divider bg-transparent rounded-md transition-all duration-200 h-full min-h-[350px] shadow-none hover:shadow-sm hover:scale-[1.01]">
       <CardBody className="p-4 flex flex-col gap-2">
         {/*Score circles and Try Now button */}
-        <div className="flex justify-between items-start">
-          <div className="flex justify-start gap-1">
-            {interview.scores
-              .sort((a, b) => {
-                const order = { BEGINNER: 0, INTERMEDIATE: 1, ADVANCED: 2 };
-                return order[a.difficulty] - order[b.difficulty];
-              })
-              .map(({ difficulty, score }) => (
+        <div className="flex justify-start gap-1">
+          {["BEGINNER", "INTERMEDIATE", "ADVANCED"].map(
+            (difficulty: string) => {
+              const score = interview.versions[difficulty as DifficultyLevel];
+
+              return (
                 <div key={difficulty} className="flex flex-col items-center">
                   <div className="w-12 h-12">
                     <svg className="w-full h-full" viewBox="0 0 36 36">
                       {/* Background circle */}
                       <circle
+                        className="stroke-default-200/50 dark:stroke-default-500/20"
                         cx="18"
                         cy="18"
-                        r="16"
                         fill="none"
-                        className="stroke-default-200/50 dark:stroke-default-500/20"
+                        r="16"
                         strokeWidth="3"
                       />
                       {/* Progress circle */}
                       <circle
+                        className={`${getScoreColorForCircle(score)} transition-all duration-500`}
                         cx="18"
                         cy="18"
-                        r="16"
                         fill="none"
-                        className={`${getScoreColorForCircle(score)} transition-all duration-500`}
-                        strokeWidth="3"
+                        r="16"
                         strokeDasharray={`${score ? (score / 100) * 100 : 0} 100`}
+                        strokeWidth="3"
                         transform="rotate(-90 18 18)"
                       />
                       {/* Score text */}
                       <text
+                        className="text-[8px] font-bold fill-foreground"
+                        dominantBaseline="central"
+                        textAnchor="middle"
                         x="18"
                         y="18"
-                        textAnchor="middle"
-                        dominantBaseline="central"
-                        className="text-[8px] font-bold fill-foreground"
                       >
-                        {score ? `${score}%` : '-'}
+                        {score ? `${score}%` : "-"}
                       </text>
                     </svg>
                   </div>
@@ -157,30 +158,13 @@ export default function InterviewGridCard({ interview }: InterviewGridCardProps)
                     {difficulty.charAt(0) + difficulty.slice(1).toLowerCase()}
                   </span>
                 </div>
-              ))}
-          </div>
-          
-          {/* Try Now button */}
-          <Button
-            aria-label="Try this interview"
-            className="bg-primary/5 text-primary hover:bg-primary/10 border border-primary/10 hover:border-primary/20 rounded-md transition-all duration-300 transform opacity-0 scale-95 group-hover:opacity-100 group-hover:scale-100 px-2 py-1 h-auto"
-            endContent={<ExternalLinkIcon className="w-3 h-3" />}
-            radius="sm"
-            size="sm"
-            variant="light"
-          >
-            <span className="text-tiny font-medium">Try Now</span>
-          </Button>
+              );
+            },
+          )}
         </div>
-        
+
         {/* Title */}
         <h2 className="text-xl font-bold line-clamp-2">{interview.title}</h2>
-
-        {/* Description */}
-        <p className="text-sm text-foreground line-clamp-2">
-          {interview.description}
-        </p>
-
         {/* Technologies */}
         <div>
           <div className="flex flex-wrap items-center gap-3">
@@ -200,14 +184,26 @@ export default function InterviewGridCard({ interview }: InterviewGridCardProps)
             ))}
             {interview.technologies.length > 3 && (
               <Button
-                aria-label={showAllTechnologies ? "Show less technologies" : "Show more technologies"}
+                aria-label={
+                  showAllTechnologies
+                    ? "Show less technologies"
+                    : "Show more technologies"
+                }
                 className="text-tiny text-primary hover:text-primary-500 p-0 min-w-0 h-auto"
-                endContent={showAllTechnologies ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
-                onClick={() => setShowAllTechnologies(!showAllTechnologies)}
+                endContent={
+                  showAllTechnologies ? (
+                    <ChevronUp size={14} />
+                  ) : (
+                    <ChevronDown size={14} />
+                  )
+                }
                 size="sm"
                 variant="light"
+                onClick={() => setShowAllTechnologies(!showAllTechnologies)}
               >
-                {showAllTechnologies ? "Show Less" : `+${interview.technologies.length - 3} More`}
+                {showAllTechnologies
+                  ? "Show Less"
+                  : `+${interview.technologies.length - 3} More`}
               </Button>
             )}
           </div>
@@ -234,14 +230,26 @@ export default function InterviewGridCard({ interview }: InterviewGridCardProps)
             })}
             {interview.focusAreas.length > 3 && (
               <Button
-                aria-label={showAllFocusAreas ? "Show less focus areas" : "Show more focus areas"}
+                aria-label={
+                  showAllFocusAreas
+                    ? "Show less focus areas"
+                    : "Show more focus areas"
+                }
                 className="text-tiny text-primary hover:text-primary-500 p-0 min-w-0 h-auto"
-                endContent={showAllFocusAreas ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
-                onClick={() => setShowAllFocusAreas(!showAllFocusAreas)}
+                endContent={
+                  showAllFocusAreas ? (
+                    <ChevronUp size={14} />
+                  ) : (
+                    <ChevronDown size={14} />
+                  )
+                }
                 size="sm"
                 variant="light"
+                onClick={() => setShowAllFocusAreas(!showAllFocusAreas)}
               >
-                {showAllFocusAreas ? "Show Less" : `+${interview.focusAreas.length - 3} More`}
+                {showAllFocusAreas
+                  ? "Show Less"
+                  : `+${interview.focusAreas.length - 3} More`}
               </Button>
             )}
           </div>
@@ -253,10 +261,10 @@ export default function InterviewGridCard({ interview }: InterviewGridCardProps)
             <Clock size={12} />
             <span>{interview.duration} minutes</span>
             <span>•</span>
-            <span>{format(interview.startedAt, "MMM d, yyyy h:mm a")}</span>
+            <span>{format(interview.createdAt, "MMM d, yyyy h:mm a")}</span>
           </div>
         </div>
       </CardBody>
     </Card>
   );
-} 
+}

@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { Card, CardBody } from "@heroui/card";
 import { Button } from "@heroui/button";
 import { Chip } from "@heroui/chip";
-import { Clock, Rocket, X } from "lucide-react";
+import { Clock, Rocket } from "lucide-react";
 
 import Agent from "../Agent";
 
@@ -113,7 +113,7 @@ const LaunchInterview: React.FC<LaunchInterviewProps> = ({
                     return (
                       <Chip
                         key={area}
-                        className="hover:scale-105 transition-all duration-200"
+                        className="border-none"
                         color="default"
                         radius="md"
                         size="sm"
@@ -136,7 +136,7 @@ const LaunchInterview: React.FC<LaunchInterviewProps> = ({
                   {interview.technologies.map((tech) => (
                     <Chip
                       key={tech}
-                      className="hover:scale-105 transition-all duration-200"
+                      className="border-none"
                       color="default"
                       radius="md"
                       size="sm"
@@ -162,8 +162,8 @@ const LaunchInterview: React.FC<LaunchInterviewProps> = ({
                       key={key}
                       className="hover:scale-105 transition-all duration-200 cursor-pointer"
                       color={selectedDifficulty === key ? "primary" : "default"}
-                      radius="md"
-                      size="sm"
+                      radius="lg"
+                      size="md"
                       startContent={<span aria-hidden="true">{emoji}</span>}
                       variant={
                         selectedDifficulty === key ? "solid" : "bordered"
@@ -180,23 +180,22 @@ const LaunchInterview: React.FC<LaunchInterviewProps> = ({
             {/* Actions */}
             <div className="flex justify-end gap-3 mt-4">
               <Button
-                className="rounded-md border-divider hover:bg-default-100"
+                className="font-semibold"
                 isDisabled={isLaunching}
-                radius="md"
-                size="sm"
-                startContent={<X className="w-4 h-4" />}
+                radius="lg"
+                size="md"
                 variant="bordered"
                 onPress={onClose}
               >
                 Cancel
               </Button>
               <Button
-                className="rounded-md"
+                className="font-semibold"
                 color="primary"
                 endContent={<Rocket className="w-4 h-4" />}
                 isLoading={isLaunching}
-                radius="md"
-                size="sm"
+                radius="lg"
+                size="md"
                 onPress={handleLaunch}
               >
                 {isLaunching ? "Launching..." : "Launch Interview"}
