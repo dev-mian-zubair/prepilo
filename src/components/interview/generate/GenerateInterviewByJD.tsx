@@ -3,12 +3,12 @@ import React, { useState } from "react";
 import { Card, CardBody } from "@heroui/card";
 import { Button } from "@heroui/button";
 import { Textarea } from "@heroui/input";
-import { Rocket, X } from "lucide-react";
+import { Rocket } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { fontSans } from "@/config/fonts";
-import { Difficulty, FocusArea } from "@/enums";
 import { Interview } from "@/types/interview";
+import { createInterviewWithJD } from "@/actions/interview";
 
 interface GenerateInterviewByJDProps {
   onClose: () => void;
@@ -35,16 +35,13 @@ const GenerateInterviewByJD: React.FC<GenerateInterviewByJDProps> = ({
     setIsGenerating(true);
 
     try {
-      const interview: Interview = {
-        title: "AI-Generated Interview",
-        duration: 60,
-        focusAreas: [FocusArea.TECHNICAL, FocusArea.COMMUNICATION],
-        technologies: ["JavaScript", "React"],
-        description: "Generated based on provided job description.",
-        difficulty: Difficulty.INTERMEDIATE,
-      };
+      const result = await createInterviewWithJD(jobDescription);
 
-      await onGenerate(interview);
+      if (result?.success) {
+        onGenerate(result.interview as Interview);
+      } else {
+        console.error(result?.error);
+      }
     } catch (error) {
       setError("Failed to generate interview. Please try again.");
     } finally {

@@ -96,10 +96,7 @@ const InterviewGeneratorModal = ({
             {step === "generate" && (
               <div className="animate-fade-in transition-opacity duration-300 ease-out w-full">
                 {type === InterviewType.agent && (
-                  <GenerateInterviewByAgent
-                    onClose={handleClose}
-                    onGenerate={handleGenerate}
-                  />
+                  <GenerateInterviewByAgent onClose={handleClose} />
                 )}
                 {type === InterviewType.manually && (
                   <GenerateInterviewManually
