@@ -51,9 +51,9 @@ export default function InterviewGrid({
       </div>
 
       <InterviewLauncherModal
+        interview={selectedInterview}
         isOpen={isOpen}
         onClose={onClose}
-        interview={selectedInterview}
       />
     </>
   );

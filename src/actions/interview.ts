@@ -1,11 +1,9 @@
 "use server";
-import { Difficulty } from "@prisma/client";
 
 import {
-  categorizeTechnologies,
   CreateInterviewInput,
-  generateQuestionsWithRetry,
-  Question,
+  generateInterviewDataWithJD,
+  validateAndCreateInterview,
 } from "./helpers/interview";
 
 import { getUser } from "@/lib/auth";
@@ -13,129 +11,23 @@ import prisma from "@/lib/prisma";
 import { InterviewFilters, PaginationOptions } from "@/types/interview";
 
 export async function createInterview(data: CreateInterviewInput | null) {
-  // 1. Validate input payload
-  if (!data) {
-    throw new Error("Invalid request: Missing payload");
-  }
+  return await validateAndCreateInterview(data);
+}
 
-  // 2. Validate required fields
-  const requiredFields: Array<keyof CreateInterviewInput> = [
-    "title",
-    "duration",
-    "focusAreas",
-    "technologyNames",
-  ];
-
-  for (const field of requiredFields) {
-    if (!data[field]) {
-      throw new Error(`Invalid request: Missing required field - ${field}`);
-    }
-    if (Array.isArray(data[field]) && data[field].length === 0) {
-      throw new Error(`Invalid request: Empty array for field - ${field}`);
-    }
-  }
-
+export async function createInterviewWithJD(jobDescription: string) {
   try {
-    // 3. Get authenticated user
-    const user = await getUser();
+    const interviewData = await generateInterviewDataWithJD(jobDescription);
 
-    if (!user) {
-      throw new Error("Authentication required");
+    if (Object.keys(interviewData).length === 0) {
+      throw new Error("Failed to generate interview. Please try again.");
     }
 
-    // 4. Process technologies
-    const techNames = Array.isArray(data.technologyNames)
-      ? data.technologyNames
-      : [data.technologyNames].filter(Boolean);
-
-    if (techNames.length === 0) {
-      throw new Error("At least one technology is required");
-    }
-
-    const categorizedTechs = await categorizeTechnologies(techNames);
-
-    console.log("Processed technologies:", categorizedTechs);
-
-    // 5. Create database records for technologies
-    const technologies = await Promise.all(
-      categorizedTechs.map(async (tech) => {
-        try {
-          return await prisma.technology.upsert({
-            where: { name: tech.name },
-            create: { name: tech.name },
-            update: {},
-          });
-        } catch (error) {
-          console.error(`Failed to process technology ${tech.name}:`, error);
-          throw new Error(`Technology processing failed for ${tech.name}`);
-        }
-      }),
-    );
-
-    // 6. Generate questions for all difficulty levels
-    const difficulties: Difficulty[] = ["BEGINNER", "INTERMEDIATE", "ADVANCED"];
-    const versionQuestions = await Promise.all(
-      difficulties.map(async (difficulty) => {
-        const questions = await generateQuestionsWithRetry(
-          {
-            ...data,
-            technologyNames: techNames,
-          },
-          categorizedTechs,
-          difficulty,
-        );
-
-        return { difficulty, questions };
-      }),
-    );
-
-    console.log("Generated questions for versions:", versionQuestions);
-
-    // 7. Create interview with versions for all difficulties
-    const interview = await prisma.interview.create({
-      data: {
-        creatorId: user.id,
-        title: data.title,
-        duration: Number(data.duration),
-        focusAreas: data.focusAreas,
-        isPublic: false,
-        technologies: {
-          create: technologies.map((t) => ({ technologyId: t.id })),
-        },
-        versions: {
-          create: versionQuestions.map(({ difficulty, questions }) => ({
-            difficulty,
-            questions: {
-              create: questions.map((q: Question) => ({
-                text: q.text,
-                type: q.type,
-                technologyId: q.technology
-                  ? technologies.find((t) => t.name === q.technology)?.id
-                  : undefined,
-              })),
-            },
-          })),
-        },
-      },
-      include: {
-        technologies: { include: { technology: true } },
-        versions: { include: { questions: true } },
-      },
+    return await validateAndCreateInterview({
+      ...interviewData,
+      technologyNames: interviewData.technologies,
+      duration: 60,
     });
-
-    return {
-      success: true,
-      interview: {
-        id: interview.id,
-        title: interview.title,
-        duration: interview.duration,
-        focusAreas: interview.focusAreas,
-        technologies: interview.technologies.map((t) => t.technology.name),
-      },
-    };
   } catch (error) {
-    console.error("Interview creation failed:", error);
-
     return {
       success: false,
       error:
