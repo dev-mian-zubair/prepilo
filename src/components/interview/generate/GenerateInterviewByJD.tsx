@@ -35,12 +35,12 @@ const GenerateInterviewByJD: React.FC<GenerateInterviewByJDProps> = ({
     setIsGenerating(true);
 
     try {
-      const result = await createInterviewWithJD(jobDescription);
+      const result: any = await createInterviewWithJD(jobDescription);
 
-      if (result?.success) {
+      if (result.success) {
         onGenerate(result.interview as Interview);
       } else {
-        console.error(result?.error);
+        throw new Error(result.error);
       }
     } catch (error) {
       setError("Failed to generate interview. Please try again.");

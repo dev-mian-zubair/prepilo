@@ -2,16 +2,30 @@
 
 import {
   CreateInterviewInput,
+  createInterviewResponse,
   generateInterviewDataWithJD,
   validateAndCreateInterview,
-} from "./helpers/interview";
+} from "./helpers/interview/create.interview";
 
 import { getUser } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { InterviewFilters, PaginationOptions } from "@/types/interview";
 
 export async function createInterview(data: CreateInterviewInput | null) {
-  return await validateAndCreateInterview(data);
+  try {
+    if (!data) {
+      throw new Error("Please provide interview data.");
+    }
+    const interview = await validateAndCreateInterview(data);
+
+    return createInterviewResponse(interview);
+  } catch (error) {
+    return {
+      success: false,
+      error:
+        error instanceof Error ? error.message : "An unexpected error occurred",
+    };
+  }
 }
 
 export async function createInterviewWithJD(jobDescription: string) {
@@ -22,11 +36,13 @@ export async function createInterviewWithJD(jobDescription: string) {
       throw new Error("Failed to generate interview. Please try again.");
     }
 
-    return await validateAndCreateInterview({
+    const interview = await validateAndCreateInterview({
       ...interviewData,
       technologyNames: interviewData.technologies,
       duration: 60,
     });
+
+    return createInterviewResponse(interview);
   } catch (error) {
     return {
       success: false,

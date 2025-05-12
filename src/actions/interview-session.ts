@@ -4,6 +4,9 @@ import { Difficulty, SessionStatus } from "@prisma/client";
 import { generateText } from "ai";
 import { google } from "@ai-sdk/google";
 
+import { findOrCreateVersion } from "./helpers/version/create.version";
+import { getCurrentUser } from "./helpers/common.helper";
+
 import prisma from "@/lib/prisma";
 import { getUser } from "@/lib/auth";
 
@@ -24,33 +27,9 @@ export async function createSession(
   difficulty: Difficulty,
 ) {
   try {
-    // 1. Get authenticated user
-    const user = await getUser();
+    const user = await getCurrentUser();
+    const version = await findOrCreateVersion(interviewId, difficulty);
 
-    if (!user) {
-      throw new Error("Authentication required");
-    }
-
-    // 2. Validate interview version
-    const interview = await prisma.interview.findUnique({
-      where: { id: interviewId },
-      include: { versions: { where: { difficulty } } },
-    });
-
-    const version = interview?.versions[0];
-
-    if (!version) {
-      throw new Error("Interview version not found");
-    }
-
-    // 3. Check access (public or creator)
-    if (!interview.isPublic && interview.creatorId !== user.id) {
-      throw new Error(
-        "Access denied: Interview is not public and you are not the creator",
-      );
-    }
-
-    // 4. Create session
     const session = await prisma.session.create({
       data: {
         userId: user.id,
