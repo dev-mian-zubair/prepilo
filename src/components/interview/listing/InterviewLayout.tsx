@@ -16,7 +16,7 @@ export default function InterviewLayout({
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen">
       <Card className="shadow-none bg-transparent border-none">
         <CardHeader className="flex justify-between items-center">
           <div className="flex items-center gap-2">
