@@ -36,8 +36,35 @@ const Agent = ({ onClose, interview, session, meetingType }: AgentProps) => {
   const [sidebarType, setSidebarType] = useState<SidebarType>("conversation");
   const [elapsedTime, setElapsedTime] = useState(0);
   const [error, setError] = useState<string | null>(null);
+  const timerRef = useRef<NodeJS.Timeout>();
 
   const toggleSidebar = useCallback(() => setIsSidebarOpen((prev) => !prev), []);
+
+  // Timer effect
+  useEffect(() => {
+    if (callStatus === 'ACTIVE') {
+      // Start timer when call becomes active
+      timerRef.current = setInterval(() => {
+        setElapsedTime(prev => prev + 1);
+      }, 1000);
+    } else {
+      // Clear timer when call is not active
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
+      // Reset timer when call ends
+      if (callStatus === 'FINISHED') {
+        setElapsedTime(0);
+      }
+    }
+
+    // Cleanup timer on unmount
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
+    };
+  }, [callStatus]);
 
   useEffect(() => {
     const start = async () => {
@@ -185,7 +212,7 @@ const Agent = ({ onClose, interview, session, meetingType }: AgentProps) => {
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            className="fixed top-0 right-0 w-full sm:w-[360px] h-full bg-white dark:bg-gray-800 border-l border-gray-200 dark:border-gray-700 shadow-xl z-50 overflow-hidden lg:z-0"
+            className="fixed top-0 right-0 w-full sm:w-[360px] h-full bg-gray-900 border-l border-gray-800 shadow-xl z-50 overflow-hidden lg:z-0"
           >
             <ActionSidebar
               interview={interview}
