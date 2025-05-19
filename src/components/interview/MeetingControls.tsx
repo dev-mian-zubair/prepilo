@@ -11,7 +11,7 @@ import {
   Clock,
 } from "lucide-react";
 import { MeetingType, SidebarType } from "@/types/interview";
-import { formatTime } from "@/lib/utils";
+import { formatTime } from "@/helpers/time.helper";
 
 interface MeetingControlsProps {
   handleEndCall: () => void;
