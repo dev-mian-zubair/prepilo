@@ -62,7 +62,7 @@ export interface DifficultyOption {
 
 export type MeetingType = "generate" | "interview";
 
-export type SidebarType = "conversation" | "info";
+export type SidebarType = "conversation" | "participants" | "info";
 
 export interface PaginationOptions {
   page?: number;

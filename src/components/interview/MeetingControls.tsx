@@ -1,102 +1,128 @@
+import React, { useState } from "react";
 import { Button } from "@heroui/button";
 import {
-  Info,
-  MessageSquare,
-  Mic,
-  MicOff,
-  PhoneOff,
   Video,
   VideoOff,
+  MessageSquare,
+  Users,
+  PhoneOff,
+  ChevronRight,
+  ChevronLeft,
+  Clock,
 } from "lucide-react";
-import React from "react";
-
 import { MeetingType, SidebarType } from "@/types/interview";
+import { formatTime } from "@/lib/utils";
 
 interface MeetingControlsProps {
-  isMuted: boolean;
-  isVideoOff: boolean;
-  toggleMute: () => void;
-  toggleVideo: () => void;
   handleEndCall: () => void;
   handleSidebarAction: (type: SidebarType) => void;
+  isVideoOff: boolean;
   meetingType?: MeetingType;
+  toggleVideo: () => void;
+  toggleSidebar: () => void;
+  isSidebarOpen: boolean;
+  elapsedTime: number;
 }
 
 const MeetingControls = ({
-  isMuted,
-  isVideoOff,
-  toggleMute,
-  toggleVideo,
   handleEndCall,
   handleSidebarAction,
+  isVideoOff,
   meetingType,
+  toggleVideo,
+  toggleSidebar,
+  isSidebarOpen,
+  elapsedTime,
 }: MeetingControlsProps) => {
-  const meetingInfo = {
-    time: "3:01 PM",
-    title: "RCS daily scrum",
+  const [activeSidebarType, setActiveSidebarType] = useState<SidebarType>("conversation");
+
+  const handleSidebarClick = (type: SidebarType) => {
+    if (activeSidebarType === type && isSidebarOpen) {
+      toggleSidebar();
+    } else {
+      handleSidebarAction(type);
+      setActiveSidebarType(type);
+      if (!isSidebarOpen) {
+        toggleSidebar();
+      }
+    }
   };
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 p-3 sm:p-4 flex flex-col sm:flex-row items-center justify-between gap-2 sm:gap-4">
-      <div className="meeting-info flex items-center text-xs sm:text-sm">
-        <span>{meetingInfo.time}</span>
-        <span className="mx-2">|</span>
-        <span>{meetingInfo.title}</span>
-      </div>
+    <div className="flex justify-center w-full p-4">
+      <div className="flex items-center gap-2 p-4 rounded-full bg-gray-800/90 backdrop-blur-sm shadow-lg">
+        {/* Timer */}
+        <div className="flex items-center gap-2 px-4 text-white">
+          <Clock className="w-4 h-4" />
+          <span className="text-sm font-medium">{formatTime(elapsedTime)}</span>
+        </div>
 
-      <div className="controls flex items-center gap-2">
+        {/* Video Control */}
         <Button
           isIconOnly
-          className={`rounded-full ${isMuted ? "bg-meet-control-hover" : "bg-meet-control-bg hover:bg-meet-control-hover"}`}
-          variant={isMuted ? "solid" : "flat"}
-          onPress={toggleMute}
-        >
-          {isMuted ? (
-            <Mic className="w-4 h-4" />
-          ) : (
-            <MicOff className="w-4 h-4" />
-          )}
-        </Button>
-        <Button
-          isIconOnly
-          className={`rounded-full ${isVideoOff ? "bg-meet-control-hover" : "bg-meet-control-bg hover:bg-meet-control-hover"}`}
-          variant={isVideoOff ? "solid" : "flat"}
+          variant="light"
+          className={`w-12 h-12 rounded-full ${
+            isVideoOff ? "bg-red-500 hover:bg-red-600" : "hover:bg-gray-700"
+          }`}
           onPress={toggleVideo}
         >
           {isVideoOff ? (
-            <Video className="w-4 h-4" />
+            <VideoOff className="w-5 h-5 text-white" />
           ) : (
-            <VideoOff className="w-4 h-4" />
+            <Video className="w-5 h-5 text-white" />
           )}
         </Button>
+
+        {/* End Call */}
         <Button
           isIconOnly
-          className="rounded-full"
-          color="danger"
+          className="w-12 h-12 rounded-full bg-red-500 hover:bg-red-600"
           onPress={handleEndCall}
         >
-          <PhoneOff className="w-4 h-4" />
+          <PhoneOff className="w-5 h-5 text-white" />
         </Button>
-      </div>
 
-      <div className="right-controls flex items-center gap-2">
+        {/* Divider */}
+        <div className="w-px h-6 bg-gray-700 mx-2" />
+
+        {/* Chat */}
+        <Button
+          isIconOnly
+          variant="light"
+          className={`w-12 h-12 rounded-full hover:bg-gray-700 ${
+            isSidebarOpen && activeSidebarType === "conversation" ? "bg-gray-700" : ""
+          }`}
+          onPress={() => handleSidebarClick("conversation")}
+        >
+          <MessageSquare className="w-5 h-5 text-white" />
+        </Button>
+
+        {/* Participants */}
         {meetingType === "interview" && (
           <Button
             isIconOnly
-            className="rounded-full bg-meet-control-bg hover:bg-meet-control-hover"
-            variant="flat"
-            onPress={() => handleSidebarAction("info")}
+            variant="light"
+            className={`w-12 h-12 rounded-full hover:bg-gray-700 ${
+              isSidebarOpen && activeSidebarType === "info" ? "bg-gray-700" : ""
+            }`}
+            onPress={() => handleSidebarClick("info")}
           >
-            <Info className="w-4 h-4" />
+            <Users className="w-5 h-5 text-white" />
           </Button>
         )}
+
+        {/* Toggle Sidebar */}
         <Button
           isIconOnly
-          className="rounded-full bg-meet-control-bg hover:bg-meet-control-hover"
-          variant="flat"
-          onPress={() => handleSidebarAction("conversation")}
+          variant="light"
+          className="w-12 h-12 rounded-full hover:bg-gray-700"
+          onPress={toggleSidebar}
         >
-          <MessageSquare className="w-4 h-4" />
+          {isSidebarOpen ? (
+            <ChevronRight className="w-5 h-5 text-white" />
+          ) : (
+            <ChevronLeft className="w-5 h-5 text-white" />
+          )}
         </Button>
       </div>
     </div>

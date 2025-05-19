@@ -20,6 +20,7 @@ const InterviewLauncherModal = ({
       isOpen={isOpen}
       shadow="none"
       size="full"
+      isDismissable={false}
       onClose={onClose}
     >
       <ModalContent className="bg-background rounded-none shadow-none overflow-hidden">

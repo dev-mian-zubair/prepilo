@@ -1,133 +1,128 @@
-import { Card, CardBody, CardHeader } from "@heroui/card";
-import { Chip } from "@heroui/chip";
-import { Clock } from "lucide-react";
 import React, { useEffect, useRef } from "react";
-
+import { X } from "lucide-react";
+import { Button } from "@heroui/button";
+import { SavedMessage } from "@/types/vapi.types";
 import { SidebarType } from "@/types/interview";
+import "@/styles/scrollbar.css";
 
-interface ParticipantsSidebarProps {
+interface ActionSidebarProps {
+  interview?: any;
+  messages: SavedMessage[];
   type: SidebarType;
-  interview: any;
-  messages: any[];
+  onClose: () => void;
 }
 
-const ActionSidebar = ({
-  type,
-  interview,
-  messages,
-}: ParticipantsSidebarProps) => {
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+const ActionSidebar = ({ interview, messages, type, onClose }: ActionSidebarProps) => {
+  const contentRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+  const scrollToBottom = () => {
+    if (contentRef.current) {
+      const scrollHeight = contentRef.current.scrollHeight;
+      contentRef.current.scrollTo({
+        top: scrollHeight,
+        behavior: "smooth"
+      });
     }
+  };
+
+  // Scroll to bottom when new messages arrive
+  useEffect(() => {
+    scrollToBottom();
   }, [messages]);
 
   return (
-    <Card className="sidebar transition-transform duration-300 rounded-md mr-4 mt-8 shadow-none bg-default-100">
-      <CardHeader className="p-4 border-b border-divider">
-        <h2 className="text-sm font-semibold text-foreground">
-          {type === "conversation" ? "Conversation" : "Information"}
+    <div className="h-full flex flex-col overflow-hidden">
+      {/* Header */}
+      <div className="flex-none flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
+        <h2 className="text-lg font-medium text-foreground">
+          {type === "conversation" ? "Interview Chat" : "Interview Details"}
         </h2>
-      </CardHeader>
-      <CardBody className="flex-1 overflow-y-auto p-4 space-y-3">
-        {type === "info" ? (
-          <div className="space-y-4">
-            <h2 className="text-sm font-semibold line-clamp-2">
-              {interview.title}
-            </h2>
-            <div className="flex flex-col gap-4">
-              {/* Duration */}
-              <div>
-                <p className="text-tiny text-foreground/70 mb-2">Duration</p>
-                <div className="flex items-center gap-2">
-                  <Clock className="text-foreground/70" size={14} />
-                  <span className="text-sm">{interview.duration} Min</span>
-                </div>
-              </div>
+        <Button
+          isIconOnly
+          variant="light"
+          className="rounded-full hover:bg-gray-100 dark:hover:bg-gray-700"
+          onClick={onClose}
+        >
+          <X className="w-5 h-5" />
+        </Button>
+      </div>
 
-              {/* Focus Areas */}
-              <div>
-                <p className="text-tiny text-foreground/70 mb-2">Focus Areas</p>
-                <div className="flex flex-wrap gap-3">
-                  {interview.focusAreas.map((area: string) => {
-                    return (
-                      <Chip
-                        key={area}
-                        className="hover:scale-105 transition-all duration-200"
-                        color="default"
-                        radius="md"
-                        size="sm"
-                        variant="bordered"
-                      >
-                        {area}
-                      </Chip>
-                    );
-                  })}
+      {/* Content */}
+      <div 
+        ref={contentRef}
+        className="flex-1 min-h-0 p-4 scrollbar-stable"
+      >
+        {type === "conversation" ? (
+          <div className="space-y-4 pr-2">
+            {messages.map((message, index) => (
+              <div
+                key={index}
+                className={`flex flex-col ${
+                  message.role === "assistant" ? "items-start" : "items-end"
+                }`}
+              >
+                <div className={`max-w-[85%] rounded-2xl px-4 py-2.5 ${
+                  message.role === "assistant"
+                    ? "bg-gray-100 dark:bg-gray-800 rounded-tl-none"
+                    : "bg-primary text-white rounded-tr-none"
+                }`}>
+                  <p className="text-sm whitespace-pre-wrap break-words">{message.content}</p>
                 </div>
+                <span className="text-xs text-foreground/60 mt-1 px-1">
+                  {message.role === "assistant" ? "AI Assistant" : "You"}
+                </span>
               </div>
-
-              {/* Technologies */}
-              <div>
-                <p className="text-tiny text-foreground/70 mb-2">
-                  Technologies
-                </p>
-                <div className="flex flex-wrap gap-3">
-                  {interview.technologies.map((tech: string) => (
-                    <Chip
-                      key={tech}
-                      className="hover:scale-105 transition-all duration-200"
-                      color="default"
-                      radius="md"
-                      size="sm"
-                      variant="bordered"
-                    >
-                      {tech}
-                    </Chip>
-                  ))}
-                </div>
-              </div>
-
-              {/* Difficulty Level */}
-              <div>
-                <p className="text-tiny text-foreground/70 mb-2">
-                  Difficulty Level
-                </p>
-                <Chip
-                  className="hover:scale-105 transition-all duration-200"
-                  color="default"
-                  radius="md"
-                  size="sm"
-                  variant="bordered"
-                >
-                  {interview.difficultyLevel || "Beginner"}
-                </Chip>
-              </div>
-            </div>
+            ))}
           </div>
         ) : (
-          <>
-            {messages.length === 0 ? (
-              <div className="text-sm text-foreground-500">
-                Conversation will appear here...
-              </div>
-            ) : (
-              messages.map((msg, index) => (
-                <div key={index} className="space-y-1">
-                  <div className="text-xs text-foreground-500 font-semibold">
-                    {msg.role}
-                  </div>
-                  <div className="text-sm text-foreground">{msg.content}</div>
+          <div className="space-y-6 pr-2">
+            {interview && (
+              <>
+                <div>
+                  <h3 className="text-sm font-medium text-foreground mb-2">
+                    Interview Topic
+                  </h3>
+                  <p className="text-sm text-foreground/70">
+                    {interview.title || "Not specified"}
+                  </p>
                 </div>
-              ))
+                <div>
+                  <h3 className="text-sm font-medium text-foreground mb-2">
+                    Duration
+                  </h3>
+                  <p className="text-sm text-foreground/70">
+                    {interview.duration || "Not specified"}
+                  </p>
+                </div>
+                <div>
+                  <h3 className="text-sm font-medium text-foreground mb-2">
+                    Difficulty Level
+                  </h3>
+                  <p className="text-sm text-foreground/70">
+                    {interview.difficulty || "Not specified"}
+                  </p>
+                </div>
+                <div>
+                  <h3 className="text-sm font-medium text-foreground mb-2">
+                    Topics Covered
+                  </h3>
+                  <div className="flex flex-wrap gap-2">
+                    {interview.topics?.map((topic: string, index: number) => (
+                      <span
+                        key={index}
+                        className="px-2 py-1 text-xs rounded-full bg-gray-100 dark:bg-gray-800 text-foreground/70"
+                      >
+                        {topic}
+                      </span>
+                    )) || "Not specified"}
+                  </div>
+                </div>
+              </>
             )}
-            {/* Invisible div to mark the bottom of the messages */}
-            <div ref={messagesEndRef} />
-          </>
+          </div>
         )}
-      </CardBody>
-    </Card>
+      </div>
+    </div>
   );
 };
 

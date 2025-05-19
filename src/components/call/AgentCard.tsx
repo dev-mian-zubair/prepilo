@@ -1,105 +1,87 @@
-import { Avatar } from "@heroui/avatar";
-import { Card, CardBody } from "@heroui/card";
-import React, { useMemo } from "react";
-import { Chip } from "@heroui/chip";
-
+import React from "react";
+import { motion } from "framer-motion";
+import { cn } from "@/lib/utils";
 import { CallStatus } from "@/enums";
+import { Mic, MicOff } from "lucide-react";
 
-const colorPalette = [
-  "from-blue-200 to-indigo-300",
-  "from-green-200 to-teal-300",
-  "from-purple-200 to-pink-300",
-  "from-red-200 to-orange-300",
-  "from-cyan-200 to-blue-300",
-  "from-yellow-200 to-green-300",
-];
-
-const speakingBorderColors = [
-  "border-blue-500",
-  "border-green-500",
-  "border-purple-500",
-  "border-red-500",
-  "border-teal-500",
-  "border-pink-500",
-];
-
-const speakingPulseColors = [
-  "bg-blue-300",
-  "bg-green-300",
-  "bg-purple-300",
-  "bg-red-300",
-  "bg-teal-300",
-  "bg-pink-300",
-];
-
-const AgentCard = ({
-  isSpeaking,
-  status,
-}: {
+interface AgentCardProps {
   isSpeaking: boolean;
   status: CallStatus;
-}) => {
-  const chipInfo = {
-    ACTIVE: ["success", "Active"],
-    INACTIVE: ["danger", "Inactive"],
-    CONNECTING: ["warning", "Connecting..."],
-    FINISHED: ["default", "Inactive"],
-  }[status];
+  className?: string;
+}
 
-  const randomGradient = useMemo(() => {
-    return colorPalette[Math.floor(Math.random() * colorPalette.length)];
-  }, []);
-
-  const randomSpeakingColors = useMemo(() => {
-    const borderColor =
-      speakingBorderColors[
-        Math.floor(Math.random() * speakingBorderColors.length)
-      ];
-    const pulseColor =
-      speakingPulseColors[
-        Math.floor(Math.random() * speakingPulseColors.length)
-      ];
-
-    return { borderColor, pulseColor };
-  }, [isSpeaking]);
+const AgentCard: React.FC<AgentCardProps> = ({ isSpeaking, status, className }) => {
+  const isConnected = status === CallStatus.ACTIVE;
 
   return (
-    <div className="absolute top-4 left-4 sm:top-6 sm:left-6 z-30 w-60 sm:w-72">
-      <Card
-        className={`relative overflow-hidden rounded-lg border-none shadow-md bg-gradient-to-tl ${randomGradient}`}
-      >
-        <div className="absolute inset-0 bg-gradient-to-t z-10" />
-        <CardBody className="flex flex-col items-center justify-center p-3 sm:p-4 z-20 relative h-32 sm:h-38">
-          <Chip
-            className="absolute top-1 left-1 text-white text-xs"
-            color={chipInfo[0] as any}
-            size="sm"
-          >
-            {chipInfo[1]}
-          </Chip>
-          <div
-            className={`rounded-full p-3 sm:p-4 ${
-              isSpeaking
-                ? `animate-pulse ${randomSpeakingColors.pulseColor}`
-                : ""
-            }`}
-          >
-            <Avatar
-              className={`w-10 h-10 sm:w-12 sm:h-12 border-2 rounded-full ${
-                isSpeaking
-                  ? randomSpeakingColors.borderColor
-                  : "border-transparent"
-              }`}
-              radius="full"
-              src="https://i.pravatar.cc/150?u=a04258114e29026708c"
+    <motion.div
+      className={cn(
+        "relative w-full h-full bg-gray-800 flex items-center justify-center",
+        isSpeaking && "after:absolute after:inset-0 after:border-4 after:border-primary after:rounded-xl after:transition-opacity",
+        className
+      )}
+      animate={{
+        scale: isSpeaking ? 1.03 : 1,
+        boxShadow: isSpeaking ? "0 0 20px rgba(var(--primary-rgb), 0.4)" : "none"
+      }}
+      transition={{
+        type: "spring",
+        stiffness: 300,
+        damping: 20
+      }}
+    >
+      <div className="relative">
+        <motion.div 
+          className={cn(
+            "w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-gray-700 flex items-center justify-center",
+            "relative"
+          )}
+        >
+          {isSpeaking && (
+            <motion.div
+              className="absolute -inset-1 rounded-full bg-primary/20"
+              animate={{
+                scale: [1, 1.1, 1],
+                opacity: [0.5, 0.3, 0.5]
+              }}
+              transition={{
+                duration: 1.5,
+                repeat: Infinity,
+                ease: "easeInOut"
+              }}
             />
+          )}
+          <span className="text-xl sm:text-2xl font-medium text-white relative z-10">AI</span>
+        </motion.div>
+        {status === CallStatus.CONNECTING && (
+          <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2">
+            <div className="bg-gray-800/90 px-3 py-1 rounded-full">
+              <div className="flex items-center gap-1.5">
+                <div className="w-1.5 h-1.5 rounded-full bg-primary/60 animate-pulse" />
+                <div className="w-1.5 h-1.5 rounded-full bg-primary/60 animate-pulse delay-100" />
+                <div className="w-1.5 h-1.5 rounded-full bg-primary/60 animate-pulse delay-200" />
+              </div>
+            </div>
           </div>
-          <span className="text-xs font-medium absolute bottom-1 left-1 text-black/80">
-            Hana
-          </span>
-        </CardBody>
-      </Card>
-    </div>
+        )}
+      </div>
+
+      {/* Status Indicators */}
+      <div className="absolute bottom-2 left-2 flex items-center gap-2">
+        <div className={`p-1.5 rounded-full ${
+          isConnected ? 'bg-gray-800/80' : 'bg-red-500/90'
+        }`}>
+          {isConnected ? (
+            <Mic className="w-3 h-3 text-white" />
+          ) : (
+            <MicOff className="w-3 h-3 text-white" />
+          )}
+        </div>
+        <span className="text-xs font-medium text-white bg-gray-800/80 px-2 py-0.5 rounded-full">
+          AI Assistant
+        </span>
+      </div>
+    </motion.div>
   );
 };
 
