@@ -1,11 +1,11 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { Card, CardBody } from "@heroui/card";
 import { Input } from "@heroui/input";
 import { Button } from "@heroui/button";
 import { Chip } from "@heroui/chip";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { ArrowLeft } from "lucide-react";
 
 import { Duration, FormValues, Interview, Template } from "@/types/interview";
 import { formSchema } from "@/schema/interview";
@@ -21,11 +21,13 @@ import { createInterview } from "@/actions/interview";
 
 interface GenerateInterviewManuallyProps {
   onClose: () => void;
+  onBack: () => void;
   onGenerate: (interview: Interview) => void;
 }
 
 const GenerateInterviewManually: React.FC<GenerateInterviewManuallyProps> = ({
   onClose,
+  onBack,
   onGenerate,
 }) => {
   const {
@@ -132,10 +134,12 @@ const GenerateInterviewManually: React.FC<GenerateInterviewManuallyProps> = ({
         technologyNames: data.technologies,
       });
 
-      if (result.success) {
-        onGenerate(result.interview as Interview);
-      } else {
+      if (result.success && 'interview' in result) {
+        onGenerate(result.interview);
+      } else if (!result.success && 'error' in result) {
         console.error(result.error);
+      } else {
+        console.error('Failed to create interview');
       }
     } catch (error) {
       console.error("Failed to submit form:", error);
@@ -143,198 +147,198 @@ const GenerateInterviewManually: React.FC<GenerateInterviewManuallyProps> = ({
   };
 
   return (
-    <Card className="group border border-divider bg-transparent rounded-md transition-all duration-200 w-full max-w-3xl mx-auto mt-10 shadow-none hover:shadow-sm hover:scale-[1.01]">
-      <CardBody className="p-4 flex flex-col gap-4">
-        {/* Title */}
-        <h2 className="text-xl font-bold text-center">Create Interview</h2>
-
-        {/* Templates */}
-        <div>
-          <p className="text-tiny text-foreground/70 mb-2">Use a Template</p>
-          <div className="flex flex-wrap gap-3">
-            {templates.map((template) => (
-              <Chip
-                key={template.name}
-                className="hover:scale-105 transition-all duration-200 cursor-pointer"
-                color={
-                  selectedTemplate === template.name ? "primary" : "default"
-                }
-                radius="md"
-                size="sm"
-                variant={
-                  selectedTemplate === template.name ? "solid" : "bordered"
-                }
-                onClick={() => applyTemplate(template)}
-              >
-                {template.name}
-              </Chip>
-            ))}
+    <div className="w-full max-w-2xl mx-auto h-screen flex flex-col px-4">
+      <div className="bg-gray-50 dark:bg-gray-800/50 rounded-xl flex flex-col flex-1">
+        {/* Sticky Header */}
+        <div className="bg-gray-50 dark:bg-gray-800/50 p-8 pb-4 rounded-t-xl border-b border-divider">
+          <div className="flex items-center justify-between">
+            <Button
+              className="rounded-xl group hover:bg-gray-100 dark:hover:bg-gray-800"
+              size="sm"
+              variant="light"
+              onClick={onBack}
+              startContent={<ArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />}
+            >
+              Change Creation Method
+            </Button>
           </div>
+          <h2 className="text-2xl font-bold text-foreground mt-6">Create Interview Manually</h2>
+          <p className="text-foreground/60">Customize your interview settings</p>
         </div>
 
-        <form
-          className="flex flex-col gap-4"
-          onSubmit={handleSubmit(handleFormSubmit)}
-        >
-          {/* Interview Title */}
-          <div className="space-y-2">
-            <Input
-              className="rounded-md"
-              errorMessage={errors.title?.message}
-              isInvalid={!!errors.title}
-              label="Interview Title"
-              placeholder="e.g., Technical JavaScript 60 Min"
-              variant="bordered"
-              {...register("title")}
-            />
-          </div>
-
-          {/* Duration */}
-          <div>
-            <p className="text-tiny text-foreground/70 mb-2">Duration</p>
-            <div className="flex flex-wrap gap-3">
-              {durationOptions.map(({ key, label, emoji }) => (
-                <Chip
-                  key={key}
-                  className="hover:scale-105 transition-all duration-200 cursor-pointer"
-                  color={currentDuration === key ? "primary" : "default"}
-                  radius="md"
-                  size="sm"
-                  startContent={<span aria-hidden="true">{emoji}</span>}
-                  variant={currentDuration === key ? "solid" : "bordered"}
-                  onClick={() => handleDurationSelect(key)}
-                >
-                  {label}
-                </Chip>
-              ))}
-              <Input
-                className="w-32 rounded-md"
-                placeholder="Custom (min)"
-                size="sm"
-                value={customDuration}
-                variant="bordered"
-                onChange={(e) => setCustomDuration(e.target.value)}
-                onKeyDown={handleCustomDurationKeyDown}
-              />
-            </div>
-          </div>
-
-          {/* Focus Areas */}
-          <div>
-            <p className="text-tiny text-foreground/70 mb-2">Focus Areas</p>
-            <div className="flex flex-wrap gap-3">
-              {focusAreaOptions.map(({ key, label, emoji }) => (
-                <Chip
-                  key={key}
-                  className="hover:scale-105 transition-all duration-200 cursor-pointer"
-                  color={
-                    currentFocusAreas.includes(key) ? "primary" : "default"
-                  }
-                  radius="md"
-                  size="sm"
-                  startContent={<span aria-hidden="true">{emoji}</span>}
-                  variant={
-                    currentFocusAreas.includes(key) ? "solid" : "bordered"
-                  }
-                  onClick={() => handleFocusAreaToggle(key)}
-                >
-                  {label}
-                </Chip>
-              ))}
-            </div>
-            {errors.focusAreas && (
-              <p className="text-danger text-tiny mt-1">
-                {errors.focusAreas.message}
-              </p>
-            )}
-          </div>
-
-          {/* Technologies */}
-          <div>
-            <p className="text-tiny text-foreground/70 mb-2">Technologies</p>
-            <div className="flex flex-wrap gap-3">
-              {technologyOptions.map(({ key, label, emoji }) => (
-                <Chip
-                  key={key}
-                  className="hover:scale-105 transition-all duration-200 cursor-pointer"
-                  color={
-                    currentTechnologies.includes(key) ? "primary" : "default"
-                  }
-                  radius="md"
-                  size="sm"
-                  startContent={<span aria-hidden="true">{emoji}</span>}
-                  variant={
-                    currentTechnologies.includes(key) ? "solid" : "bordered"
-                  }
-                  onClick={() => handleTechnologyToggle(key)}
-                >
-                  {label}
-                </Chip>
-              ))}
-              {currentTechnologies
-                .filter(
-                  (tech) =>
-                    !predefinedTechnologies.includes(
-                      tech as (typeof predefinedTechnologies)[number],
-                    ),
-                )
-                .map((tech, index) => (
-                  <Chip
-                    key={`${tech}-${index}`}
-                    className="hover:scale-105 transition-all duration-200 cursor-pointer"
-                    color="primary"
-                    radius="md"
-                    size="sm"
-                    variant="solid"
-                    onClick={() => handleTechnologyToggle(tech)}
+        {/* Scrollable Content */}
+        <div className="flex-1 overflow-y-auto">
+          <div className="p-8 pt-4 space-y-8">
+            {/* Templates */}
+            <div className="space-y-3">
+              <p className="text-sm font-medium">Templates</p>
+              <div className="flex flex-wrap gap-2">
+                {templates.map((template) => (
+                  <button
+                    key={template.name}
+                    onClick={() => applyTemplate(template)}
+                    className={`px-4 py-2 rounded-xl text-sm transition-all duration-200 hover:scale-[1.02] ${
+                      selectedTemplate === template.name
+                        ? "bg-primary text-white"
+                        : "bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700"
+                    }`}
                   >
-                    {tech}
-                  </Chip>
+                    {template.name}
+                  </button>
                 ))}
-              <Input
-                className="w-32 rounded-md"
-                placeholder="Custom tech"
-                size="sm"
-                value={customTech}
-                variant="bordered"
-                onChange={(e) => setCustomTech(e.target.value)}
-                onKeyDown={handleCustomTechKeyDown}
-              />
+              </div>
             </div>
-            {errors.technologies && (
-              <p className="text-danger text-tiny mt-1">
-                {errors.technologies.message}
-              </p>
-            )}
-          </div>
 
-          {/* Form Actions */}
-          <div className="flex justify-end gap-3 mt-4">
-            <Button
-              className="font-semibold"
-              isDisabled={isSubmitting}
-              radius="lg"
-              size="md"
-              variant="bordered"
-              onPress={onClose}
-            >
-              Cancel
-            </Button>
-            <Button
-              className="font-semibold"
-              color="primary"
-              isLoading={isSubmitting}
-              radius="lg"
-              size="md"
-              type="submit"
-              variant="solid"
-            >
-              {isSubmitting ? "Generating..." : "Generate Interview"}
-            </Button>
+            <form className="space-y-8" onSubmit={handleSubmit(handleFormSubmit)}>
+              {/* Interview Title */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Interview Title</label>
+                <Input
+                  className="rounded-xl"
+                  errorMessage={errors.title?.message}
+                  isInvalid={!!errors.title}
+                  placeholder="e.g., Technical JavaScript 60 Min"
+                  variant="bordered"
+                  {...register("title")}
+                />
+              </div>
+
+              {/* Duration */}
+              <div className="space-y-3">
+                <p className="text-sm font-medium">Duration</p>
+                <div className="flex flex-wrap gap-2">
+                  {durationOptions.map(({ key, label, emoji }) => (
+                    <button
+                      key={key}
+                      type="button"
+                      onClick={() => handleDurationSelect(key)}
+                      className={`px-4 py-2 rounded-xl text-sm transition-all duration-200 hover:scale-[1.02] flex items-center gap-2 ${
+                        currentDuration === key
+                          ? "bg-primary text-white"
+                          : "bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700"
+                      }`}
+                    >
+                      <span>{emoji}</span>
+                      {label}
+                    </button>
+                  ))}
+                  <Input
+                    className="w-32 rounded-xl"
+                    placeholder="Custom (min)"
+                    size="sm"
+                    value={customDuration}
+                    variant="bordered"
+                    onChange={(e) => setCustomDuration(e.target.value)}
+                    onKeyDown={handleCustomDurationKeyDown}
+                  />
+                </div>
+              </div>
+
+              {/* Focus Areas */}
+              <div className="space-y-3">
+                <p className="text-sm font-medium">Focus Areas</p>
+                <div className="flex flex-wrap gap-2">
+                  {focusAreaOptions.map(({ key, label, emoji }) => (
+                    <button
+                      key={key}
+                      type="button"
+                      onClick={() => handleFocusAreaToggle(key)}
+                      className={`px-4 py-2 rounded-xl text-sm transition-all duration-200 hover:scale-[1.02] flex items-center gap-2 ${
+                        currentFocusAreas.includes(key)
+                          ? "bg-primary text-white"
+                          : "bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700"
+                      }`}
+                    >
+                      <span>{emoji}</span>
+                      {label}
+                    </button>
+                  ))}
+                </div>
+                {errors.focusAreas && (
+                  <p className="text-danger text-sm">{errors.focusAreas.message}</p>
+                )}
+              </div>
+
+              {/* Technologies */}
+              <div className="space-y-3">
+                <p className="text-sm font-medium">Technologies</p>
+                <div className="flex flex-wrap gap-2">
+                  {technologyOptions.map(({ key, label, emoji }) => (
+                    <button
+                      key={key}
+                      type="button"
+                      onClick={() => handleTechnologyToggle(key)}
+                      className={`px-4 py-2 rounded-xl text-sm transition-all duration-200 hover:scale-[1.02] flex items-center gap-2 ${
+                        currentTechnologies.includes(key)
+                          ? "bg-primary text-white"
+                          : "bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700"
+                      }`}
+                    >
+                      <span>{emoji}</span>
+                      {label}
+                    </button>
+                  ))}
+                  {currentTechnologies
+                    .filter(
+                      (tech) =>
+                        !predefinedTechnologies.includes(
+                          tech as (typeof predefinedTechnologies)[number],
+                        ),
+                    )
+                    .map((tech, index) => (
+                      <button
+                        key={`${tech}-${index}`}
+                        type="button"
+                        onClick={() => handleTechnologyToggle(tech)}
+                        className="px-4 py-2 rounded-xl text-sm transition-all duration-200 hover:scale-[1.02] bg-primary text-white"
+                      >
+                        {tech}
+                      </button>
+                    ))}
+                  <Input
+                    className="w-32 rounded-xl"
+                    placeholder="Custom tech"
+                    size="sm"
+                    value={customTech}
+                    variant="bordered"
+                    onChange={(e) => setCustomTech(e.target.value)}
+                    onKeyDown={handleCustomTechKeyDown}
+                  />
+                </div>
+                {errors.technologies && (
+                  <p className="text-danger text-sm">{errors.technologies.message}</p>
+                )}
+              </div>
+
+              {/* Form Actions */}
+              <div className="flex justify-end gap-3 pt-6 border-t border-divider">
+                <Button
+                  className="font-medium min-w-[100px]"
+                  isDisabled={isSubmitting}
+                  radius="lg"
+                  size="lg"
+                  variant="bordered"
+                  onPress={onClose}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  className="font-medium min-w-[140px]"
+                  color="primary"
+                  isLoading={isSubmitting}
+                  radius="lg"
+                  size="lg"
+                  type="submit"
+                  variant="solid"
+                >
+                  {isSubmitting ? "Generating..." : "Generate Interview"}
+                </Button>
+              </div>
+            </form>
           </div>
-        </form>
-      </CardBody>
-    </Card>
+        </div>
+      </div>
+    </div>
   );
 };
 

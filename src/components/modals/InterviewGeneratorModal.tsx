@@ -1,12 +1,13 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { Modal, ModalContent, ModalHeader, ModalBody } from "@heroui/modal";
-import { RadioGroup } from "@heroui/react";
+import { Button } from "@heroui/button";
+import { X } from "lucide-react";
 
 import GenerateInterviewByAgent from "../interview/generate/GenerateInterviewByAgent";
 import GenerateInterviewManually from "../interview/generate/GenerateInterviewManually";
 import LaunchInterview from "../interview/launch/LaunchInterview";
-import SelectCreationMethod from "../interview/generate/SelectCreationMethod";
+import InterviewMethodSelector from "../interview/generate/SelectCreationMethod";
 import GenerateInterviewByJD from "../interview/generate/GenerateInterviewByJD";
 
 import { InterviewType } from "@/enums";
@@ -67,8 +68,24 @@ const InterviewGeneratorModal = ({
     }, 300);
   };
 
+  const handleBack = () => {
+    setIsFadingOut(true);
+    setTimeout(() => {
+      setStep("select");
+      setType(null);
+      setIsFadingOut(false);
+    }, 300);
+  };
+
   return (
-    <Modal isOpen={isOpen} shadow="none" size="full" onClose={handleClose}>
+    <Modal 
+      isOpen={isOpen} 
+      shadow="none" 
+      size="full" 
+      isDismissable={false}
+      hideCloseButton
+      onClose={handleClose}
+    >
       <ModalContent className="bg-background rounded-none shadow-none overflow-y-auto">
         <ModalHeader className="hidden" />
         <ModalBody className="p-0 m-0">
@@ -76,21 +93,33 @@ const InterviewGeneratorModal = ({
             {step === "select" && (
               <div
                 className={cn(
-                  "bg-card border border-divider rounded-xl p-8 w-full max-w-3xl transition-all duration-300 ease-in-out",
+                  "bg-background p-8 w-full max-w-2xl transition-all duration-300 ease-in-out",
                   isFadingOut ? "opacity-0 translate-y-6" : "opacity-100",
                 )}
               >
-                <h2 className="text-2xl font-bold text-foreground text-center mb-8">
-                  Choose Interview Creation Method 📝✨
-                </h2>
-                <RadioGroup
-                  aria-label="Interview Type Selection"
-                  className="w-full"
-                  orientation="horizontal"
-                  onValueChange={handleTypeChange}
+                {/* Close Button */}
+                <Button
+                  isIconOnly
+                  className="absolute right-8 top-8 rounded-full"
+                  size="sm"
+                  variant="light"
+                  onPress={handleClose}
                 >
-                  <SelectCreationMethod />
-                </RadioGroup>
+                  <X className="w-4 h-4" />
+                </Button>
+
+                <div className="space-y-8">
+                  <div className="text-center space-y-2">
+                    <h2 className="text-2xl font-bold text-foreground">
+                      Create New Interview
+                    </h2>
+                    <p className="text-foreground/60">
+                      Choose a method to create your interview questions
+                    </p>
+                  </div>
+
+                  <InterviewMethodSelector onSelect={handleTypeChange} />
+                </div>
               </div>
             )}
             {step === "generate" && (
@@ -101,12 +130,14 @@ const InterviewGeneratorModal = ({
                 {type === InterviewType.manually && (
                   <GenerateInterviewManually
                     onClose={handleClose}
+                    onBack={handleBack}
                     onGenerate={handleGenerate}
                   />
                 )}
                 {type === InterviewType.byJd && (
                   <GenerateInterviewByJD
                     onClose={handleClose}
+                    onBack={handleBack}
                     onGenerate={handleGenerate}
                   />
                 )}
