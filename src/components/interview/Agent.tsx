@@ -11,6 +11,8 @@ import { MeetingType, SidebarType } from "@/types/interview";
 import { Session } from "@/types/session.types";
 import { useAuth } from "@/providers/AuthProvider";
 import { interviewer } from "@/helpers/agent.helper";
+import { CallStatus } from "@/enums";
+import { handleIncompleteSession } from "@/actions/interview-session";
 import "@/styles/scrollbar.css";
 
 interface AgentProps {
@@ -52,8 +54,8 @@ const Agent = ({ onClose, interview, session, meetingType }: AgentProps) => {
       if (timerRef.current) {
         clearInterval(timerRef.current);
       }
-      // Reset timer when call ends
-      if (callStatus === 'FINISHED') {
+      // Only reset timer when component is unmounting
+      if (callStatus === 'FINISHED' && !session) {
         setElapsedTime(0);
       }
     }
@@ -64,7 +66,34 @@ const Agent = ({ onClose, interview, session, meetingType }: AgentProps) => {
         clearInterval(timerRef.current);
       }
     };
-  }, [callStatus]);
+  }, [callStatus, session]);
+
+  const handleError = async (error: string) => {
+    try {
+      if (session) {
+        // Get the transcript from messages
+        const transcript = messages
+          .filter(msg => msg.role === 'user' || msg.role === 'assistant')
+          .map(msg => `${msg.role.toUpperCase()}: ${msg.content}`)
+          .join('\n\n');
+
+        const result = await handleIncompleteSession(session.id, error, transcript);
+        if (result.success && result.elapsedMinutes !== undefined && result.sessionDuration !== undefined && result.completionPercentage !== undefined) {
+          const message = result.isComplete 
+            ? `Session completed with feedback generated. (${result.elapsedMinutes.toFixed(1)}/${result.sessionDuration} minutes)`
+            : `Session marked as incomplete (${result.elapsedMinutes.toFixed(1)}/${result.sessionDuration} minutes, ${result.completionPercentage.toFixed(1)}% complete).`;
+          setError(message);
+        } else {
+          setError(result.error || "Failed to handle session error. Please try again.");
+        }
+      } else {
+        setError(error);
+      }
+    } catch (err) {
+      console.error("Failed to handle session error:", err);
+      setError("Failed to handle session error. Please try again.");
+    }
+  };
 
   useEffect(() => {
     const start = async () => {
@@ -95,7 +124,7 @@ const Agent = ({ onClose, interview, session, meetingType }: AgentProps) => {
         }
       } catch (err) {
         console.error("Failed to start call:", err);
-        setError("Failed to start the call. Please try again.");
+        handleError("Failed to start the call. Please try again.");
       }
     };
 
@@ -128,6 +157,62 @@ const Agent = ({ onClose, interview, session, meetingType }: AgentProps) => {
         });
     };
   }, [meetingType, session, user, startCall]);
+
+  // Handle call status changes
+  useEffect(() => {
+    if (session) {
+      switch (callStatus) {
+        case CallStatus.FINISHED:
+          // User ended the call or there was an error
+          handleError("Call was terminated. Session will be evaluated for completion.");
+          break;
+        case CallStatus.INACTIVE:
+          // Call was never started or failed to start
+          handleError("Call failed to start. Session will be marked as incomplete.");
+          break;
+        case CallStatus.CONNECTING:
+          // Call is connecting, no action needed
+          break;
+        case CallStatus.ACTIVE:
+          // Call is active, no action needed
+          break;
+      }
+    }
+  }, [callStatus, session]);
+
+  // Handle user leaving the call
+  const handleUserLeave = useCallback(async () => {
+    if (session) {
+      try {
+        // Get the transcript from messages
+        const transcript = messages
+          .filter(msg => msg.role === 'user' || msg.role === 'assistant')
+          .map(msg => `${msg.role.toUpperCase()}: ${msg.content}`)
+          .join('\n\n');
+
+        const result = await handleIncompleteSession(session.id, "User ended the call. Session will be evaluated for completion.", transcript);
+        if (result.success && result.elapsedMinutes !== undefined && result.sessionDuration !== undefined && result.completionPercentage !== undefined) {
+          const message = result.isComplete 
+            ? `Session completed with feedback generated. (${result.elapsedMinutes.toFixed(1)}/${result.sessionDuration} minutes)`
+            : `Session marked as incomplete (${result.elapsedMinutes.toFixed(1)}/${result.sessionDuration} minutes, ${result.completionPercentage.toFixed(1)}% complete).`;
+          setError(message);
+          
+          // Wait a moment to show the message before closing
+          await new Promise(resolve => setTimeout(resolve, 2000));
+        } else {
+          setError(result.error || "Failed to handle session error. Please try again.");
+          // Wait a moment to show the error before closing
+          await new Promise(resolve => setTimeout(resolve, 2000));
+        }
+      } catch (err) {
+        console.error("Failed to handle session error:", err);
+        setError("Failed to handle session error. Please try again.");
+        // Wait a moment to show the error before closing
+        await new Promise(resolve => setTimeout(resolve, 2000));
+      }
+    }
+    handleLeaveCall();
+  }, [session, messages, handleLeaveCall]);
 
   return (
     <div className="fixed inset-0 bg-gray-900">
@@ -193,7 +278,7 @@ const Agent = ({ onClose, interview, session, meetingType }: AgentProps) => {
         <div className="absolute bottom-0 left-0 right-0 px-2 sm:px-4 pb-2 sm:pb-4">
           <MeetingControls
             elapsedTime={elapsedTime}
-            handleEndCall={handleLeaveCall}
+            handleEndCall={handleUserLeave}
             handleSidebarAction={setSidebarType}
             isVideoOff={isVideoOff}
             meetingType={meetingType}
