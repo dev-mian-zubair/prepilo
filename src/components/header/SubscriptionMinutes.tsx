@@ -23,8 +23,8 @@ export default function SubscriptionMinutes({
   return (
     <>
       <div className={cn(
-        "flex items-center gap-2 px-3 py-1.5 rounded-medium",
-        isLow ? "bg-danger-100/50" : "bg-default-100/50",
+        "flex items-center gap-2 px-3 py-2.5 rounded-large",
+        isLow ? "bg-danger-100" : "bg-default-100/50",
         className
       )}>
         <span className={cn(
@@ -33,9 +33,9 @@ export default function SubscriptionMinutes({
         )}>
           {used}
         </span>
-        <span className="text-sm text-default-500">/</span>
-        <span className="text-sm text-default-500">{total}</span>
-        <span className="text-sm text-default-500">min</span>
+        <span className="text-sm text-default-400">/</span>
+        <span className="text-sm text-default-400">{total}</span>
+        <span className="text-sm text-default-400">min</span>
         {isLow && (
           <button 
             onClick={() => setIsModalOpen(true)}
