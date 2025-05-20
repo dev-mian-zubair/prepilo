@@ -110,7 +110,7 @@ export default function InterviewGridCard({
     : interview.focusAreas.slice(0, 3);
 
   return (
-    <Card className="group border border-divider bg-transparent rounded-md transition-all duration-200 h-full min-h-[350px] shadow-none hover:shadow-sm hover:scale-[1.01]">
+    <Card className="group border border-divider bg-transparent rounded-lg min-h-[300px] shadow-none hover:shadow-sm hover:scale-[1.01]">
       <CardBody className="p-4 flex flex-col gap-2">
         {/*Score circles and Try Now button */}
         <div className="flex justify-start gap-1">
@@ -171,7 +171,7 @@ export default function InterviewGridCard({
             {displayedTechnologies.map((tech) => (
               <Chip
                 key={tech}
-                className="hover:scale-105 transition-all duration-200"
+                className="hover:scale-105"
                 radius="md"
                 size="sm"
                 startContent={
@@ -218,7 +218,7 @@ export default function InterviewGridCard({
               return (
                 <Chip
                   key={area}
-                  className="hover:scale-105 transition-all duration-200"
+                  className="hover:scale-105"
                   radius="md"
                   size="sm"
                   startContent={<span aria-hidden="true">{emoji}</span>}

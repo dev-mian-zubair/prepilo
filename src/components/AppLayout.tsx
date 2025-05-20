@@ -12,6 +12,8 @@ import {
   MagnifyingGlassIcon,
   ArrowLeftOnRectangleIcon,
   CreditCardIcon,
+  Bars3Icon,
+  XMarkIcon,
 } from "@heroicons/react/24/outline";
 import { PanelLeftClose, PanelRightClose } from "lucide-react";
 
@@ -31,6 +33,7 @@ export function AppLayout({ children }: AppLayoutProps) {
   const { user, loading } = useAuth();
   const pathname = usePathname();
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [subscription, setSubscription] = useState<{
     used: number;
     total: number;
@@ -49,6 +52,11 @@ export function AppLayout({ children }: AppLayoutProps) {
     fetchSubscription();
   }, []);
 
+  // Close mobile menu when route changes
+  useEffect(() => {
+    setIsMobileMenuOpen(false);
+  }, [pathname]);
+
   const isActive = (path: string) => pathname === path;
 
   const menuItems = [
@@ -64,32 +72,103 @@ export function AppLayout({ children }: AppLayoutProps) {
   const handleSidebarToggle = () => setIsCollapsed(!isCollapsed);
 
   return (
-    <div className="flex flex-col h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="flex flex-col h-screen bg-background">
       {/* Navbar */}
-      <header className="sticky top-0 z-40 w-full bg-white dark:bg-gray-800 shadow-sm">
-        <div className="flex h-16 items-center px-6">
-          <Link href="/app">
-            <h1 className="text-2xl font-bold tracking-tight">
-              <span className="text-primary">Prep</span>
-              <span className="text-gray-900 dark:text-white">ilo</span>
-            </h1>
-          </Link>
-          <div className="flex flex-1 justify-end items-center gap-4">
+      <header className="sticky top-0 z-40 w-full bg-background-secondary shadow-sm">
+        <div className="flex h-16 items-center justify-between px-4 md:px-8">
+          <div className="flex items-center">
+            <Link href="/app" className="flex items-center gap-2">
+              <h1 className="text-xl md:text-2xl font-bold tracking-tight">
+                <span className="text-primary">Prep</span>
+                <span className="text-foreground">ilo</span>
+              </h1>
+            </Link>
+          </div>
+          <div className="flex items-center gap-4">
             {subscription && (
-              <SubscriptionMinutes subscription={subscription} />
+              <div className="hidden md:block">
+                <SubscriptionMinutes subscription={subscription} />
+              </div>
             )}
-            <HeaderRightActions />
+            <div className="hidden md:block">
+              <HeaderRightActions />
+            </div>
+            <button
+              className="md:hidden p-2 rounded-lg text-foreground-secondary hover:bg-background-secondary/50 hover:text-foreground"
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            >
+              {isMobileMenuOpen ? (
+                <XMarkIcon className="h-6 w-6" />
+              ) : (
+                <Bars3Icon className="h-6 w-6" />
+              )}
+            </button>
           </div>
         </div>
       </header>
 
+      {/* Mobile Menu */}
+      <div
+        className={cn(
+          "fixed inset-0 z-30 bg-background/80 backdrop-blur-md transition-opacity md:hidden",
+          isMobileMenuOpen ? "opacity-100" : "opacity-0 pointer-events-none"
+        )}
+      >
+        <div
+          className={cn(
+            "fixed inset-y-0 right-0 w-full max-w-xs bg-content1 transition-transform duration-300",
+            isMobileMenuOpen ? "translate-x-0" : "translate-x-full"
+          )}
+        >
+          <div className="flex flex-col h-full">
+            <div className="flex items-center justify-between p-4">
+              <h2 className="text-lg font-semibold">Menu</h2>
+            </div>
+            <nav className="flex-1 p-4 space-y-1">
+              {menuItems.map(({ icon: Icon, label, href }) => (
+                <Link
+                  key={href}
+                  className={cn(
+                    "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors duration-200",
+                    isActive(href)
+                      ? "bg-primary/10 text-primary"
+                      : "text-foreground-secondary hover:bg-background-secondary/50 hover:text-foreground"
+                  )}
+                  href={href}
+                >
+                  <Icon className="h-5 w-5 shrink-0" />
+                  <span>{label}</span>
+                </Link>
+              ))}
+            </nav>
+            <div className="p-4 space-y-4">
+              {subscription && (
+                <div className="md:hidden">
+                  <SubscriptionMinutes subscription={subscription} />
+                </div>
+              )}
+              <div className="md:hidden">
+                <HeaderRightActions />
+              </div>
+              <button
+                onClick={handleSignOut}
+                className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-error hover:bg-error/10 transition-colors duration-200"
+              >
+                <ArrowLeftOnRectangleIcon className="h-5 w-5 shrink-0" />
+                <span>Logout</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Main Content */}
       <div className="flex flex-1 overflow-hidden">
-        {/* Sidebar */}
+        {/* Sidebar - Hidden on mobile */}
         <aside
           className={cn(
-            "bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700",
-            isCollapsed ? "w-16" : "w-64",
+            "hidden md:block bg-background-secondary",
+            isCollapsed ? "w-16" : "w-64"
           )}
         >
           <div className="flex flex-col h-full">
@@ -99,19 +178,19 @@ export function AppLayout({ children }: AppLayoutProps) {
                 <Link
                   key={href}
                   className={cn(
-                    "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium",
+                    "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors duration-200",
                     isActive(href)
-                      ? "bg-primary-50 text-primary-600 dark:bg-primary-900/20 dark:text-primary-400"
-                      : "text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700/50",
+                      ? "bg-primary/10 text-primary"
+                      : "text-foreground-secondary hover:bg-background-secondary/50 hover:text-foreground"
                   )}
                   href={href}
                 >
                   <Icon
                     className={cn(
-                      "h-5 w-5 shrink-0",
+                      "h-5 w-5 shrink-0 transition-colors duration-200",
                       isActive(href)
-                        ? "text-primary-600 dark:text-primary-400"
-                        : "text-gray-400 dark:text-gray-500",
+                        ? "text-primary"
+                        : "text-foreground-secondary group-hover:text-foreground"
                     )}
                   />
                   {!isCollapsed && (
@@ -127,15 +206,10 @@ export function AppLayout({ children }: AppLayoutProps) {
                 onClick={handleSignOut}
                 className={cn(
                   "flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium",
-                  "text-danger-600 hover:bg-danger-50 dark:text-danger-400 dark:hover:bg-danger-900/20"
+                  "text-error hover:bg-error/10 transition-colors duration-200"
                 )}
               >
-                <ArrowLeftOnRectangleIcon
-                  className={cn(
-                    "h-5 w-5 shrink-0",
-                    "text-danger-600 dark:text-danger-400"
-                  )}
-                />
+                <ArrowLeftOnRectangleIcon className="h-5 w-5 shrink-0" />
                 {!isCollapsed && (
                   <span className="truncate">Logout</span>
                 )}
@@ -145,16 +219,16 @@ export function AppLayout({ children }: AppLayoutProps) {
                 onClick={handleSidebarToggle}
                 className={cn(
                   "flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium",
-                  "text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700/50"
+                  "text-foreground-secondary hover:bg-background-secondary/50 hover:text-foreground transition-colors duration-200"
                 )}
               >
                 {isCollapsed ? (
-                  <PanelRightClose className="h-5 w-5 shrink-0 text-gray-400 dark:text-gray-500" />
+                  <PanelRightClose className="h-5 w-5 shrink-0" />
                 ) : (
-                  <PanelLeftClose className="h-5 w-5 shrink-0 text-gray-400 dark:text-gray-500" />
+                  <PanelLeftClose className="h-5 w-5 shrink-0" />
                 )}
                 {!isCollapsed && (
-                  <span className="truncate">Collapse Sidebar</span>
+                  <span className="truncate">Collapse</span>
                 )}
               </button>
             </div>
@@ -162,10 +236,8 @@ export function AppLayout({ children }: AppLayoutProps) {
         </aside>
 
         {/* Content Area */}
-        <main className="flex-1 overflow-auto bg-gray-50 dark:bg-gray-900">
-          <div className="mx-auto p-6">
-            {children}
-          </div>
+        <main className="flex-1 overflow-auto bg-background">
+          {children}
         </main>
       </div>
     </div>
