@@ -357,8 +357,22 @@ export async function handleIncompleteSession(sessionId: string, error?: string,
     if (session.userId !== user.id) {
       throw new Error("Access denied: You are not the session owner");
     }
+
+    // If session is already completed or cancelled, return current state
     if (session.status !== "IN_PROGRESS") {
-      throw new Error("Session is not in progress");
+      return {
+        success: true,
+        session,
+        completionPercentage: session.endedAt ? 
+          ((session.endedAt.getTime() - session.startedAt.getTime()) / (1000 * 60)) / (session.version?.interview.duration || 1) * 100 : 
+          0,
+        isComplete: session.status === "COMPLETED",
+        elapsedMinutes: session.endedAt ? 
+          (session.endedAt.getTime() - session.startedAt.getTime()) / (1000 * 60) : 
+          0,
+        sessionDuration: session.version?.interview.duration || 0,
+        error: error || null
+      };
     }
 
     // 3. Calculate completion percentage based on time
