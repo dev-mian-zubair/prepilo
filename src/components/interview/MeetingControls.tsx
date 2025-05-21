@@ -1,4 +1,3 @@
-import React, { useState } from "react";
 import { Button } from "@heroui/button";
 import {
   Video,
@@ -9,6 +8,9 @@ import {
   ChevronRight,
   ChevronLeft,
   Clock,
+  Pause,
+  Play,
+  X,
 } from "lucide-react";
 import { MeetingType, SidebarType } from "@/types/interview";
 import { formatTime } from "@/helpers/time.helper";
@@ -22,6 +24,9 @@ interface MeetingControlsProps {
   toggleSidebar: () => void;
   isSidebarOpen: boolean;
   elapsedTime: number;
+  isPaused: boolean;
+  onPause: () => void;
+  onResume: () => void;
 }
 
 const MeetingControls = ({
@@ -33,97 +38,81 @@ const MeetingControls = ({
   toggleSidebar,
   isSidebarOpen,
   elapsedTime,
+  isPaused,
+  onPause,
+  onResume,
 }: MeetingControlsProps) => {
-  const [activeSidebarType, setActiveSidebarType] = useState<SidebarType>("conversation");
-
   const handleSidebarClick = (type: SidebarType) => {
-    if (activeSidebarType === type && isSidebarOpen) {
+    handleSidebarAction(type);
+    if (!isSidebarOpen) {
       toggleSidebar();
-    } else {
-      handleSidebarAction(type);
-      setActiveSidebarType(type);
-      if (!isSidebarOpen) {
-        toggleSidebar();
-      }
     }
   };
 
-  return (
-    <div className="flex justify-center w-full p-4">
-      <div className="flex items-center gap-2 p-4 rounded-full bg-gray-800/90 backdrop-blur-sm shadow-lg">
-        {/* Timer */}
-        <div className="flex items-center gap-2 px-4 text-white">
-          <Clock className="w-4 h-4" />
-          <span className="text-sm font-medium">{formatTime(elapsedTime)}</span>
-        </div>
+  const activeSidebarType: SidebarType = "conversation";
 
-        {/* Video Control */}
+  return (
+    <div className="fixed bottom-6 left-1/2 -translate-x-1/2 w-[95%] max-w-3xl z-50">
+      <div className="flex items-center justify-between bg-gray-800/80 backdrop-blur-md rounded-2xl p-3 shadow-lg border border-gray-700/50">
+        {/* Left Controls */}
+        <div className="flex items-center gap-3">
         <Button
-          isIconOnly
-          variant="light"
-          className={`w-12 h-12 rounded-full ${
-            isVideoOff ? "bg-red-500 hover:bg-red-600" : "hover:bg-gray-700"
-          }`}
-          onPress={toggleVideo}
+            variant="ghost"
+            className="text-white hover:bg-white/10 rounded-xl p-2"
+            onClick={toggleVideo}
         >
           {isVideoOff ? (
-            <VideoOff className="w-5 h-5 text-white" />
+              <VideoOff className="w-5 h-5" />
           ) : (
-            <Video className="w-5 h-5 text-white" />
+              <Video className="w-5 h-5" />
           )}
         </Button>
+          <span className="text-sm text-white/80 font-medium">
+            {formatTime(elapsedTime)}
+          </span>
+        </div>
 
-        {/* End Call */}
+        {/* Center Controls */}
+        <div className="flex items-center gap-3">
         <Button
-          isIconOnly
-          className="w-12 h-12 rounded-full bg-red-500 hover:bg-red-600"
-          onPress={handleEndCall}
+            variant="ghost"
+            className="text-white hover:bg-white/10 rounded-xl p-2"
+            onClick={isPaused ? onResume : onPause}
         >
-          <PhoneOff className="w-5 h-5 text-white" />
+            {isPaused ? (
+              <Play className="w-5 h-5" />
+            ) : (
+              <Pause className="w-5 h-5" />
+            )}
         </Button>
-
-        {/* Divider */}
-        <div className="w-px h-6 bg-gray-700 mx-2" />
-
-        {/* Chat */}
         <Button
-          isIconOnly
-          variant="light"
-          className={`w-12 h-12 rounded-full hover:bg-gray-700 ${
-            isSidebarOpen && activeSidebarType === "conversation" ? "bg-gray-700" : ""
+            variant="ghost"
+            className={`w-12 h-12 rounded-full hover:bg-white/10 p-2 ${
+              isSidebarOpen && activeSidebarType === "conversation" ? "bg-white/10" : ""
           }`}
-          onPress={() => handleSidebarClick("conversation")}
+            onClick={() => handleSidebarClick("conversation")}
         >
           <MessageSquare className="w-5 h-5 text-white" />
         </Button>
+        </div>
 
-        {/* Participants */}
-        {meetingType === "interview" && (
+        {/* Right Controls */}
+        <div className="flex items-center gap-3">
           <Button
-            isIconOnly
-            variant="light"
-            className={`w-12 h-12 rounded-full hover:bg-gray-700 ${
-              isSidebarOpen && activeSidebarType === "info" ? "bg-gray-700" : ""
-            }`}
-            onPress={() => handleSidebarClick("info")}
+            variant="ghost"
+            className="text-white hover:bg-white/10 rounded-xl p-2"
+            onClick={toggleSidebar}
           >
-            <Users className="w-5 h-5 text-white" />
+            <X className="w-5 h-5" />
           </Button>
-        )}
-
-        {/* Toggle Sidebar */}
         <Button
-          isIconOnly
-          variant="light"
-          className="w-12 h-12 rounded-full hover:bg-gray-700"
-          onPress={toggleSidebar}
+            variant="solid"
+            className="text-white bg-red-500 hover:bg-red-600 rounded-xl px-4"
+            onClick={handleEndCall}
         >
-          {isSidebarOpen ? (
-            <ChevronRight className="w-5 h-5 text-white" />
-          ) : (
-            <ChevronLeft className="w-5 h-5 text-white" />
-          )}
+            End Call
         </Button>
+        </div>
       </div>
     </div>
   );

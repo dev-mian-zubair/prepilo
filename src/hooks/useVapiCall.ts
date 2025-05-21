@@ -10,8 +10,9 @@ interface UseVapiCallReturn {
   isVideoOff: boolean;
   isSpeaking: boolean;
   toggleVideo: () => void;
-  handleLeaveCall: () => void;
+  handleLeaveCall: () => Promise<void>;
   startCall: (params: any) => Promise<void>;
+  restoreMessages: (messages: SavedMessage[]) => void;
 }
 
 export const useVapiCall = (): UseVapiCallReturn => {
@@ -21,6 +22,10 @@ export const useVapiCall = (): UseVapiCallReturn => {
   const [isSpeaking, setIsSpeaking] = useState(false);
   const isInitialized = useRef(false);
   const isCleaningUp = useRef(false);
+
+  const restoreMessages = useCallback((savedMessages: SavedMessage[]) => {
+    setMessages(savedMessages);
+  }, []);
 
   const cleanupMediaStreams = useCallback(async () => {
     if (isCleaningUp.current) return;
@@ -159,5 +164,6 @@ export const useVapiCall = (): UseVapiCallReturn => {
     toggleVideo,
     handleLeaveCall,
     startCall,
+    restoreMessages,
   };
 };

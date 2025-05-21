@@ -12,7 +12,7 @@ import { Session } from "@/types/session.types";
 import { useAuth } from "@/providers/AuthProvider";
 import { interviewer } from "@/helpers/agent.helper";
 import { CallStatus } from "@/enums";
-import { handleIncompleteSession } from "@/actions/interview-session";
+import { handleIncompleteSession, saveSessionTranscript, pauseSession, resumeSession } from "@/actions/interview-session";
 import "@/styles/scrollbar.css";
 
 interface AgentProps {
@@ -33,12 +33,14 @@ const Agent = ({ onClose, interview, session, meetingType }: AgentProps) => {
     toggleVideo,
     handleLeaveCall,
     startCall,
+    restoreMessages,
   } = useVapiCall();
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [sidebarType, setSidebarType] = useState<SidebarType>("conversation");
   const [elapsedTime, setElapsedTime] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
   const timerRef = useRef<NodeJS.Timeout>();
 
   const toggleSidebar = useCallback(() => setIsSidebarOpen((prev) => !prev), []);
@@ -78,14 +80,31 @@ const Agent = ({ onClose, interview, session, meetingType }: AgentProps) => {
           .map(msg => `${msg.role.toUpperCase()}: ${msg.content}`)
           .join('\n\n');
 
+        // First save the transcript
+        const saveResult = await saveSessionTranscript(session.id, transcript);
+        if (!saveResult?.success) {
+          console.error("Failed to save transcript:", saveResult?.error);
+          setError("Failed to save session transcript. Please try again.");
+          return;
+        }
+
+        // Then handle the incomplete session
         const result = await handleIncompleteSession(session.id, error, transcript);
-        if (result.success && result.elapsedMinutes !== undefined && result.sessionDuration !== undefined && result.completionPercentage !== undefined) {
+        if (!result?.success) {
+          console.error("Failed to handle session:", result?.error);
+          setError("Failed to handle session. Please try again.");
+          return;
+        }
+
+        if (result.elapsedMinutes !== undefined && 
+            result.sessionDuration !== undefined && 
+            result.completionPercentage !== undefined) {
           const message = result.isComplete 
             ? `Session completed with feedback generated. (${result.elapsedMinutes.toFixed(1)}/${result.sessionDuration} minutes)`
             : `Session marked as incomplete (${result.elapsedMinutes.toFixed(1)}/${result.sessionDuration} minutes, ${result.completionPercentage.toFixed(1)}% complete).`;
           setError(message);
         } else {
-          setError(result.error || "Failed to handle session error. Please try again.");
+          setError("Session status updated but completion details are missing.");
         }
       } else {
         setError(error);
@@ -113,9 +132,24 @@ const Agent = ({ onClose, interview, session, meetingType }: AgentProps) => {
             },
           });
         } else if (meetingType === "interview" && session) {
+          // Restore messages if session has a transcript
+          if (session.transcript) {
+            const savedMessages = session.transcript
+              .split('\n\n')
+              .map((msg: string) => {
+                const [role, content] = msg.split(': ');
+                return {
+                  role: role.toLowerCase() as 'user' | 'assistant',
+                  content: content || ''
+                };
+              });
+            restoreMessages(savedMessages);
+          }
+
           const formattedQuestions = session.questions
-            .map((question) => `- ${question.text}`)
-            .join("\n");
+            ?.map((question) => `- ${question.text}`)
+            .join("\n") || '';
+
           await startCall({
             interviewer,
             variables: {
@@ -157,19 +191,23 @@ const Agent = ({ onClose, interview, session, meetingType }: AgentProps) => {
           // Ignore errors as we're just cleaning up
         });
     };
-  }, [meetingType, session, user, startCall]);
+  }, [meetingType, session, user, startCall, restoreMessages]);
 
   // Handle call status changes
   useEffect(() => {
-    if (session) {
+    if (session && !isPaused) { // Only handle status changes when not paused
       switch (callStatus) {
         case CallStatus.FINISHED:
-          // User ended the call or there was an error
-          handleError("Call was terminated. Session will be evaluated for completion.");
+          // Only handle unexpected call termination
+          if (!isProcessing) { // Don't handle if we're already processing an action
+            handleError("Call was unexpectedly terminated. Session will be evaluated for completion.");
+          }
           break;
         case CallStatus.INACTIVE:
-          // Call was never started or failed to start
-          handleError("Call failed to start. Session will be marked as incomplete.");
+          // Only handle unexpected inactivity
+          if (!isProcessing) {
+            handleError("Call failed to start. Session will be marked as incomplete.");
+          }
           break;
         case CallStatus.CONNECTING:
           // Call is connecting, no action needed
@@ -179,7 +217,7 @@ const Agent = ({ onClose, interview, session, meetingType }: AgentProps) => {
           break;
       }
     }
-  }, [callStatus, session]);
+  }, [callStatus, session, isPaused, isProcessing]);
 
   // Handle final close
   const handleFinalClose = useCallback(async () => {
@@ -201,6 +239,12 @@ const Agent = ({ onClose, interview, session, meetingType }: AgentProps) => {
           .map(msg => `${msg.role.toUpperCase()}: ${msg.content}`)
           .join('\n\n');
 
+        // Save the transcript first
+        const saveResult = await saveSessionTranscript(session.id, transcript);
+        if (!saveResult.success) {
+          throw new Error(saveResult.error || "Failed to save session transcript");
+        }
+
         const result = await handleIncompleteSession(session.id, "User ended the call. Session will be evaluated for completion.", transcript);
         if (result.success && result.elapsedMinutes !== undefined && result.sessionDuration !== undefined && result.completionPercentage !== undefined) {
           const message = result.isComplete 
@@ -218,6 +262,94 @@ const Agent = ({ onClose, interview, session, meetingType }: AgentProps) => {
       }
     }
   }, [session, messages, handleLeaveCall]);
+
+  // Handle pause session
+  const handlePauseSession = useCallback(async () => {
+    if (!session) return;
+
+    try {
+      setIsProcessing(true);
+      setError(null);
+
+      // Get the transcript from messages
+      const transcript = messages
+        .filter(msg => msg.role === 'user' || msg.role === 'assistant')
+        .map(msg => `${msg.role.toUpperCase()}: ${msg.content}`)
+        .join('\n\n');
+
+      // Update session status first
+      const result = await pauseSession(session.id, transcript);
+      
+      if (!result.success) {
+        throw new Error(result.error || "Failed to pause session");
+      }
+
+      // Update UI state
+      setIsPaused(true);
+      
+      // Clear timer
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
+
+      // Stop VAPI call after session is paused
+      await handleLeaveCall();
+
+    } catch (err) {
+      console.error("Failed to pause session:", err);
+      setError(err instanceof Error ? err.message : "Failed to pause session. Please try again.");
+      setIsPaused(false); // Reset pause state on error
+    } finally {
+      setIsProcessing(false);
+    }
+  }, [session, messages, handleLeaveCall]);
+
+  // Handle resume session
+  const handleResumeSession = useCallback(async () => {
+    if (session) {
+      try {
+        setIsProcessing(true);
+        
+        // Update session status
+        const result = await resumeSession(session.id);
+        if (result.success) {
+          setIsPaused(false);
+          
+          // Restart the VAPI call with context
+          const transcript = session.transcript || '';
+          const formattedQuestions = session.questions
+            ?.map((question) => `- ${question.text}`)
+            .join("\n") || '';
+
+          await startCall({
+            interviewer,
+            variables: {
+              questions: formattedQuestions,
+              context: `Previous conversation:\n${transcript}\n\nPlease continue the interview from where we left off.`,
+            },
+          });
+
+          // Calculate elapsed time from session duration
+          const elapsedMinutes = session.endedAt 
+            ? (session.endedAt.getTime() - session.startedAt.getTime()) / (1000 * 60)
+            : 0;
+          setElapsedTime(Math.floor(elapsedMinutes * 60));
+
+          // Restart timer from the elapsed time
+          timerRef.current = setInterval(() => {
+            setElapsedTime(prev => prev + 1);
+          }, 1000);
+        } else {
+          throw new Error(result.error || "Failed to resume session");
+        }
+      } catch (err) {
+        console.error("Failed to resume session:", err);
+        setError("Failed to resume session. Please try again.");
+      } finally {
+        setIsProcessing(false);
+      }
+    }
+  }, [session, startCall]);
 
   return (
     <div className="fixed inset-0 bg-gray-900">
@@ -246,6 +378,19 @@ const Agent = ({ onClose, interview, session, meetingType }: AgentProps) => {
           {isProcessing && (
             <div className="absolute top-4 left-4 right-4 z-[40] bg-blue-500 text-white p-4 rounded-lg flex justify-between items-center">
               <span>Processing session...</span>
+            </div>
+          )}
+
+          {/* Paused Indicator */}
+          {isPaused && (
+            <div className="absolute top-4 left-4 right-4 z-[40] bg-yellow-500 text-white p-4 rounded-lg flex justify-between items-center">
+              <span>Session is paused</span>
+              <button
+                onClick={handleResumeSession}
+                className="ml-4 px-4 py-2 bg-white text-yellow-500 rounded hover:bg-yellow-50 transition-colors"
+              >
+                Resume
+              </button>
             </div>
           )}
 
@@ -295,16 +440,19 @@ const Agent = ({ onClose, interview, session, meetingType }: AgentProps) => {
         {/* Meeting Controls */}
         <div className="absolute bottom-0 left-0 right-0 px-2 sm:px-4 pb-2 sm:pb-4">
           {!error && !isProcessing && (
-            <MeetingControls
-              elapsedTime={elapsedTime}
+          <MeetingControls
+            elapsedTime={elapsedTime}
               handleEndCall={handleUserLeave}
-              handleSidebarAction={setSidebarType}
-              isVideoOff={isVideoOff}
-              meetingType={meetingType}
-              toggleVideo={toggleVideo}
-              toggleSidebar={toggleSidebar}
-              isSidebarOpen={isSidebarOpen}
-            />
+            handleSidebarAction={setSidebarType}
+            isVideoOff={isVideoOff}
+            meetingType={meetingType}
+            toggleVideo={toggleVideo}
+            toggleSidebar={toggleSidebar}
+            isSidebarOpen={isSidebarOpen}
+              isPaused={isPaused}
+              onPause={handlePauseSession}
+              onResume={handleResumeSession}
+          />
           )}
         </div>
       </div>

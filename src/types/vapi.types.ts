@@ -51,6 +51,26 @@ export type Message =
   | FunctionCallResultMessage;
 
 export interface SavedMessage {
-  role: "user" | "system" | "assistant";
+  role: string;
   content: string;
+}
+
+export interface VapiCallOptions {
+  assistant: {
+    name: string;
+    model: string;
+    voice: string;
+    initialMessage?: string;
+    prompt?: string;
+  };
+  transcriber?: {
+    model: string;
+    language?: string;
+  };
+  inputAudio?: {
+    enabled: boolean;
+  };
+  outputAudio?: {
+    enabled: boolean;
+  };
 }
