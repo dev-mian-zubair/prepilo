@@ -33,11 +33,12 @@ const Agent = ({ onClose, interview, session, meetingType }: AgentProps) => {
     toggleVideo,
     handleLeaveCall,
     startCall,
-  } = useVapiCall({ onClose });
+  } = useVapiCall();
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [sidebarType, setSidebarType] = useState<SidebarType>("conversation");
   const [elapsedTime, setElapsedTime] = useState(0);
   const [error, setError] = useState<string | null>(null);
+  const [isProcessing, setIsProcessing] = useState(false);
   const timerRef = useRef<NodeJS.Timeout>();
 
   const toggleSidebar = useCallback(() => setIsSidebarOpen((prev) => !prev), []);
@@ -180,10 +181,20 @@ const Agent = ({ onClose, interview, session, meetingType }: AgentProps) => {
     }
   }, [callStatus, session]);
 
+  // Handle final close
+  const handleFinalClose = useCallback(async () => {
+    await handleLeaveCall();
+    onClose();
+  }, [handleLeaveCall, onClose]);
+
   // Handle user leaving the call
   const handleUserLeave = useCallback(async () => {
     if (session) {
       try {
+        setIsProcessing(true);
+        // Clean up VAPI first
+        await handleLeaveCall();
+        
         // Get the transcript from messages
         const transcript = messages
           .filter(msg => msg.role === 'user' || msg.role === 'assistant')
@@ -196,33 +207,20 @@ const Agent = ({ onClose, interview, session, meetingType }: AgentProps) => {
             ? `Session completed with feedback generated. (${result.elapsedMinutes.toFixed(1)}/${result.sessionDuration} minutes)`
             : `Session marked as incomplete (${result.elapsedMinutes.toFixed(1)}/${result.sessionDuration} minutes, ${result.completionPercentage.toFixed(1)}% complete).`;
           setError(message);
-          
-          // Wait a moment to show the message before closing
-          await new Promise(resolve => setTimeout(resolve, 2000));
         } else {
           setError(result.error || "Failed to handle session error. Please try again.");
-          // Wait a moment to show the error before closing
-          await new Promise(resolve => setTimeout(resolve, 2000));
         }
       } catch (err) {
         console.error("Failed to handle session error:", err);
         setError("Failed to handle session error. Please try again.");
-        // Wait a moment to show the error before closing
-        await new Promise(resolve => setTimeout(resolve, 2000));
+      } finally {
+        setIsProcessing(false);
       }
     }
-    handleLeaveCall();
   }, [session, messages, handleLeaveCall]);
 
   return (
     <div className="fixed inset-0 bg-gray-900">
-      {/* Error Display */}
-      {error && (
-        <div className="absolute top-4 left-4 right-4 bg-red-500 text-white p-4 rounded-lg">
-          {error}
-        </div>
-      )}
-
       {/* Main Content Area */}
       <div
         className={`h-full transition-all duration-300 ease-in-out ${
@@ -231,6 +229,26 @@ const Agent = ({ onClose, interview, session, meetingType }: AgentProps) => {
       >
         {/* Video Grid */}
         <div className="relative h-full p-2 sm:p-4 grid place-items-center">
+          {/* Error Display */}
+          {error && (
+            <div className="absolute top-4 left-4 right-4 z-[40] bg-red-500 text-white p-4 rounded-lg flex justify-between items-center">
+              <span>{error}</span>
+              <button
+                onClick={handleFinalClose}
+                className="ml-4 px-4 py-2 bg-white text-red-500 rounded hover:bg-red-50 transition-colors"
+              >
+                Close
+              </button>
+            </div>
+          )}
+
+          {/* Processing Indicator */}
+          {isProcessing && (
+            <div className="absolute top-4 left-4 right-4 z-[40] bg-blue-500 text-white p-4 rounded-lg flex justify-between items-center">
+              <span>Processing session...</span>
+            </div>
+          )}
+
           <div className="relative w-full max-w-4xl aspect-video rounded-2xl overflow-hidden bg-gray-800">
             {/* User Video */}
             <div className="w-full h-full">
@@ -276,16 +294,18 @@ const Agent = ({ onClose, interview, session, meetingType }: AgentProps) => {
 
         {/* Meeting Controls */}
         <div className="absolute bottom-0 left-0 right-0 px-2 sm:px-4 pb-2 sm:pb-4">
-          <MeetingControls
-            elapsedTime={elapsedTime}
-            handleEndCall={handleUserLeave}
-            handleSidebarAction={setSidebarType}
-            isVideoOff={isVideoOff}
-            meetingType={meetingType}
-            toggleVideo={toggleVideo}
-            toggleSidebar={toggleSidebar}
-            isSidebarOpen={isSidebarOpen}
-          />
+          {!error && !isProcessing && (
+            <MeetingControls
+              elapsedTime={elapsedTime}
+              handleEndCall={handleUserLeave}
+              handleSidebarAction={setSidebarType}
+              isVideoOff={isVideoOff}
+              meetingType={meetingType}
+              toggleVideo={toggleVideo}
+              toggleSidebar={toggleSidebar}
+              isSidebarOpen={isSidebarOpen}
+            />
+          )}
         </div>
       </div>
 
@@ -297,7 +317,7 @@ const Agent = ({ onClose, interview, session, meetingType }: AgentProps) => {
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            className="fixed top-0 right-0 w-full sm:w-[360px] h-full bg-gray-900 border-l border-gray-800 shadow-xl z-50 overflow-hidden lg:z-0"
+            className="fixed top-0 right-0 w-full sm:w-[360px] h-full bg-gray-900 border-l border-gray-800 shadow-xl z-[50] overflow-hidden lg:z-[50]"
           >
             <ActionSidebar
               interview={interview}

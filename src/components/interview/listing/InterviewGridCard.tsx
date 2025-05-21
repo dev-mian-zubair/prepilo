@@ -110,7 +110,7 @@ export default function InterviewGridCard({
     : interview.focusAreas.slice(0, 3);
 
   return (
-    <Card className="group border border-divider bg-transparent rounded-lg min-h-[300px] shadow-none hover:shadow-sm hover:scale-[1.01]">
+    <Card className="group border border-divider bg-transparent min-h-[300px] shadow-none hover:shadow-sm hover:scale-[1.01]">
       <CardBody className="p-4 flex flex-col gap-2">
         {/*Score circles and Try Now button */}
         <div className="flex justify-start gap-1">

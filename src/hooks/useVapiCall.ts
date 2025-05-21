@@ -4,10 +4,6 @@ import { vapi } from "@/lib/vapi.sdk";
 import { Message, SavedMessage } from "@/types/vapi.types";
 import { CallStatus } from "@/enums";
 
-interface UseVapiCallProps {
-  onClose: () => void;
-}
-
 interface UseVapiCallReturn {
   callStatus: CallStatus;
   messages: SavedMessage[];
@@ -18,9 +14,7 @@ interface UseVapiCallReturn {
   startCall: (params: any) => Promise<void>;
 }
 
-export const useVapiCall = ({
-  onClose,
-}: UseVapiCallProps): UseVapiCallReturn => {
+export const useVapiCall = (): UseVapiCallReturn => {
   const [callStatus, setCallStatus] = useState<CallStatus>(CallStatus.CONNECTING);
   const [messages, setMessages] = useState<SavedMessage[]>([]);
   const [isVideoOff, setIsVideoOff] = useState(true);
@@ -74,8 +68,7 @@ export const useVapiCall = ({
       // Stop VAPI
       await vapi.stop();
       
-      // Reset state
-      setMessages([]);
+      // Reset state except messages
       setIsVideoOff(true);
       setCallStatus(CallStatus.FINISHED);
       
@@ -112,8 +105,7 @@ export const useVapiCall = ({
   const handleLeaveCall = useCallback(async () => {
     await cleanupVapi();
     await cleanupMediaStreams();
-    onClose();
-  }, [cleanupVapi, cleanupMediaStreams, onClose]);
+  }, [cleanupVapi, cleanupMediaStreams]);
 
   const toggleVideo = useCallback(() => {
     setIsVideoOff((prev) => !prev);
