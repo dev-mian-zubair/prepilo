@@ -101,6 +101,7 @@ model Session {
   endedAt      DateTime?
   status       SessionStatus      @default(IN_PROGRESS)
   overallScore Float? // 0-100
+  transcript   String?            @db.Text
   createdAt    DateTime           @default(now())
   updatedAt    DateTime           @updatedAt
   feedback     Feedback?

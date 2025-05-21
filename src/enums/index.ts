@@ -3,6 +3,7 @@ export enum CallStatus {
   CONNECTING = "CONNECTING",
   ACTIVE = "ACTIVE",
   FINISHED = "FINISHED",
+  PAUSED = "PAUSED",
 }
 
 export enum InterviewType {
