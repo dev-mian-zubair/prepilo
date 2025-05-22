@@ -54,7 +54,7 @@ export async function createInterviewWithJD(jobDescription: string) {
 
 export async function getInterviewWithDetails(id: string) {
   try {
-    return await prisma.interview.findUnique({
+    const interview = await prisma.interview.findUnique({
       where: { id },
       include: {
         technologies: {
@@ -66,10 +66,15 @@ export async function getInterviewWithDetails(id: string) {
         creator: true,
       },
     });
+
+    if (!interview) {
+      throw new Error("Interview not found");
+    }
+
+    return interview;
   } catch (error) {
     console.error("Failed to fetch interview:", error);
-
-    return null;
+    throw error; // Re-throw the error to be handled by the hook
   }
 }
 

@@ -1,7 +1,6 @@
 "use client";
 import React from "react";
-
-import Agent from "../Agent";
+import { GenerateAgent } from "../agent";
 
 interface GenerateInterviewByAgentProps {
   onClose: () => void;
@@ -10,7 +9,7 @@ interface GenerateInterviewByAgentProps {
 const GenerateInterviewByAgent = ({
   onClose,
 }: GenerateInterviewByAgentProps) => {
-  return <Agent meetingType="generate" onClose={onClose} />;
+  return <GenerateAgent onClose={onClose} />;
 };
 
 export default GenerateInterviewByAgent;

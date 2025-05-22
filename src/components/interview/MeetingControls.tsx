@@ -21,7 +21,7 @@ interface MeetingControlsProps {
   toggleVideo: () => void;
   toggleSidebar: () => void;
   isSidebarOpen: boolean;
-  elapsedTime: number;
+  elapsedTime?: number;
 }
 
 const MeetingControls = ({
@@ -51,11 +51,13 @@ const MeetingControls = ({
   return (
     <div className="flex justify-center w-full p-4">
       <div className="flex items-center gap-2 p-4 rounded-full bg-gray-800/90 backdrop-blur-sm shadow-lg">
-        {/* Timer */}
-        <div className="flex items-center gap-2 px-4 text-white">
-          <Clock className="w-4 h-4" />
-          <span className="text-sm font-medium">{formatTime(elapsedTime)}</span>
-        </div>
+        {/* Timer - Only show for interview type */}
+        {meetingType === "interview" && elapsedTime !== undefined && (
+          <div className="flex items-center gap-2 px-4 text-white">
+            <Clock className="w-4 h-4" />
+            <span className="text-sm font-medium">{formatTime(elapsedTime)}</span>
+          </div>
+        )}
 
         {/* Video Control */}
         <Button

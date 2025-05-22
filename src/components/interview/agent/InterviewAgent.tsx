@@ -2,8 +2,8 @@ import React, { useCallback, useEffect, useState, useRef } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import Webcam from "react-webcam";
 
-import MeetingControls from "./MeetingControls";
-import ActionSidebar from "./ActionSidebar";
+import MeetingControls from "../MeetingControls";
+import ActionSidebar from "../ActionSidebar";
 import AgentCard from "@/components/call/AgentCard";
 
 import { useVapiCall } from "@/hooks/useVapiCall";
@@ -15,14 +15,13 @@ import { CallStatus } from "@/enums";
 import { handleIncompleteSession } from "@/actions/interview-session";
 import "@/styles/scrollbar.css";
 
-interface AgentProps {
+interface InterviewAgentProps {
   onClose: () => void;
   interview?: any;
-  session?: Session;
-  meetingType?: MeetingType;
+  session: Session;
 }
 
-const Agent = ({ onClose, interview, session, meetingType }: AgentProps) => {
+const InterviewAgent = ({ onClose, interview, session }: InterviewAgentProps) => {
   const { user } = useAuth();
   const webcamRef = useRef<Webcam>(null);
   const {
@@ -46,49 +45,40 @@ const Agent = ({ onClose, interview, session, meetingType }: AgentProps) => {
   // Timer effect
   useEffect(() => {
     if (callStatus === 'ACTIVE') {
-      // Start timer when call becomes active
       timerRef.current = setInterval(() => {
         setElapsedTime(prev => prev + 1);
       }, 1000);
     } else {
-      // Clear timer when call is not active
       if (timerRef.current) {
         clearInterval(timerRef.current);
       }
-      // Only reset timer when component is unmounting
-      if (callStatus === 'FINISHED' && !session) {
+      if (callStatus === 'FINISHED') {
         setElapsedTime(0);
       }
     }
 
-    // Cleanup timer on unmount
     return () => {
       if (timerRef.current) {
         clearInterval(timerRef.current);
       }
     };
-  }, [callStatus, session]);
+  }, [callStatus]);
 
   const handleError = async (error: string) => {
     try {
-      if (session) {
-        // Get the transcript from messages
-        const transcript = messages
-          .filter(msg => msg.role === 'user' || msg.role === 'assistant')
-          .map(msg => `${msg.role.toUpperCase()}: ${msg.content}`)
-          .join('\n\n');
+      const transcript = messages
+        .filter(msg => msg.role === 'user' || msg.role === 'assistant')
+        .map(msg => `${msg.role.toUpperCase()}: ${msg.content}`)
+        .join('\n\n');
 
-        const result = await handleIncompleteSession(session.id, error, transcript);
-        if (result.success && result.elapsedMinutes !== undefined && result.sessionDuration !== undefined && result.completionPercentage !== undefined) {
-          const message = result.isComplete 
-            ? `Session completed with feedback generated. (${result.elapsedMinutes.toFixed(1)}/${result.sessionDuration} minutes)`
-            : `Session marked as incomplete (${result.elapsedMinutes.toFixed(1)}/${result.sessionDuration} minutes, ${result.completionPercentage.toFixed(1)}% complete).`;
-          setError(message);
-        } else {
-          setError(result.error || "Failed to handle session error. Please try again.");
-        }
+      const result = await handleIncompleteSession(session.id, error, transcript);
+      if (result.success && result.elapsedMinutes !== undefined && result.sessionDuration !== undefined && result.completionPercentage !== undefined) {
+        const message = result.isComplete 
+          ? `Session completed with feedback generated. (${result.elapsedMinutes.toFixed(1)}/${result.sessionDuration} minutes)`
+          : `Session marked as incomplete (${result.elapsedMinutes.toFixed(1)}/${result.sessionDuration} minutes, ${result.completionPercentage.toFixed(1)}% complete).`;
+        setError(message);
       } else {
-        setError(error);
+        setError(result.error || "Failed to handle session error. Please try again.");
       }
     } catch (err) {
       console.error("Failed to handle session error:", err);
@@ -100,29 +90,15 @@ const Agent = ({ onClose, interview, session, meetingType }: AgentProps) => {
     const start = async () => {
       try {
         setError(null);
-        if (meetingType === "generate") {
-          const workflowId = process.env.NEXT_PUBLIC_VAPI_WORKFLOW_ID;
-          if (!workflowId) {
-            throw new Error("Workflow ID is not configured");
-          }
-          await startCall({
-            workflowId,
-            variables: {
-              username: user?.user_metadata?.name || "User",
-              userid: user?.id || "anonymous",
-            },
-          });
-        } else if (meetingType === "interview" && session) {
-          const formattedQuestions = session.questions
-            .map((question) => `- ${question.text}`)
-            .join("\n");
-          await startCall({
-            interviewer,
-            variables: {
-              questions: formattedQuestions,
-            },
-          });
-        }
+        const formattedQuestions = session.questions
+          .map((question) => `- ${question.text}`)
+          .join("\n");
+        await startCall({
+          interviewer,
+          variables: {
+            questions: formattedQuestions,
+          },
+        });
       } catch (err) {
         console.error("Failed to start call:", err);
         handleError("Failed to start the call. Please try again.");
@@ -131,9 +107,7 @@ const Agent = ({ onClose, interview, session, meetingType }: AgentProps) => {
 
     start();
 
-    // Cleanup function
     return () => {
-      // Clean up webcam
       if (webcamRef.current) {
         const webcam = webcamRef.current;
         const stream = webcam.stream;
@@ -145,7 +119,6 @@ const Agent = ({ onClose, interview, session, meetingType }: AgentProps) => {
         }
       }
 
-      // Force cleanup any remaining media tracks
       navigator.mediaDevices.getUserMedia({ video: true, audio: true })
         .then(stream => {
           stream.getTracks().forEach(track => {
@@ -157,79 +130,63 @@ const Agent = ({ onClose, interview, session, meetingType }: AgentProps) => {
           // Ignore errors as we're just cleaning up
         });
     };
-  }, [meetingType, session, user, startCall]);
+  }, [session, startCall]);
 
-  // Handle call status changes
   useEffect(() => {
-    if (session) {
-      switch (callStatus) {
-        case CallStatus.FINISHED:
-          // User ended the call or there was an error
-          handleError("Call was terminated. Session will be evaluated for completion.");
-          break;
-        case CallStatus.INACTIVE:
-          // Call was never started or failed to start
-          handleError("Call failed to start. Session will be marked as incomplete.");
-          break;
-        case CallStatus.CONNECTING:
-          // Call is connecting, no action needed
-          break;
-        case CallStatus.ACTIVE:
-          // Call is active, no action needed
-          break;
-      }
+    switch (callStatus) {
+      case CallStatus.FINISHED:
+        handleError("Call was terminated. Session will be evaluated for completion.");
+        break;
+      case CallStatus.INACTIVE:
+        handleError("Call failed to start. Session will be marked as incomplete.");
+        break;
+      case CallStatus.CONNECTING:
+        break;
+      case CallStatus.ACTIVE:
+        break;
     }
-  }, [callStatus, session]);
+  }, [callStatus]);
 
-  // Handle final close
   const handleFinalClose = useCallback(async () => {
     await handleLeaveCall();
     onClose();
   }, [handleLeaveCall, onClose]);
 
-  // Handle user leaving the call
   const handleUserLeave = useCallback(async () => {
-    if (session) {
-      try {
-        setIsProcessing(true);
-        // Clean up VAPI first
-        await handleLeaveCall();
-        
-        // Get the transcript from messages
-        const transcript = messages
-          .filter(msg => msg.role === 'user' || msg.role === 'assistant')
-          .map(msg => `${msg.role.toUpperCase()}: ${msg.content}`)
-          .join('\n\n');
+    try {
+      setIsProcessing(true);
+      await handleLeaveCall();
+      
+      const transcript = messages
+        .filter(msg => msg.role === 'user' || msg.role === 'assistant')
+        .map(msg => `${msg.role.toUpperCase()}: ${msg.content}`)
+        .join('\n\n');
 
-        const result = await handleIncompleteSession(session.id, "User ended the call. Session will be evaluated for completion.", transcript);
-        if (result.success && result.elapsedMinutes !== undefined && result.sessionDuration !== undefined && result.completionPercentage !== undefined) {
-          const message = result.isComplete 
-            ? `Session completed with feedback generated. (${result.elapsedMinutes.toFixed(1)}/${result.sessionDuration} minutes)`
-            : `Session marked as incomplete (${result.elapsedMinutes.toFixed(1)}/${result.sessionDuration} minutes, ${result.completionPercentage.toFixed(1)}% complete).`;
-          setError(message);
-        } else {
-          setError(result.error || "Failed to handle session error. Please try again.");
-        }
-      } catch (err) {
-        console.error("Failed to handle session error:", err);
-        setError("Failed to handle session error. Please try again.");
-      } finally {
-        setIsProcessing(false);
+      const result = await handleIncompleteSession(session.id, "User ended the call. Session will be evaluated for completion.", transcript);
+      if (result.success && result.elapsedMinutes !== undefined && result.sessionDuration !== undefined && result.completionPercentage !== undefined) {
+        const message = result.isComplete 
+          ? `Session completed with feedback generated. (${result.elapsedMinutes.toFixed(1)}/${result.sessionDuration} minutes)`
+          : `Session marked as incomplete (${result.elapsedMinutes.toFixed(1)}/${result.sessionDuration} minutes, ${result.completionPercentage.toFixed(1)}% complete).`;
+        setError(message);
+      } else {
+        setError(result.error || "Failed to handle session error. Please try again.");
       }
+    } catch (err) {
+      console.error("Failed to handle session error:", err);
+      setError("Failed to handle session error. Please try again.");
+    } finally {
+      setIsProcessing(false);
     }
   }, [session, messages, handleLeaveCall]);
 
   return (
     <div className="fixed inset-0 bg-gray-900">
-      {/* Main Content Area */}
       <div
         className={`h-full transition-all duration-300 ease-in-out ${
           isSidebarOpen ? "lg:pr-[360px]" : "pr-0"
         }`}
       >
-        {/* Video Grid */}
         <div className="relative h-full p-2 sm:p-4 grid place-items-center">
-          {/* Error Display */}
           {error && (
             <div className="absolute top-4 left-4 right-4 z-[40] bg-red-500 text-white p-4 rounded-lg flex justify-between items-center">
               <span>{error}</span>
@@ -242,7 +199,6 @@ const Agent = ({ onClose, interview, session, meetingType }: AgentProps) => {
             </div>
           )}
 
-          {/* Processing Indicator */}
           {isProcessing && (
             <div className="absolute top-4 left-4 right-4 z-[40] bg-blue-500 text-white p-4 rounded-lg flex justify-between items-center">
               <span>Processing session...</span>
@@ -250,7 +206,6 @@ const Agent = ({ onClose, interview, session, meetingType }: AgentProps) => {
           )}
 
           <div className="relative w-full max-w-4xl aspect-video rounded-2xl overflow-hidden bg-gray-800">
-            {/* User Video */}
             <div className="w-full h-full">
               <Webcam
                 ref={webcamRef}
@@ -275,7 +230,6 @@ const Agent = ({ onClose, interview, session, meetingType }: AgentProps) => {
               )}
             </div>
 
-            {/* Agent Video Overlay */}
             <div className="absolute bottom-2 sm:bottom-4 right-2 sm:right-4 w-24 sm:w-32 md:w-48 aspect-video">
               <motion.div
                 initial={{ opacity: 0, scale: 0.8 }}
@@ -292,7 +246,6 @@ const Agent = ({ onClose, interview, session, meetingType }: AgentProps) => {
           </div>
         </div>
 
-        {/* Meeting Controls */}
         <div className="absolute bottom-0 left-0 right-0 px-2 sm:px-4 pb-2 sm:pb-4">
           {!error && !isProcessing && (
             <MeetingControls
@@ -300,7 +253,7 @@ const Agent = ({ onClose, interview, session, meetingType }: AgentProps) => {
               handleEndCall={handleUserLeave}
               handleSidebarAction={setSidebarType}
               isVideoOff={isVideoOff}
-              meetingType={meetingType}
+              meetingType="interview"
               toggleVideo={toggleVideo}
               toggleSidebar={toggleSidebar}
               isSidebarOpen={isSidebarOpen}
@@ -309,7 +262,6 @@ const Agent = ({ onClose, interview, session, meetingType }: AgentProps) => {
         </div>
       </div>
 
-      {/* Sidebar */}
       <AnimatePresence>
         {isSidebarOpen && (
           <motion.div
@@ -332,4 +284,4 @@ const Agent = ({ onClose, interview, session, meetingType }: AgentProps) => {
   );
 };
 
-export default Agent;
+export default InterviewAgent; 
