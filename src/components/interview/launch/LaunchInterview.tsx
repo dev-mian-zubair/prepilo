@@ -10,6 +10,7 @@ import InterviewDetails from "./InterviewDetails";
 import { createSession } from "@/actions/interview-session";
 import { Difficulty } from "@prisma/client";
 import { Session } from "@/types/session.types";
+import { InterviewAgentProvider } from "@/contexts/InterviewAgentContext";
 
 interface LaunchInterviewProps {
   interviewId: string;
@@ -124,14 +125,14 @@ const LaunchInterview = ({ interviewId, onClose }: LaunchInterviewProps) => {
   // Use the activeSession state variable directly
   if (activeSession) {
     return (
-      <InterviewAgent
-        interview={interview}
-        session={activeSession}
-        onClose={() => {
-          setActiveSession(null);
-          setActiveSessionId(null);
-        }}
-      />
+      <InterviewAgentProvider session={activeSession} onClose={() => {
+        setActiveSession(null);
+        setActiveSessionId(null);
+      }}>
+        <InterviewAgent
+          interview={interview}
+        />
+      </InterviewAgentProvider>
     );
   }
 
