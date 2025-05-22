@@ -6,7 +6,7 @@ import LaunchInterview from "../interview/launch/LaunchInterview";
 interface InterviewLauncherModalProps {
   isOpen: boolean;
   onClose: () => void;
-  interview?: any;
+  interview?: { id: string };
 }
 
 const InterviewLauncherModal = ({
@@ -14,6 +14,10 @@ const InterviewLauncherModal = ({
   onClose,
   interview,
 }: InterviewLauncherModalProps) => {
+  if (!interview?.id) {
+    return null;
+  }
+
   return (
     <Modal
       hideCloseButton
@@ -27,7 +31,7 @@ const InterviewLauncherModal = ({
         <ModalHeader className="hidden" />
         <ModalBody className="p-0 m-0">
           <div className="animate-fade-in transition-opacity duration-300 ease-out w-full h-screen flex items-center justify-center bg-background">
-            <LaunchInterview interview={interview as any} onClose={onClose} />
+            <LaunchInterview interviewId={interview.id} onClose={onClose} />
           </div>
         </ModalBody>
       </ModalContent>

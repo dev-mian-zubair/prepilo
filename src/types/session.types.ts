@@ -1,4 +1,4 @@
-import { SessionStatus } from "@prisma/client";
+import { SessionStatus, Difficulty } from "@prisma/client";
 
 export interface Session {
   id: string;
@@ -10,4 +10,7 @@ export interface Session {
   }[];
   startedAt: Date;
   status: SessionStatus;
+  version?: {
+    difficulty: Difficulty;
+  };
 }
