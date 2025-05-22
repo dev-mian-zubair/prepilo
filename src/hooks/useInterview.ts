@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
-import { Interview } from '@/types/interview';
+import { Interview } from '@/types/interview.types';
 import { getInterviewWithDetails } from '@/actions/interview';
+import { Difficulty } from '@prisma/client';
 
 export const useInterview = (interviewId: string) => {
   const [interview, setInterview] = useState<Interview | null>(null);
@@ -19,9 +20,12 @@ export const useInterview = (interviewId: string) => {
           id: data.id,
           title: data.title,
           duration: data.duration,
-          focusAreas: data.focusAreas as unknown as Interview['focusAreas'],
+          focusAreas: data.focusAreas as string[],
           technologies: data.technologies.map(t => t.technology.name),
-          description: data.description || undefined
+          description: data.description || undefined,
+          difficulty: data.versions[0]?.difficulty || 'BEGINNER' as Difficulty,
+          createdAt: data.createdAt,
+          updatedAt: data.updatedAt
         };
 
         setInterview(transformedInterview);
