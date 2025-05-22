@@ -12,5 +12,10 @@ export interface Session {
   status: SessionStatus;
   version?: {
     difficulty: Difficulty;
+    interview?: {
+      title: string;
+      focusAreas: string[];
+      duration: number;
+    };
   };
 }

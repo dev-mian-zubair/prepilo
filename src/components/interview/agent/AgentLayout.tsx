@@ -8,6 +8,8 @@ import AgentCard from "@/components/call/AgentCard";
 
 import { MeetingType, SidebarType } from "@/types/interview";
 import { CallStatus } from "@/enums";
+import { Session } from "@/types/session.types";
+import { Interview } from "@/types/interview";
 
 interface AgentLayoutProps {
   webcamRef: React.RefObject<Webcam>;
@@ -21,6 +23,9 @@ interface AgentLayoutProps {
   isProcessing?: boolean;
   meetingType: MeetingType;
   userInitial?: string;
+  elapsedTime?: number;
+  session?: Session;
+  interview: Interview;
   onClose: () => void;
   onEndCall: () => void;
   onSidebarAction: (type: SidebarType) => void;
@@ -40,6 +45,9 @@ const AgentLayout = ({
   isProcessing,
   meetingType,
   userInitial = "U",
+  elapsedTime = 0,
+  session,
+  interview,
   onClose,
   onEndCall,
   onSidebarAction,
@@ -113,17 +121,26 @@ const AgentLayout = ({
           </div>
         </div>
 
-        <div className="absolute bottom-0 left-0 right-0 px-2 sm:px-4 pb-2 sm:pb-4">
+        <div className={`absolute bottom-0 left-0 right-0 px-2 sm:px-4 pb-2 sm:pb-4 transition-all duration-300 ease-in-out ${
+          isSidebarOpen ? "lg:pr-[360px]" : "pr-0"
+        }`}>
           {!error && !isProcessing && (
-            <MeetingControls
-              handleEndCall={onEndCall}
-              handleSidebarAction={onSidebarAction}
-              isVideoOff={isVideoOff}
-              meetingType={meetingType}
-              toggleVideo={onToggleVideo}
-              toggleSidebar={onToggleSidebar}
-              isSidebarOpen={isSidebarOpen}
-            />
+            <div className="max-w-4xl mx-auto">
+              <MeetingControls
+                elapsedTime={elapsedTime}
+                handleEndCall={onEndCall}
+                handleSidebarAction={(type) => {
+                  onSidebarAction(type);
+                  onToggleSidebar();
+                }}
+                isVideoOff={isVideoOff}
+                meetingType={meetingType}
+                toggleVideo={onToggleVideo}
+                toggleSidebar={onToggleSidebar}
+                isSidebarOpen={isSidebarOpen}
+                sidebarType={sidebarType}
+              />
+            </div>
           )}
         </div>
       </div>
@@ -141,6 +158,8 @@ const AgentLayout = ({
               messages={messages}
               type={sidebarType}
               onClose={onToggleSidebar}
+              session={session}
+              interview={interview}
             />
           </motion.div>
         )}

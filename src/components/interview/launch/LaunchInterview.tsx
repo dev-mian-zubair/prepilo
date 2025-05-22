@@ -125,7 +125,7 @@ const LaunchInterview = ({ interviewId, onClose }: LaunchInterviewProps) => {
   // Use the activeSession state variable directly
   if (activeSession) {
     return (
-      <InterviewAgentProvider session={activeSession} onClose={() => {
+      <InterviewAgentProvider session={activeSession} interview={interview} onClose={() => {
         setActiveSession(null);
         setActiveSessionId(null);
       }}>
