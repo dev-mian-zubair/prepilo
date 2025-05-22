@@ -4,6 +4,7 @@ import { SidebarType } from "@/types/interview";
 import { CallStatus } from "@/enums";
 import { handleIncompleteSession } from "@/actions/interview-session";
 import { useVapiCall } from "@/hooks/useVapiCall";
+import { Interview } from "@/types/interview";
 
 interface Message {
   role: "user" | "system" | "assistant";
@@ -22,6 +23,7 @@ interface InterviewAgentContextType {
   isVideoOff: boolean;
   isAgentSpeaking: boolean;
   session: Session;
+  interview: Interview;
 
   // Actions
   toggleSidebar: () => void;
@@ -40,12 +42,14 @@ const InterviewAgentContext = createContext<InterviewAgentContextType | undefine
 interface InterviewAgentProviderProps {
   children: React.ReactNode;
   session: Session;
+  interview: Interview;
   onClose: () => void;
 }
 
 export const InterviewAgentProvider: React.FC<InterviewAgentProviderProps> = ({
   children,
   session,
+  interview,
   onClose,
 }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -114,6 +118,7 @@ export const InterviewAgentProvider: React.FC<InterviewAgentProviderProps> = ({
     isVideoOff,
     isAgentSpeaking,
     session,
+    interview,
 
     // Actions
     toggleSidebar,
