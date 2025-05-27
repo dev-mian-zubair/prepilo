@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Interview } from '@/types/interview.types';
 import { getInterviewWithDetails } from '@/actions/interview';
 import { Difficulty } from '@prisma/client';
+import { FocusArea } from '@/enums';
 
 export const useInterview = (interviewId: string) => {
   const [interview, setInterview] = useState<Interview | null>(null);
@@ -20,7 +21,7 @@ export const useInterview = (interviewId: string) => {
           id: data.id,
           title: data.title,
           duration: data.duration,
-          focusAreas: data.focusAreas as string[],
+          focusAreas: data.focusAreas as unknown as FocusArea[],
           technologies: data.technologies.map(t => t.technology.name),
           description: data.description || undefined,
           difficulty: data.versions[0]?.difficulty || 'BEGINNER' as Difficulty,

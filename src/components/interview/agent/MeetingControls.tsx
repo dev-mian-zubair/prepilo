@@ -1,36 +1,34 @@
-import React from "react";
-import { MeetingType, SidebarType } from "@/types/interview";
-import { CallStatus } from "@/enums";
+import React, { useCallback } from "react";
+import { SidebarType } from "@/types/interview";
 import { VideoCameraIcon, VideoCameraSlashIcon, ChatBubbleLeftRightIcon, XMarkIcon, InformationCircleIcon } from "@heroicons/react/24/outline";
+import { useInterviewAgent } from "@/contexts/InterviewAgentContext";
 
 interface MeetingControlsProps {
   handleEndCall: () => void;
-  handleSidebarAction: (type: SidebarType) => void;
   isVideoOff: boolean;
-  meetingType: MeetingType;
+  meetingType: "interview" | "generate";
   toggleVideo: () => void;
-  toggleSidebar: () => void;
-  isSidebarOpen: boolean;
   elapsedTime?: number;
-  sidebarType: SidebarType;
 }
 
 const MeetingControls = ({
   handleEndCall,
-  handleSidebarAction,
   isVideoOff,
   meetingType,
   toggleVideo,
-  toggleSidebar,
-  isSidebarOpen,
   elapsedTime = 0,
-  sidebarType,
 }: MeetingControlsProps) => {
-  const formatTime = (seconds: number) => {
+  const { sidebarType, setSidebarType } = useInterviewAgent();
+
+  const handleSidebarAction = useCallback((type: SidebarType) => {
+    setSidebarType(type);
+  }, [setSidebarType]);
+
+  const formatTime = useCallback((seconds: number) => {
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = seconds % 60;
     return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
-  };
+  }, []);
 
   return (
     <div className="flex justify-center items-center gap-4">
@@ -56,7 +54,7 @@ const MeetingControls = ({
         <button
           onClick={() => handleSidebarAction("info")}
           className={`p-3 rounded-full transition-colors ${
-            isSidebarOpen && sidebarType === "info" ? "bg-blue-600 hover:bg-blue-700" : "bg-gray-800 hover:bg-gray-700"
+            sidebarType === "info" ? "bg-blue-600 hover:bg-blue-700" : "bg-gray-800 hover:bg-gray-700"
           }`}
           title="Show interview information"
         >
@@ -67,7 +65,7 @@ const MeetingControls = ({
       <button
         onClick={() => handleSidebarAction("conversation")}
         className={`p-3 rounded-full transition-colors ${
-          isSidebarOpen && sidebarType === "conversation" ? "bg-blue-600 hover:bg-blue-700" : "bg-gray-800 hover:bg-gray-700"
+          sidebarType === "conversation" ? "bg-blue-600 hover:bg-blue-700" : "bg-gray-800 hover:bg-gray-700"
         }`}
         title="Toggle conversation"
       >

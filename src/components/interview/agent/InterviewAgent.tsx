@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import Webcam from "react-webcam";
 
 import AgentLayout from "./AgentLayout";
@@ -16,8 +16,6 @@ const InterviewAgent = ({ interview }: InterviewAgentProps) => {
   const { user } = useAuth();
   const webcamRef = useRef<Webcam>(null);
   const {
-    isSidebarOpen,
-    sidebarType,
     elapsedTime,
     error,
     isProcessing,
@@ -25,8 +23,6 @@ const InterviewAgent = ({ interview }: InterviewAgentProps) => {
     callStatus,
     isVideoOff,
     isAgentSpeaking,
-    toggleSidebar,
-    setSidebarType,
     toggleVideo,
     handleUserLeave,
     handleFinalClose,
@@ -111,8 +107,6 @@ const InterviewAgent = ({ interview }: InterviewAgentProps) => {
       isVideoOff={isVideoOff}
       isAgentSpeaking={isAgentSpeaking}
       callStatus={callStatus}
-      isSidebarOpen={isSidebarOpen}
-      sidebarType={sidebarType}
       messages={messages}
       error={error}
       isProcessing={isProcessing}
@@ -123,9 +117,7 @@ const InterviewAgent = ({ interview }: InterviewAgentProps) => {
       interview={interview}
       onClose={handleFinalClose}
       onEndCall={handleUserLeave}
-      onSidebarAction={setSidebarType}
       onToggleVideo={toggleVideo}
-      onToggleSidebar={toggleSidebar}
     />
   );
 };

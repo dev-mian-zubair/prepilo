@@ -13,7 +13,6 @@ interface Message {
 
 interface InterviewAgentContextType {
   // States
-  isSidebarOpen: boolean;
   sidebarType: SidebarType;
   elapsedTime: number;
   error: string | null;
@@ -26,7 +25,6 @@ interface InterviewAgentContextType {
   interview: Interview;
 
   // Actions
-  toggleSidebar: () => void;
   setSidebarType: (type: SidebarType) => void;
   toggleVideo: () => void;
   handleLeaveCall: () => Promise<void>;
@@ -52,11 +50,11 @@ export const InterviewAgentProvider: React.FC<InterviewAgentProviderProps> = ({
   interview,
   onClose,
 }) => {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [sidebarType, setSidebarType] = useState<SidebarType>("conversation");
   const [elapsedTime, setElapsedTime] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
+  const sidebarUpdateRef = useRef(false);
 
   const {
     callStatus,
@@ -67,8 +65,6 @@ export const InterviewAgentProvider: React.FC<InterviewAgentProviderProps> = ({
     handleLeaveCall: originalHandleLeaveCall,
     startCall,
   } = useVapiCall();
-
-  const toggleSidebar = useCallback(() => setIsSidebarOpen((prev) => !prev), []);
 
   const handleLeaveCall = useCallback(async () => {
     await originalHandleLeaveCall();
@@ -106,9 +102,18 @@ export const InterviewAgentProvider: React.FC<InterviewAgentProviderProps> = ({
     }
   }, [session, messages, handleLeaveCall]);
 
+  const handleSidebarTypeChange = useCallback((type: SidebarType) => {
+    if (sidebarUpdateRef.current) return;
+    sidebarUpdateRef.current = true;
+    setSidebarType(type);
+    // Reset the ref after a short delay to allow for state updates
+    setTimeout(() => {
+      sidebarUpdateRef.current = false;
+    }, 100);
+  }, []);
+
   const value = {
     // States
-    isSidebarOpen,
     sidebarType,
     elapsedTime,
     error,
@@ -121,8 +126,7 @@ export const InterviewAgentProvider: React.FC<InterviewAgentProviderProps> = ({
     interview,
 
     // Actions
-    toggleSidebar,
-    setSidebarType,
+    setSidebarType: handleSidebarTypeChange,
     toggleVideo,
     handleLeaveCall,
     handleUserLeave,

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo, useCallback } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import Webcam from "react-webcam";
 
@@ -6,18 +6,17 @@ import MeetingControls from "./MeetingControls";
 import ActionSidebar from "./ActionSidebar";
 import AgentCard from "@/components/call/AgentCard";
 
-import { MeetingType, SidebarType } from "@/types/interview";
+import { MeetingType } from "@/types/interview";
 import { CallStatus } from "@/enums";
 import { Session } from "@/types/session.types";
 import { Interview } from "@/types/interview";
+import { useInterviewAgent } from "@/contexts/InterviewAgentContext";
 
 interface AgentLayoutProps {
   webcamRef: React.RefObject<Webcam>;
   isVideoOff: boolean;
   isAgentSpeaking: boolean;
   callStatus: CallStatus;
-  isSidebarOpen: boolean;
-  sidebarType: SidebarType;
   messages: any[];
   error: string | null;
   isProcessing?: boolean;
@@ -25,12 +24,10 @@ interface AgentLayoutProps {
   userInitial?: string;
   elapsedTime?: number;
   session?: Session;
-  interview: Interview;
+  interview?: Interview;
   onClose: () => void;
   onEndCall: () => void;
-  onSidebarAction: (type: SidebarType) => void;
   onToggleVideo: () => void;
-  onToggleSidebar: () => void;
 }
 
 const AgentLayout = ({
@@ -38,8 +35,6 @@ const AgentLayout = ({
   isVideoOff,
   isAgentSpeaking,
   callStatus,
-  isSidebarOpen,
-  sidebarType,
   messages,
   error,
   isProcessing,
@@ -50,17 +45,20 @@ const AgentLayout = ({
   interview,
   onClose,
   onEndCall,
-  onSidebarAction,
   onToggleVideo,
-  onToggleSidebar,
 }: AgentLayoutProps) => {
+  const { sidebarType, setSidebarType } = useInterviewAgent();
+  
+  const isSidebarOpen = useMemo(() => sidebarType !== null, [sidebarType]);
+  const sidebarPadding = useMemo(() => isSidebarOpen ? "lg:pr-[360px]" : "pr-0", [isSidebarOpen]);
+
+  const handleSidebarClose = useCallback(() => {
+    setSidebarType(null);
+  }, [setSidebarType]);
+
   return (
     <div className="fixed inset-0 bg-gray-900">
-      <div
-        className={`h-full transition-all duration-300 ease-in-out ${
-          isSidebarOpen ? "lg:pr-[360px]" : "pr-0"
-        }`}
-      >
+      <div className={`h-full transition-all duration-300 ease-in-out ${sidebarPadding}`}>
         <div className="relative h-full p-2 sm:p-4 grid place-items-center">
           {error && (
             <div className="absolute top-4 left-4 right-4 z-[40] bg-red-500 text-white p-4 rounded-lg flex justify-between items-center">
@@ -121,24 +119,15 @@ const AgentLayout = ({
           </div>
         </div>
 
-        <div className={`absolute bottom-0 left-0 right-0 px-2 sm:px-4 pb-2 sm:pb-4 transition-all duration-300 ease-in-out ${
-          isSidebarOpen ? "lg:pr-[360px]" : "pr-0"
-        }`}>
+        <div className={`absolute bottom-0 left-0 right-0 px-2 sm:px-4 pb-2 sm:pb-4 transition-all duration-300 ease-in-out ${sidebarPadding}`}>
           {!error && !isProcessing && (
             <div className="max-w-4xl mx-auto">
               <MeetingControls
                 elapsedTime={elapsedTime}
                 handleEndCall={onEndCall}
-                handleSidebarAction={(type) => {
-                  onSidebarAction(type);
-                  onToggleSidebar();
-                }}
                 isVideoOff={isVideoOff}
                 meetingType={meetingType}
                 toggleVideo={onToggleVideo}
-                toggleSidebar={onToggleSidebar}
-                isSidebarOpen={isSidebarOpen}
-                sidebarType={sidebarType}
               />
             </div>
           )}
@@ -157,7 +146,7 @@ const AgentLayout = ({
             <ActionSidebar
               messages={messages}
               type={sidebarType}
-              onClose={onToggleSidebar}
+              onClose={handleSidebarClose}
               session={session}
               interview={interview}
             />
