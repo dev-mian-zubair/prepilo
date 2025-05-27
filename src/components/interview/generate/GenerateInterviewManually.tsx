@@ -54,16 +54,21 @@ const GenerateInterviewManually: React.FC<GenerateInterviewManuallyProps> = ({
   const [customDuration, setCustomDuration] = useState("");
   const [selectedTemplate, setSelectedTemplate] = useState("Frontend");
 
-  // Auto-populate title
-  useEffect(() => {
+  const updateTitle = () => {
     const focusAreaLabel =
       focusAreaOptions.find((opt) => opt.key === currentFocusAreas[0])?.label ||
       "Technical";
     const techLabel = currentTechnologies[0] || "Coding";
-    const title = `${focusAreaLabel} ${techLabel} ${currentDuration} Min`;
+    const duration = customDuration || currentDuration;
+    const title = `${focusAreaLabel} ${techLabel} ${duration} Min`;
 
     setValue("title", title, { shouldValidate: true });
-  }, [currentFocusAreas, currentTechnologies, currentDuration, setValue]);
+  };
+
+  // Auto-populate title
+  useEffect(() => {
+    updateTitle();
+  }, [currentFocusAreas, currentTechnologies, currentDuration, customDuration]);
 
   const handleFocusAreaToggle = (area: FocusArea): void => {
     const updatedAreas = currentFocusAreas.includes(area)
@@ -71,11 +76,13 @@ const GenerateInterviewManually: React.FC<GenerateInterviewManuallyProps> = ({
       : [...currentFocusAreas, area];
 
     setValue("focusAreas", updatedAreas, { shouldValidate: true });
+    updateTitle();
   };
 
   const handleDurationSelect = (duration: Duration): void => {
     setValue("duration", duration, { shouldValidate: true });
     setCustomDuration(""); // Clear custom duration when selecting predefined
+    updateTitle();
   };
 
   const handleTechnologyToggle = (tech: string): void => {
@@ -84,6 +91,7 @@ const GenerateInterviewManually: React.FC<GenerateInterviewManuallyProps> = ({
       : [...currentTechnologies, tech];
 
     setValue("technologies", updatedTechs, { shouldValidate: true });
+    updateTitle();
   };
 
   const handleAddCustomTech = (): void => {
@@ -92,6 +100,7 @@ const GenerateInterviewManually: React.FC<GenerateInterviewManuallyProps> = ({
 
       setValue("technologies", updatedTechs, { shouldValidate: true });
       setCustomTech("");
+      updateTitle();
     }
   };
 
@@ -128,14 +137,7 @@ const GenerateInterviewManually: React.FC<GenerateInterviewManuallyProps> = ({
         // Set custom duration and clear predefined duration
         setValue("duration", num, { shouldValidate: true });
         setCustomDuration(cleanValue);
-        
-        // Update title with custom duration
-        const focusAreaLabel =
-          focusAreaOptions.find((opt) => opt.key === currentFocusAreas[0])?.label ||
-          "Technical";
-        const techLabel = currentTechnologies[0] || "Coding";
-        const title = `${focusAreaLabel} ${techLabel} ${num} Min`;
-        setValue("title", title, { shouldValidate: true });
+        updateTitle();
       }
     }
   };
@@ -175,7 +177,7 @@ const GenerateInterviewManually: React.FC<GenerateInterviewManuallyProps> = ({
     <div className="w-full max-w-2xl mx-auto h-screen flex flex-col px-4">
       <div className="bg-gray-50 dark:bg-gray-800/50 rounded-xl flex flex-col flex-1">
         {/* Sticky Header */}
-        <div className="bg-gray-50 dark:bg-gray-800/50 p-8 pb-4 rounded-t-xl border-b border-divider">
+        <div className="sticky top-0 z-10 bg-gray-50 dark:bg-gray-800/100 p-8 pb-4 rounded-t-xl border-b border-divider">
           <div className="flex items-center justify-between">
             <Button
               className="rounded-xl group hover:bg-gray-100 dark:hover:bg-gray-800"
