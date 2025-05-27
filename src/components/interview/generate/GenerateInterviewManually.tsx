@@ -75,6 +75,7 @@ const GenerateInterviewManually: React.FC<GenerateInterviewManuallyProps> = ({
 
   const handleDurationSelect = (duration: Duration): void => {
     setValue("duration", duration, { shouldValidate: true });
+    setCustomDuration(""); // Clear custom duration when selecting predefined
   };
 
   const handleTechnologyToggle = (tech: string): void => {
@@ -101,19 +102,41 @@ const GenerateInterviewManually: React.FC<GenerateInterviewManuallyProps> = ({
     }
   };
 
-  const handleAddCustomDuration = (): void => {
-    const durationNum = parseInt(customDuration, 10);
-
-    if (!isNaN(durationNum) && durationNum > 0) {
-      setValue("duration", durationNum, { shouldValidate: true });
-      setCustomDuration("");
+  const handleCustomDuration = (e: React.ChangeEvent<HTMLInputElement> | React.KeyboardEvent<HTMLInputElement>): void => {
+    // Handle both change and keydown events
+    const value = 'value' in e.target ? e.target.value : customDuration;
+    
+    // If it's a keydown event and not Enter, ignore it
+    if ('key' in e && e.key !== 'Enter') {
+      return;
     }
-  };
 
-  const handleCustomDurationKeyDown = (e: React.KeyboardEvent): void => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      handleAddCustomDuration();
+    // Allow empty input for better UX
+    if (value === '') {
+      setCustomDuration('');
+      return;
+    }
+
+    // Strictly only allow positive integers
+    // Remove any non-digit characters immediately
+    const cleanValue = value.replace(/[^\d]/g, '');
+    
+    // Only proceed if we have a clean number
+    if (cleanValue) {
+      const num = parseInt(cleanValue, 10);
+      if (num > 0) {
+        // Set custom duration and clear predefined duration
+        setValue("duration", num, { shouldValidate: true });
+        setCustomDuration(cleanValue);
+        
+        // Update title with custom duration
+        const focusAreaLabel =
+          focusAreaOptions.find((opt) => opt.key === currentFocusAreas[0])?.label ||
+          "Technical";
+        const techLabel = currentTechnologies[0] || "Coding";
+        const title = `${focusAreaLabel} ${techLabel} ${num} Min`;
+        setValue("title", title, { shouldValidate: true });
+      }
     }
   };
 
@@ -133,6 +156,8 @@ const GenerateInterviewManually: React.FC<GenerateInterviewManuallyProps> = ({
         focusAreas: data.focusAreas,
         technologyNames: data.technologies,
       });
+
+      console.log(result);
 
       if (result.success && 'interview' in result) {
         onGenerate(result.interview);
@@ -213,7 +238,7 @@ const GenerateInterviewManually: React.FC<GenerateInterviewManuallyProps> = ({
                       type="button"
                       onClick={() => handleDurationSelect(key)}
                       className={`px-4 py-2 rounded-xl text-sm transition-all duration-200 hover:scale-[1.02] flex items-center gap-2 ${
-                        currentDuration === key
+                        currentDuration === key && !customDuration
                           ? "bg-primary text-white"
                           : "bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700"
                       }`}
@@ -223,13 +248,24 @@ const GenerateInterviewManually: React.FC<GenerateInterviewManuallyProps> = ({
                     </button>
                   ))}
                   <Input
-                    className="w-32 rounded-xl"
+                    className={`w-32 rounded-xl ${customDuration ? 'text-white' : ''}`}
                     placeholder="Custom (min)"
                     size="sm"
                     value={customDuration}
                     variant="bordered"
-                    onChange={(e) => setCustomDuration(e.target.value)}
-                    onKeyDown={handleCustomDurationKeyDown}
+                    onChange={handleCustomDuration}
+                    onKeyDown={handleCustomDuration}
+                    type="text"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
+                    onPaste={(e) => {
+                      e.preventDefault();
+                      const pastedText = e.clipboardData.getData('text');
+                      const cleanValue = pastedText.replace(/[^\d]/g, '');
+                      if (cleanValue) {
+                        setCustomDuration(cleanValue);
+                      }
+                    }}
                   />
                 </div>
               </div>
