@@ -1,5 +1,4 @@
 import { useEffect, useState, useRef, useCallback } from "react";
-
 import { vapi } from "@/lib/vapi.sdk";
 import { Message, SavedMessage } from "@/types/vapi.types";
 import { CallStatus } from "@/enums";
@@ -21,33 +20,22 @@ export const useVapiCall = (): UseVapiCallReturn => {
   const [isSpeaking, setIsSpeaking] = useState(false);
   const isInitialized = useRef(false);
   const isCleaningUp = useRef(false);
+  const mounted = useRef(true);
 
   const cleanupMediaStreams = useCallback(async () => {
-    if (isCleaningUp.current) return;
+    if (isCleaningUp.current || !mounted.current) return;
     isCleaningUp.current = true;
 
     try {
-      // Stop all media tracks from all video elements
-      document.querySelectorAll('video').forEach(video => {
-        if (video.srcObject) {
-          const stream = video.srcObject as MediaStream;
-          stream.getTracks().forEach(track => {
+      const elements = document.querySelectorAll('video, audio');
+      elements.forEach((element: any) => {
+        if (element.srcObject) {
+          const stream = element.srcObject as MediaStream;
+          stream.getTracks().forEach((track: any) => {
             track.stop();
             stream.removeTrack(track);
           });
-          video.srcObject = null;
-        }
-      });
-
-      // Stop all media tracks from all audio elements
-      document.querySelectorAll('audio').forEach(audio => {
-        if (audio.srcObject) {
-          const stream = audio.srcObject as MediaStream;
-          stream.getTracks().forEach(track => {
-            track.stop();
-            stream.removeTrack(track);
-          });
-          audio.srcObject = null;
+          element.srcObject = null;
         }
       });
     } catch (error) {
@@ -58,18 +46,14 @@ export const useVapiCall = (): UseVapiCallReturn => {
   }, []);
 
   const cleanupVapi = useCallback(async () => {
-    if (isCleaningUp.current) return;
+    if (isCleaningUp.current || !mounted.current) return;
     isCleaningUp.current = true;
 
     try {
-      // Remove all event listeners
       vapi.removeAllListeners();
-      
-      // Stop VAPI
       await vapi.stop();
       
-      // Only update state if we're not in the middle of starting a new call
-      if (!isInitialized.current) {
+      if (!isInitialized.current && mounted.current) {
         setIsVideoOff(true);
         setCallStatus(CallStatus.FINISHED);
       }
@@ -81,23 +65,24 @@ export const useVapiCall = (): UseVapiCallReturn => {
   }, []);
 
   const startCall = useCallback(async (params: any) => {
-    if (isCleaningUp.current) return;
+    if (isCleaningUp.current || !mounted.current) return;
 
     try {
-      // Clean up any existing call first
-      await cleanupVapi();
-      await cleanupMediaStreams();
-
-      setCallStatus(CallStatus.CONNECTING);
-      setMessages([]);
       isInitialized.current = true;
+      if (mounted.current) {
+        setCallStatus(CallStatus.CONNECTING);
+        setMessages([]);
+      }
 
+      await Promise.all([cleanupVapi(), cleanupMediaStreams()]);
       await vapi.start(params.workflowId || params.interviewer, {
         variableValues: params.variables,
       });
     } catch (error) {
       console.error('Failed to start call:', error);
-      setCallStatus(CallStatus.FINISHED);
+      if (mounted.current) {
+        setCallStatus(CallStatus.FINISHED);
+      }
       isInitialized.current = false;
       throw error;
     }
@@ -105,58 +90,67 @@ export const useVapiCall = (): UseVapiCallReturn => {
 
   const handleLeaveCall = useCallback(async () => {
     isInitialized.current = false;
-    await cleanupVapi();
-    await cleanupMediaStreams();
+    await Promise.all([cleanupVapi(), cleanupMediaStreams()]);
   }, [cleanupVapi, cleanupMediaStreams]);
 
   const toggleVideo = useCallback(() => {
-    setIsVideoOff((prev) => !prev);
+    if (mounted.current) {
+      setIsVideoOff((prev) => !prev);
+    }
   }, []);
 
   useEffect(() => {
-    const onCallStart = () => setCallStatus(CallStatus.ACTIVE);
-    const onCallEnd = () => {
-      if (!isInitialized.current) {
-        setCallStatus(CallStatus.FINISHED);
-        cleanupVapi();
-        cleanupMediaStreams();
-      }
-    };
-    const onMessage = (message: Message) => {
-      if (message.type === "transcript" && message.transcriptType === "final") {
-        const newMessage = { role: message.role, content: message.transcript };
-        setMessages((prev) => [...prev, newMessage]);
-      }
-    };
-    const onSpeechStart = () => setIsSpeaking(true);
-    const onSpeechEnd = () => setIsSpeaking(false);
-    const onError = (error: any) => {
-      console.log("Error:", error.errorMsg);
-      if (!isInitialized.current) {
-        cleanupVapi();
-        cleanupMediaStreams();
-      }
+    mounted.current = true;
+
+    const handlers = {
+      'call-start': () => {
+        if (mounted.current) {
+          setCallStatus(CallStatus.ACTIVE);
+        }
+      },
+      'call-end': () => {
+        if (!isInitialized.current && mounted.current) {
+          setCallStatus(CallStatus.FINISHED);
+          Promise.all([cleanupVapi(), cleanupMediaStreams()]);
+        }
+      },
+      'message': (message: Message) => {
+        if (message.type === "transcript" && message.transcriptType === "final" && mounted.current) {
+          setMessages((prev) => [...prev, { role: message.role, content: message.transcript }]);
+        }
+      },
+      'speech-start': () => {
+        if (mounted.current) {
+          setIsSpeaking(true);
+        }
+      },
+      'speech-end': () => {
+        if (mounted.current) {
+          setIsSpeaking(false);
+        }
+      },
+      'error': (error: any) => {
+        console.error('Error:', error.errorMsg);
+        if (!isInitialized.current && mounted.current) {
+          Promise.all([cleanupVapi(), cleanupMediaStreams()]);
+        }
+      },
     };
 
-    vapi.on("call-start", onCallStart);
-    vapi.on("call-end", onCallEnd);
-    vapi.on("message", onMessage);
-    vapi.on("speech-start", onSpeechStart);
-    vapi.on("speech-end", onSpeechEnd);
-    vapi.on("error", onError);
+    // Register all event listeners
+    Object.entries(handlers).forEach(([event, handler]) => {
+      vapi.on(event as any, handler);
+    });
 
     return () => {
-      vapi.off("call-start", onCallStart);
-      vapi.off("call-end", onCallEnd);
-      vapi.off("message", onMessage);
-      vapi.off("speech-start", onSpeechStart);
-      vapi.off("speech-end", onSpeechEnd);
-      vapi.off("error", onError);
-      
-      // Only cleanup if we're not in the middle of starting a new call
+      mounted.current = false;
+      // Unregister all event listeners
+      Object.entries(handlers).forEach(([event, handler]) => {
+        vapi.off(event as any, handler);
+      });
+
       if (!isInitialized.current) {
-        cleanupVapi();
-        cleanupMediaStreams();
+        Promise.all([cleanupVapi(), cleanupMediaStreams()]);
       }
     };
   }, [cleanupVapi, cleanupMediaStreams]);

@@ -8,6 +8,7 @@ import { InterviewAgent } from "../agent";
 import SessionList from "./SessionList";
 import InterviewDetails from "./InterviewDetails";
 import { InterviewLauncherProvider, useInterviewLauncher } from "@/contexts/InterviewLauncherContext";
+import { InterviewAgentProvider } from "@/contexts/InterviewAgentContext";
 
 
 interface LaunchInterviewProps {
@@ -41,9 +42,15 @@ const LaunchInterviewContent = () => {
   // Use the activeSession state variable directly
   if (activeSession) {
     return (
-      <InterviewAgent
+      <InterviewAgentProvider
+        session={activeSession}
         interview={interview}
-      />
+        onClose={handleClose}
+      >
+        <InterviewAgent
+          interview={interview}
+        />
+      </InterviewAgentProvider>
     );
   }
 
