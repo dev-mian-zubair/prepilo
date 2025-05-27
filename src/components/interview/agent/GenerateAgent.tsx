@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useState, useRef } from "react";
 import Webcam from "react-webcam";
 
 import { useVapiCall } from "@/hooks/useVapiCall";
-import { SidebarType } from "@/types/interview";
 import { useAuth } from "@/providers/AuthProvider";
 import "@/styles/scrollbar.css";
 import { AgentLayout } from ".";
@@ -23,13 +22,12 @@ const GenerateAgent = ({ onClose }: GenerateAgentProps) => {
     handleLeaveCall,
     startCall,
   } = useVapiCall();
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-  const [sidebarType, setSidebarType] = useState<SidebarType>("conversation");
   const [error, setError] = useState<string | null>(null);
-
-  const toggleSidebar = useCallback(() => setIsSidebarOpen((prev) => !prev), []);
+  const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
+    if (isInitialized) return;
+
     const start = async () => {
       try {
         setError(null);
@@ -44,6 +42,7 @@ const GenerateAgent = ({ onClose }: GenerateAgentProps) => {
             userid: user?.id || "anonymous",
           },
         });
+        setIsInitialized(true);
       } catch (err) {
         console.error("Failed to start call:", err);
         setError("Failed to start the call. Please try again.");
@@ -53,29 +52,11 @@ const GenerateAgent = ({ onClose }: GenerateAgentProps) => {
     start();
 
     return () => {
-      if (webcamRef.current) {
-        const webcam = webcamRef.current;
-        const stream = webcam.stream;
-        if (stream) {
-          stream.getTracks().forEach(track => {
-            track.stop();
-            stream.removeTrack(track);
-          });
-        }
+      if (webcamRef.current?.stream) {
+        webcamRef.current.stream.getTracks().forEach(track => track.stop());
       }
-
-      navigator.mediaDevices.getUserMedia({ video: true, audio: true })
-        .then(stream => {
-          stream.getTracks().forEach(track => {
-            track.stop();
-            stream.removeTrack(track);
-          });
-        })
-        .catch(() => {
-          // Ignore errors as we're just cleaning up
-        });
     };
-  }, [user, startCall]);
+  }, [user, startCall, isInitialized]);
 
   const handleFinalClose = useCallback(() => {
     handleLeaveCall();
@@ -93,17 +74,13 @@ const GenerateAgent = ({ onClose }: GenerateAgentProps) => {
       isVideoOff={isVideoOff}
       isAgentSpeaking={isAgentSpeaking}
       callStatus={callStatus}
-      isSidebarOpen={isSidebarOpen}
-      sidebarType={sidebarType}
       messages={messages}
       error={error}
       meetingType="generate"
       userInitial={user?.user_metadata?.name?.[0] || "U"}
       onClose={handleFinalClose}
       onEndCall={handleUserLeave}
-      onSidebarAction={setSidebarType}
       onToggleVideo={toggleVideo}
-      onToggleSidebar={toggleSidebar}
     />
   );
 };

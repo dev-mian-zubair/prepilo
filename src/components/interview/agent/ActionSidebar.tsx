@@ -9,12 +9,12 @@ interface ActionSidebarProps {
   type: SidebarType;
   onClose: () => void;
   session?: Session;
-  interview: Interview;
+  interview?: Interview;
 }
 
 const ActionSidebar = ({ messages, type, onClose, session, interview }: ActionSidebarProps) => {
   const renderContent = () => {
-    if (type === "info" && session) {
+    if (type === "info" && session && interview) {
       return (
         <div className="space-y-6">
           <div>

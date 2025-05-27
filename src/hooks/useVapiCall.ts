@@ -68,11 +68,11 @@ export const useVapiCall = (): UseVapiCallReturn => {
       // Stop VAPI
       await vapi.stop();
       
-      // Reset state except messages
-      setIsVideoOff(true);
-      setCallStatus(CallStatus.FINISHED);
-      
-      isInitialized.current = false;
+      // Only update state if we're not in the middle of starting a new call
+      if (!isInitialized.current) {
+        setIsVideoOff(true);
+        setCallStatus(CallStatus.FINISHED);
+      }
     } catch (error) {
       console.error('Error during VAPI cleanup:', error);
     } finally {
@@ -98,11 +98,13 @@ export const useVapiCall = (): UseVapiCallReturn => {
     } catch (error) {
       console.error('Failed to start call:', error);
       setCallStatus(CallStatus.FINISHED);
+      isInitialized.current = false;
       throw error;
     }
   }, [cleanupVapi, cleanupMediaStreams]);
 
   const handleLeaveCall = useCallback(async () => {
+    isInitialized.current = false;
     await cleanupVapi();
     await cleanupMediaStreams();
   }, [cleanupVapi, cleanupMediaStreams]);
@@ -114,9 +116,11 @@ export const useVapiCall = (): UseVapiCallReturn => {
   useEffect(() => {
     const onCallStart = () => setCallStatus(CallStatus.ACTIVE);
     const onCallEnd = () => {
-      setCallStatus(CallStatus.FINISHED);
-      cleanupVapi();
-      cleanupMediaStreams();
+      if (!isInitialized.current) {
+        setCallStatus(CallStatus.FINISHED);
+        cleanupVapi();
+        cleanupMediaStreams();
+      }
     };
     const onMessage = (message: Message) => {
       if (message.type === "transcript" && message.transcriptType === "final") {
@@ -128,8 +132,10 @@ export const useVapiCall = (): UseVapiCallReturn => {
     const onSpeechEnd = () => setIsSpeaking(false);
     const onError = (error: any) => {
       console.log("Error:", error.errorMsg);
-      cleanupVapi();
-      cleanupMediaStreams();
+      if (!isInitialized.current) {
+        cleanupVapi();
+        cleanupMediaStreams();
+      }
     };
 
     vapi.on("call-start", onCallStart);
@@ -146,8 +152,12 @@ export const useVapiCall = (): UseVapiCallReturn => {
       vapi.off("speech-start", onSpeechStart);
       vapi.off("speech-end", onSpeechEnd);
       vapi.off("error", onError);
-      cleanupVapi();
-      cleanupMediaStreams();
+      
+      // Only cleanup if we're not in the middle of starting a new call
+      if (!isInitialized.current) {
+        cleanupVapi();
+        cleanupMediaStreams();
+      }
     };
   }, [cleanupVapi, cleanupMediaStreams]);
 
