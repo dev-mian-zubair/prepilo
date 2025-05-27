@@ -13,6 +13,7 @@ interface GenerateAgentProps {
 const GenerateAgent = ({ onClose }: GenerateAgentProps) => {
   const { user } = useAuth();
   const webcamRef = useRef<Webcam>(null);
+  const [isPaused, setIsPaused] = useState(false);
   const {
     callStatus,
     messages,
@@ -68,6 +69,22 @@ const GenerateAgent = ({ onClose }: GenerateAgentProps) => {
     onClose();
   }, [handleLeaveCall, onClose]);
 
+  const handlePause = useCallback(async () => {
+    await handleLeaveCall();
+    setIsPaused(true);
+  }, [handleLeaveCall]);
+
+  const handleResume = useCallback(async () => {
+    await startCall({
+      workflowId: process.env.NEXT_PUBLIC_VAPI_WORKFLOW_ID,
+      variables: {
+        username: user?.user_metadata?.name || "User",
+        userid: user?.id || "anonymous",
+      },
+    });
+    setIsPaused(false);
+  }, [startCall, user]);
+
   return (
     <AgentLayout
       webcamRef={webcamRef}
@@ -81,6 +98,9 @@ const GenerateAgent = ({ onClose }: GenerateAgentProps) => {
       onClose={handleFinalClose}
       onEndCall={handleUserLeave}
       onToggleVideo={toggleVideo}
+      isPaused={isPaused}
+      onPause={handlePause}
+      onResume={handleResume}
     />
   );
 };
