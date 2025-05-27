@@ -1,7 +1,7 @@
 import React from 'react';
 import { Session } from '@/types/session.types';
 import { Button } from '@heroui/button';
-import { Clock, Play, RefreshCw, X } from 'lucide-react';
+import { Clock, Play, RefreshCw, X, Rocket } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { Interview } from '@/types/interview';
 
@@ -163,35 +163,56 @@ const SessionList = ({
       <div className="flex-1 overflow-y-auto p-6">
         <div className="max-w-4xl mx-auto space-y-4">
           <h2 className="text-lg font-semibold text-white mb-4">Your Sessions</h2>
-          {sessions.map((session) => (
-            <div
-              key={session.id}
-              className="group w-full text-left bg-gray-800 hover:bg-gray-700 rounded-xl p-6 transition-all duration-200 
-                hover:scale-[1.01] hover:shadow-lg"
-            >
-              <div className="flex items-center justify-between w-full">
-                <div className="flex items-center gap-4">
-                  <div className="flex-shrink-0 w-12 h-12 flex items-center justify-center rounded-full bg-primary/5 group-hover:bg-primary/10 transition-colors">
-                    <Play className="w-5 h-5 text-primary" />
+          {sessions.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
+              <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-4">
+                <Rocket className="w-8 h-8 text-primary" />
+              </div>
+              <h3 className="text-xl font-semibold text-white mb-2">Start Your First Interview</h3>
+              <p className="text-gray-400 mb-6 max-w-md">
+                Begin your interview preparation journey. Practice with our AI interviewer and get real-time feedback to improve your skills.
+              </p>
+              <Button
+                onClick={onReattempt}
+                className="flex items-center gap-2"
+                color="primary"
+                size="lg"
+              >
+                <Play className="w-5 h-5" />
+                Start Interview
+              </Button>
+            </div>
+          ) : (
+            sessions.map((session) => (
+              <div
+                key={session.id}
+                className="group w-full text-left bg-gray-800 hover:bg-gray-700 rounded-xl p-6 transition-all duration-200 
+                  hover:scale-[1.01] hover:shadow-lg"
+              >
+                <div className="flex items-center justify-between w-full">
+                  <div className="flex items-center gap-4">
+                    <div className="flex-shrink-0 w-12 h-12 flex items-center justify-center rounded-full bg-primary/5 group-hover:bg-primary/10 transition-colors">
+                      <Play className="w-5 h-5 text-primary" />
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="text-lg font-semibold text-white group-hover:text-primary transition-colors">
+                        Session {formatDistanceToNow(new Date(session.startedAt), { addSuffix: true })}
+                      </span>
+                      <span className="text-sm text-gray-400">
+                        {session.version?.difficulty || 'Unknown'} Level
+                      </span>
+                    </div>
                   </div>
-                  <div className="flex flex-col">
-                    <span className="text-lg font-semibold text-white group-hover:text-primary transition-colors">
-                      Session {formatDistanceToNow(new Date(session.startedAt), { addSuffix: true })}
+                  <div className="flex items-center gap-3">
+                    <span className={`px-3 py-1 rounded-full text-sm ${getStatusColor(session.status)}`}>
+                      {getStatusLabel(session.status)}
                     </span>
-                    <span className="text-sm text-gray-400">
-                      {session.version?.difficulty || 'Unknown'} Level
-                    </span>
+                    {getActionButton(session)}
                   </div>
-                </div>
-                <div className="flex items-center gap-3">
-                  <span className={`px-3 py-1 rounded-full text-sm ${getStatusColor(session.status)}`}>
-                    {getStatusLabel(session.status)}
-                  </span>
-                  {getActionButton(session)}
                 </div>
               </div>
-            </div>
-          ))}
+            ))
+          )}
         </div>
       </div>
     </div>
