@@ -145,7 +145,7 @@ const InterviewGeneratorModal = ({
             )}
             {step === "launch" && interview && (
               <div className="animate-fade-in transition-opacity duration-300 ease-out w-full">
-                <LaunchInterview interview={interview} onClose={handleClose} />
+                <LaunchInterview interviewId={interview.id} onClose={handleClose} />
               </div>
             )}
           </div>

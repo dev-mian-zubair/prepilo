@@ -16,7 +16,7 @@ const InterviewAgent = ({ interview }: InterviewAgentProps) => {
   const { user } = useAuth();
   const webcamRef = useRef<Webcam>(null);
   const {
-    // elapsedTime,
+    elapsedTime,
     error,
     isProcessing,
     messages,
@@ -27,7 +27,7 @@ const InterviewAgent = ({ interview }: InterviewAgentProps) => {
     handleUserLeave,
     handleFinalClose,
     startCall,
-    // setElapsedTime,
+    setElapsedTime,
     setError,
     session,
   } = useInterviewAgent();
@@ -79,12 +79,11 @@ const InterviewAgent = ({ interview }: InterviewAgentProps) => {
     };
   }, [session, startCall, setError]);
 
-  // Timer effect - commented out to prevent infinite renders
-  /*
+  // Timer effect
   useEffect(() => {
     if (callStatus === 'ACTIVE') {
       timerRef.current = setInterval(() => {
-        setElapsedTime((prev) => prev + 1);
+        setElapsedTime((prev: number) => prev + 1);
       }, 1000);
     } else {
       if (timerRef.current) {
@@ -99,9 +98,9 @@ const InterviewAgent = ({ interview }: InterviewAgentProps) => {
       if (timerRef.current) {
         clearInterval(timerRef.current);
       }
+      setElapsedTime(0); // Reset time on unmount
     };
   }, [callStatus, setElapsedTime]);
-  */
 
   return (
     <AgentLayout
@@ -114,7 +113,7 @@ const InterviewAgent = ({ interview }: InterviewAgentProps) => {
       isProcessing={isProcessing}
       meetingType="interview"
       userInitial={user?.user_metadata?.name?.[0] || "U"}
-      elapsedTime={0} // Hardcoded to 0 since timer is disabled
+      elapsedTime={elapsedTime}
       session={session}
       interview={interview}
       onClose={handleFinalClose}
