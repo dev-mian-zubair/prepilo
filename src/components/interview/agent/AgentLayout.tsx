@@ -28,6 +28,9 @@ interface AgentLayoutProps {
   onClose: () => void;
   onEndCall: () => void;
   onToggleVideo: () => void;
+  isPaused: boolean;
+  onPause: () => Promise<void>;
+  onResume: () => Promise<void>;
 }
 
 const AgentLayout = ({
@@ -46,6 +49,9 @@ const AgentLayout = ({
   onClose,
   onEndCall,
   onToggleVideo,
+  isPaused,
+  onPause,
+  onResume,
 }: AgentLayoutProps) => {
   const { sidebarType, setSidebarType } = useInterviewAgent();
   
@@ -128,6 +134,9 @@ const AgentLayout = ({
                 isVideoOff={isVideoOff}
                 meetingType={meetingType}
                 toggleVideo={onToggleVideo}
+                isPaused={isPaused}
+                onPause={onPause}
+                onResume={onResume}
               />
             </div>
           )}

@@ -23,6 +23,7 @@ const InterviewAgent = ({ interview }: InterviewAgentProps) => {
     callStatus,
     isVideoOff,
     isAgentSpeaking,
+    isPaused,
     toggleVideo,
     handleUserLeave,
     handleFinalClose,
@@ -30,6 +31,8 @@ const InterviewAgent = ({ interview }: InterviewAgentProps) => {
     setElapsedTime,
     setError,
     session,
+    pauseSession,
+    resumeSession,
   } = useInterviewAgent();
   const timerRef = useRef<NodeJS.Timeout>();
 
@@ -81,7 +84,7 @@ const InterviewAgent = ({ interview }: InterviewAgentProps) => {
 
   // Timer effect
   useEffect(() => {
-    if (callStatus === 'ACTIVE') {
+    if (callStatus === 'ACTIVE' && !isPaused) {
       timerRef.current = setInterval(() => {
         setElapsedTime((prev: number) => prev + 1);
       }, 1000);
@@ -100,7 +103,7 @@ const InterviewAgent = ({ interview }: InterviewAgentProps) => {
       }
       setElapsedTime(0); // Reset time on unmount
     };
-  }, [callStatus, setElapsedTime]);
+  }, [callStatus, setElapsedTime, isPaused]);
 
   return (
     <AgentLayout
@@ -119,6 +122,9 @@ const InterviewAgent = ({ interview }: InterviewAgentProps) => {
       onClose={handleFinalClose}
       onEndCall={handleUserLeave}
       onToggleVideo={toggleVideo}
+      isPaused={isPaused}
+      onPause={pauseSession}
+      onResume={resumeSession}
     />
   );
 };

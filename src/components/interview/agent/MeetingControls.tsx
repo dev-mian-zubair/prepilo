@@ -1,22 +1,31 @@
 import React, { useCallback } from "react";
+import { Video, VideoOff, PhoneOff, Pause, Play } from "lucide-react";
+import { Button } from "@heroui/button";
+import { useInterviewAgent } from "@/contexts/InterviewAgentContext";
+import { MeetingType } from "@/types/interview";
 import { SidebarType } from "@/types/interview";
 import { VideoCameraIcon, VideoCameraSlashIcon, ChatBubbleLeftRightIcon, XMarkIcon, InformationCircleIcon } from "@heroicons/react/24/outline";
-import { useInterviewAgent } from "@/contexts/InterviewAgentContext";
 
 interface MeetingControlsProps {
+  elapsedTime: number;
   handleEndCall: () => void;
   isVideoOff: boolean;
-  meetingType: "interview" | "generate";
+  meetingType: MeetingType;
   toggleVideo: () => void;
-  elapsedTime?: number;
+  isPaused: boolean;
+  onPause: () => Promise<void>;
+  onResume: () => Promise<void>;
 }
 
 const MeetingControls = ({
+  elapsedTime = 0,
   handleEndCall,
   isVideoOff,
   meetingType,
   toggleVideo,
-  elapsedTime = 0,
+  isPaused,
+  onPause,
+  onResume,
 }: MeetingControlsProps) => {
   const { sidebarType, setSidebarType } = useInterviewAgent();
 
@@ -31,54 +40,52 @@ const MeetingControls = ({
   }, []);
 
   return (
-    <div className="flex justify-center items-center gap-4">
-      {meetingType === "interview" && (
-        <div className="text-white text-lg font-medium">
-          {formatTime(elapsedTime)}
-        </div>
-      )}
-
-      <button
-        onClick={toggleVideo}
-        className="p-3 rounded-full bg-gray-800 hover:bg-gray-700 transition-colors"
-        title={isVideoOff ? "Turn on camera" : "Turn off camera"}
-      >
-        {isVideoOff ? (
-          <VideoCameraSlashIcon className="w-6 h-6 text-gray-400" />
-        ) : (
-          <VideoCameraIcon className="w-6 h-6 text-gray-400" />
-        )}
-      </button>
-
-      {meetingType === "interview" && (
-        <button
-          onClick={() => handleSidebarAction("info")}
-          className={`p-3 rounded-full transition-colors ${
-            sidebarType === "info" ? "bg-blue-600 hover:bg-blue-700" : "bg-gray-800 hover:bg-gray-700"
-          }`}
-          title="Show interview information"
+    <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-4 flex items-center justify-between">
+      <div className="flex items-center gap-4">
+        <Button
+          className="rounded-xl"
+          isIconOnly
+          size="lg"
+          variant="light"
+          onPress={toggleVideo}
         >
-          <InformationCircleIcon className="w-6 h-6 text-white" />
-        </button>
-      )}
+          {isVideoOff ? <VideoOff className="w-5 h-5" /> : <Video className="w-5 h-5" />}
+        </Button>
+        <span className="text-sm text-gray-400">{formatTime(elapsedTime)}</span>
+      </div>
 
-      <button
-        onClick={() => handleSidebarAction("conversation")}
-        className={`p-3 rounded-full transition-colors ${
-          sidebarType === "conversation" ? "bg-blue-600 hover:bg-blue-700" : "bg-gray-800 hover:bg-gray-700"
-        }`}
-        title="Toggle conversation"
-      >
-        <ChatBubbleLeftRightIcon className="w-6 h-6 text-white" />
-      </button>
-
-      <button
-        onClick={handleEndCall}
-        className="p-3 rounded-full bg-red-600 hover:bg-red-700 transition-colors"
-        title="End call"
-      >
-        <XMarkIcon className="w-6 h-6 text-white" />
-      </button>
+      <div className="flex items-center gap-4">
+        {isPaused ? (
+          <Button
+            className="rounded-xl"
+            isIconOnly
+            size="lg"
+            variant="light"
+            onPress={onResume}
+          >
+            <Play className="w-5 h-5" />
+          </Button>
+        ) : (
+          <Button
+            className="rounded-xl"
+            isIconOnly
+            size="lg"
+            variant="light"
+            onPress={onPause}
+          >
+            <Pause className="w-5 h-5" />
+          </Button>
+        )}
+        <Button
+          className="rounded-xl"
+          color="danger"
+          size="lg"
+          variant="light"
+          onPress={handleEndCall}
+        >
+          <PhoneOff className="w-5 h-5" />
+        </Button>
+      </div>
     </div>
   );
 };

@@ -255,3 +255,102 @@ export async function getInterviewSessions(interviewId: string): Promise<Session
     throw new Error('Failed to fetch interview sessions');
   }
 }
+
+export async function storeSessionTranscript(sessionId: string, transcript: string) {
+  try {
+    const updatedSession = await prisma.session.update({
+      where: { id: sessionId },
+      data: {
+        transcript,
+        updatedAt: new Date(),
+      },
+    });
+
+    return { success: true, data: updatedSession };
+  } catch (error) {
+    console.error('Error storing session transcript:', error);
+    return { success: false, error: 'Failed to store session transcript' };
+  }
+}
+
+export async function getSessionTranscript(sessionId: string) {
+  try {
+    const session = await prisma.session.findUnique({
+      where: { id: sessionId },
+      select: { transcript: true },
+    });
+
+    if (!session) {
+      throw new Error('Session not found');
+    }
+
+    return { success: true, transcript: session.transcript };
+  } catch (error) {
+    console.error('Error retrieving session transcript:', error);
+    return { success: false, error: 'Failed to retrieve session transcript' };
+  }
+}
+
+export async function handlePauseSession(sessionId: string, transcript: string) {
+  try {
+    const session = await prisma.session.update({
+      where: { id: sessionId },
+      data: {
+        status: "PAUSED",
+        transcript,
+        updatedAt: new Date(),
+      },
+      include: {
+        version: {
+          include: {
+            questions: true,
+            interview: true
+          }
+        }
+      }
+    });
+
+    return { 
+      success: true, 
+      session,
+      transcript: session.transcript
+    };
+  } catch (error) {
+    console.error('Error pausing session:', error);
+    return { 
+      success: false, 
+      error: 'Failed to pause session' 
+    };
+  }
+}
+
+export async function handleResumeSession(sessionId: string) {
+  try {
+    const session = await prisma.session.update({
+      where: { id: sessionId },
+      data: {
+        status: "IN_PROGRESS",
+        updatedAt: new Date(),
+      },
+      include: {
+        version: {
+          include: {
+            questions: true,
+            interview: true
+          }
+        }
+      }
+    });
+
+    return { 
+      success: true, 
+      session
+    };
+  } catch (error) {
+    console.error('Error resuming session:', error);
+    return { 
+      success: false, 
+      error: 'Failed to resume session' 
+    };
+  }
+}
