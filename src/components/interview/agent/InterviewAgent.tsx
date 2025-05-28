@@ -18,7 +18,6 @@ const InterviewAgent = ({ interview }: InterviewAgentProps) => {
   const [hasHandledError, setHasHandledError] = useState(false);
   const initializedRef = useRef(false);
   const {
-    elapsedTime,
     error,
     isProcessing,
     messages,
@@ -30,13 +29,11 @@ const InterviewAgent = ({ interview }: InterviewAgentProps) => {
     handleUserLeave,
     handleFinalClose,
     startCall,
-    setElapsedTime,
     setError,
     session,
     pauseSession,
     resumeSession,
   } = useInterviewAgent();
-  const timerRef = useRef<NodeJS.Timeout>();
 
   // Handle errors by pausing the interview
   useEffect(() => {
@@ -71,7 +68,7 @@ const InterviewAgent = ({ interview }: InterviewAgentProps) => {
         await startCall({
           interviewer,
           variables: {
-          questions: formattedQuestions,
+            questions: formattedQuestions,
           },
         });
       }
@@ -112,29 +109,6 @@ const InterviewAgent = ({ interview }: InterviewAgentProps) => {
     };
   }, [initializeCall]);
 
-  // Timer effect
-  useEffect(() => {
-    if (callStatus === 'ACTIVE' && !isPaused) {
-      timerRef.current = setInterval(() => {
-        setElapsedTime((prev: number) => prev + 1);
-      }, 1000);
-    } else {
-      if (timerRef.current) {
-        clearInterval(timerRef.current);
-      }
-      if (callStatus === 'FINISHED') {
-        setElapsedTime(0);
-      }
-    }
-
-    return () => {
-      if (timerRef.current) {
-        clearInterval(timerRef.current);
-      }
-      setElapsedTime(0); // Reset time on unmount
-    };
-  }, [callStatus, setElapsedTime, isPaused]);
-
   return (
     <AgentLayout
       webcamRef={webcamRef}
@@ -146,7 +120,6 @@ const InterviewAgent = ({ interview }: InterviewAgentProps) => {
       isProcessing={isProcessing}
       meetingType="interview"
       userInitial={user?.user_metadata?.name?.[0] || "U"}
-      elapsedTime={elapsedTime}
       session={session}
       interview={interview}
       onClose={handleFinalClose}
