@@ -171,6 +171,7 @@ export async function handleIncompleteSession(sessionId: string, error?: string,
         technical: Number(feedbackResult.technical),
         communication: Number(feedbackResult.communication),
         summary: feedbackResult.summary,
+        questionAnalysis: feedbackResult.questionAnalysis,
       };
     }
 
@@ -183,7 +184,12 @@ export async function handleIncompleteSession(sessionId: string, error?: string,
         overallScore: completionPercentage >= 90 ? feedback?.technical : null,
         ...(feedback && {
           feedback: {
-            create: feedback,
+            create: {
+              technical: feedback.technical,
+              communication: feedback.communication,
+              summary: feedback.summary,
+              questionAnalysis: feedback.questionAnalysis,
+            },
           },
         }),
       },
@@ -450,6 +456,17 @@ export const generateFeedback = async (sessionId: string, transcript: string) =>
       summary: feedbackResult.summary,
       questionAnalysis: feedbackResult.questionAnalysis,
     };
+
+    // Save feedback to database
+    await prisma.feedback.create({
+      data: {
+        sessionId: session.id,
+        technical: feedback.technical,
+        communication: feedback.communication,
+        summary: feedback.summary,
+        questionAnalysis: feedback.questionAnalysis,
+      },
+    });
 
     return {
       success: true,
