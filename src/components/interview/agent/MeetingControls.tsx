@@ -15,7 +15,6 @@ interface MeetingControlsProps {
   isPaused: boolean;
   onPause: () => Promise<void>;
   onResume: () => Promise<void>;
-  onGenerateFeedback: () => Promise<void>;
 }
 
 const MeetingControls = ({
@@ -27,13 +26,16 @@ const MeetingControls = ({
   isPaused,
   onPause,
   onResume,
-  onGenerateFeedback,
 }: MeetingControlsProps) => {
-  const { sidebarType, setSidebarType } = useInterviewAgent();
+  const { sidebarType, setSidebarType, generateFeedback, isGeneratingFeedback } = useInterviewAgent();
 
   const handleSidebarAction = useCallback((type: SidebarType) => {
     setSidebarType(type);
   }, [setSidebarType]);
+
+  const handleGenerateFeedback = useCallback(async () => {
+    await generateFeedback();
+  }, [generateFeedback]);
 
   const formatTime = useCallback((seconds: number) => {
     const minutes = Math.floor(seconds / 60);
@@ -84,9 +86,12 @@ const MeetingControls = ({
             <InformationCircleIcon className="w-5 h-5 text-white" />
           </Button>
           <Button
-            onPress={onGenerateFeedback}
-            className="rounded-full bg-gray-800 hover:bg-gray-700 transition-colors"
+            onPress={handleGenerateFeedback}
+            className={`rounded-full transition-colors ${
+              sidebarType === "feedback" ? "bg-blue-600 hover:bg-blue-700" : "bg-gray-800 hover:bg-gray-700"
+            }`}
             title="Generate feedback"
+            isDisabled={isGeneratingFeedback}
           >
             <DocumentTextIcon className="w-5 h-5 text-white" />
           </Button>

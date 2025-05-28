@@ -354,3 +354,112 @@ export async function handleResumeSession(sessionId: string) {
     };
   }
 }
+
+export const generateFeedback = async (sessionId: string, transcript: string) => {
+  try {
+    // Get session details
+    const session = await prisma.session.findUnique({
+      where: { id: sessionId },
+      include: {
+        version: { 
+          include: { 
+            interview: true,
+            questions: true
+          } 
+        },
+      },
+    });
+
+    if (!session || !session.version) {
+      throw new Error("Session or version not found");
+    }
+
+    const sessionDuration = session.version.interview.duration || 0;
+    const sessionStartTime = session.startedAt;
+    const sessionEndTime = new Date();
+    const elapsedMinutes = (sessionEndTime.getTime() - sessionStartTime.getTime()) / (1000 * 60);
+    const completionPercentage = sessionDuration > 0 
+      ? (elapsedMinutes / sessionDuration) * 100 
+      : 0;
+
+    // Generate feedback using AI
+    const { text } = await generateText({
+      model: google("gemini-2.0-flash-001"),
+      prompt: `ONLY respond with a JSON object containing feedback details.
+
+      Based on the following interview transcript and questions, generate overall feedback for the interview.
+      Note: This is a partially completed interview (${completionPercentage.toFixed(1)}% complete).
+
+      Session Details:
+      - Interview: ${session.version.interview.title}
+      - Difficulty: ${session.version.difficulty}
+      - Focus Areas: ${session.version.interview.focusAreas.join(", ")}
+      - Duration: ${sessionDuration} minutes
+      - Elapsed Time: ${elapsedMinutes.toFixed(1)} minutes
+
+      Questions:
+      ${session.version.questions
+        .map((q, i) => `${i + 1}. ${q.text} (Type: ${q.type})`)
+        .join("\n")}
+
+      Transcript:
+      ${transcript}
+
+      Required JSON format:
+      {
+        "technical": 0-100,
+        "communication": 0-100,
+        "summary": "Overall feedback summary including note about partial completion",
+        "questionAnalysis": [
+          {
+            "question": "Question text",
+            "analysis": "Analysis of how well the candidate answered this question",
+            "strengths": ["List of strengths in the answer"],
+            "improvements": ["List of areas for improvement"]
+          }
+        ]
+      }
+
+      Important:
+      - Technical score reflects technical accuracy and depth.
+      - Communication score reflects clarity and articulation.
+      - Summary should mention that this was a partially completed interview.
+      - Consider the completion percentage when generating scores.
+      - Analyze how well each question was answered in the transcript.
+      - Provide specific strengths and areas for improvement for each question.`,
+      system:
+        "You are an AI assistant that generates feedback for interview sessions based on the transcript and questions.",
+    });
+
+    const jsonStart = text.indexOf("{");
+    const jsonEnd = text.lastIndexOf("}") + 1;
+    const feedbackResult = JSON.parse(text.slice(jsonStart, jsonEnd));
+
+    if (
+      feedbackResult.technical === undefined ||
+      feedbackResult.communication === undefined ||
+      !feedbackResult.summary ||
+      !feedbackResult.questionAnalysis
+    ) {
+      throw new Error("Invalid AI feedback format");
+    }
+
+    const feedback = {
+      technical: Number(feedbackResult.technical),
+      communication: Number(feedbackResult.communication),
+      summary: feedbackResult.summary,
+      questionAnalysis: feedbackResult.questionAnalysis,
+    };
+
+    return {
+      success: true,
+      feedback: JSON.stringify(feedback, null, 2),
+    };
+  } catch (error) {
+    console.error('Error generating feedback:', error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Failed to generate feedback',
+    };
+  }
+};
