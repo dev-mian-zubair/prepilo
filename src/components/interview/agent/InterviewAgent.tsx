@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
 import Webcam from "react-webcam";
 
 import AgentLayout from "./AgentLayout";
@@ -15,6 +15,8 @@ interface InterviewAgentProps {
 const InterviewAgent = ({ interview }: InterviewAgentProps) => {
   const { user } = useAuth();
   const webcamRef = useRef<Webcam>(null);
+  const [hasHandledError, setHasHandledError] = useState(false);
+  const initializedRef = useRef(false);
   const {
     elapsedTime,
     error,
@@ -36,26 +38,42 @@ const InterviewAgent = ({ interview }: InterviewAgentProps) => {
   } = useInterviewAgent();
   const timerRef = useRef<NodeJS.Timeout>();
 
+  // Handle errors by pausing the interview
   useEffect(() => {
-    const start = async () => {
-      try {
-        setError(null);
-        const formattedQuestions = session.questions
-          .map((question: { text: string }) => `- ${question.text}`)
-          .join("\n");
-        await startCall({
-          interviewer,
-          variables: {
-            questions: formattedQuestions,
-          },
-        });
-      } catch (err) {
-        console.error("Failed to start call:", err);
-        setError("Failed to start the call. Please try again.");
-      }
-    };
+    if (error && !isPaused && !hasHandledError) {
+      setHasHandledError(true);
+      pauseSession();
+    } else if (!error) {
+      setHasHandledError(false);
+    }
+  }, [error, isPaused, pauseSession, hasHandledError]);
 
-    start();
+  const initializeCall = useCallback(async () => {
+    if (initializedRef.current) return;
+    
+    try {
+      setError(null);
+      setHasHandledError(false);
+      const formattedQuestions = session.questions
+        .map((question: { text: string }) => `- ${question.text}`)
+        .join("\n");
+      await startCall({
+        interviewer,
+        variables: {
+          questions: formattedQuestions,
+        },
+      });
+      initializedRef.current = true;
+    } catch (err) {
+      console.error("Failed to start call:", err);
+      setError("Failed to start the call. Please try again.");
+      setHasHandledError(true);
+      pauseSession();
+    }
+  }, [session, startCall, setError, pauseSession]);
+
+  useEffect(() => {
+    initializeCall();
 
     return () => {
       if (webcamRef.current) {
@@ -80,7 +98,7 @@ const InterviewAgent = ({ interview }: InterviewAgentProps) => {
           // Ignore errors as we're just cleaning up
         });
     };
-  }, [session, startCall, setError]);
+  }, [initializeCall]);
 
   // Timer effect
   useEffect(() => {
