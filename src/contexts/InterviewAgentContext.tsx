@@ -246,16 +246,25 @@ export const InterviewAgentProvider: React.FC<InterviewAgentProviderProps> = ({
         .map((msg: Message) => `${msg.role.toUpperCase()}: ${msg.content}`)
         .join('\n\n');
 
+      if (!transcript) {
+        throw new Error("No conversation transcript available");
+      }
+
       const result = await generateFeedback(session.id, transcript);
-      if (!result.success || !result.feedback) {
-        throw new Error(result.error || 'No feedback generated');
+      if (!result.success) {
+        throw new Error(result.error || 'Failed to generate feedback');
+      }
+
+      if (!result.feedback) {
+        throw new Error('No feedback was generated');
       }
 
       setFeedback(result.feedback);
       setSidebarType("feedback");
     } catch (err) {
       console.error("Failed to generate feedback:", err);
-      setError("Failed to generate feedback. Please try again.");
+      setError(err instanceof Error ? err.message : "Failed to generate feedback. Please try again.");
+      setSidebarType("feedback");
     } finally {
       setIsGeneratingFeedback(false);
     }

@@ -34,8 +34,14 @@ const MeetingControls = ({
   }, [setSidebarType]);
 
   const handleGenerateFeedback = useCallback(async () => {
-    await generateFeedback();
-  }, [generateFeedback]);
+    try {
+      setSidebarType("feedback");
+      await generateFeedback();
+    } catch (error) {
+      console.error("Failed to generate feedback:", error);
+      setSidebarType("feedback");
+    }
+  }, [generateFeedback, setSidebarType]);
 
   const formatTime = useCallback((seconds: number) => {
     const minutes = Math.floor(seconds / 60);

@@ -57,14 +57,14 @@ model InterviewVersion {
 
 // InterviewQuestion: Questions within an interview version
 model InterviewQuestion {
-  id           String             @id @default(uuid())
+  id           String           @id @default(uuid())
   versionId    String
-  version      InterviewVersion   @relation(fields: [versionId], references: [id], onDelete: Cascade)
+  version      InterviewVersion @relation(fields: [versionId], references: [id], onDelete: Cascade)
   text         String
   type         QuestionType
   technologyId String?
-  technology   Technology?        @relation(fields: [technologyId], references: [id], onDelete: SetNull)
-  createdAt    DateTime           @default(now())
+  technology   Technology?      @relation(fields: [technologyId], references: [id], onDelete: SetNull)
+  createdAt    DateTime         @default(now())
 
   @@index([versionId]) // For version-specific questions
 }
@@ -92,18 +92,18 @@ model InterviewTechnology {
 
 // Session: Instance of a user taking an interview version
 model Session {
-  id           String             @id @default(uuid())
+  id           String            @id @default(uuid())
   userId       String
   versionId    String?
-  user         User               @relation(fields: [userId], references: [id], onDelete: Cascade)
-  version      InterviewVersion?  @relation(fields: [versionId], references: [id], onDelete: SetNull)
-  startedAt    DateTime           @default(now())
+  user         User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  version      InterviewVersion? @relation(fields: [versionId], references: [id], onDelete: SetNull)
+  startedAt    DateTime          @default(now())
   endedAt      DateTime?
-  status       SessionStatus      @default(IN_PROGRESS)
+  status       SessionStatus     @default(IN_PROGRESS)
   overallScore Float? // 0-100
-  transcript   String?            @db.Text
-  createdAt    DateTime           @default(now())
-  updatedAt    DateTime           @updatedAt
+  transcript   String?           @db.Text
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
   feedback     Feedback?
 
   @@index([userId, versionId]) // For user and version queries
@@ -111,15 +111,15 @@ model Session {
 
 // Feedback: Basic AI-generated feedback for a session
 model Feedback {
-  id            String   @id @default(cuid())
-  sessionId     String   @unique
-  technical     Int
-  communication Int
-  summary       String
-  questionAnalysis Json
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  session       Session  @relation(fields: [sessionId], references: [id])
+  id               String   @id @default(cuid())
+  sessionId        String   @unique
+  technical        Int
+  communication    Int
+  summary          String
+  questionAnalysis Json?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  session          Session  @relation(fields: [sessionId], references: [id])
 
   @@index([sessionId])
 }

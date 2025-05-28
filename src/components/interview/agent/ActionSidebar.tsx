@@ -14,7 +14,7 @@ interface ActionSidebarProps {
 }
 
 const ActionSidebar = ({ messages, type, onClose, session, interview }: ActionSidebarProps) => {
-  const { feedback, isGeneratingFeedback } = useInterviewAgent();
+  const { feedback, isGeneratingFeedback, error } = useInterviewAgent();
 
   const renderContent = () => {
     if (type === "info" && session && interview) {
@@ -66,6 +66,14 @@ const ActionSidebar = ({ messages, type, onClose, session, interview }: ActionSi
           <div className="flex flex-col h-full items-center justify-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
             <p className="mt-4 text-gray-400">Generating feedback...</p>
+          </div>
+        );
+      }
+
+      if (error) {
+        return (
+          <div className="flex flex-col h-full items-center justify-center">
+            <p className="text-red-400">{error}</p>
           </div>
         );
       }
