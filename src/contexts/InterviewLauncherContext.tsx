@@ -65,6 +65,7 @@ export const InterviewLauncherProvider = ({ children, interview, sessions, onClo
       if (result.success && result.session) {
         return {
           ...result.session,
+          status: result.session.status as 'IN_PROGRESS' | 'PAUSED' | 'COMPLETED',
           questions: (result.session.questions || []).map(q => ({
             id: q.id,
             text: q.text,

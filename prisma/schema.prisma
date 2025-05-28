@@ -143,7 +143,6 @@ enum SessionStatus {
   PAUSED
   IN_PROGRESS
   COMPLETED
-  CANCELLED
 }
 
 enum QuestionType {

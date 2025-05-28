@@ -36,8 +36,6 @@ const SessionList = ({
         return 'bg-blue-500/20 text-blue-400';
       case 'PAUSED':
         return 'bg-yellow-500/20 text-yellow-400';
-      case 'CANCELLED':
-        return 'bg-red-500/20 text-red-400';
       default:
         return 'bg-gray-500/20 text-gray-400';
     }
@@ -51,8 +49,6 @@ const SessionList = ({
         return 'In Progress';
       case 'PAUSED':
         return 'Paused';
-      case 'CANCELLED':
-        return 'Cancelled';
       default:
         return status;
     }
@@ -94,18 +90,6 @@ const SessionList = ({
           >
             <RefreshCw className="w-4 h-4" />
             Retry
-          </Button>
-        );
-      case 'CANCELLED':
-        return (
-          <Button
-            onPress={onReattempt}
-            className="flex items-center gap-2"
-            color="danger"
-            size="sm"
-          >
-            <RefreshCw className="w-4 h-4" />
-            Start New
           </Button>
         );
       default:

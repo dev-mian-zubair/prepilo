@@ -9,7 +9,7 @@ export interface Session {
     technology?: string;
   }[];
   startedAt: Date;
-  status: 'IN_PROGRESS' | 'COMPLETED' | 'PAUSED' | 'CANCELLED';
+  status: 'IN_PROGRESS' | 'PAUSED' | 'COMPLETED';
   version?: {
     difficulty: string;
   };
