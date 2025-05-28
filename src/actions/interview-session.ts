@@ -289,7 +289,7 @@ export async function getInterviewSessions(interviewId: string): Promise<Session
         technology: q.technology?.name
       })) || [],
       startedAt: session.startedAt,
-      status: session.status,
+      status: session.status as 'IN_PROGRESS' | 'PAUSED' | 'COMPLETED',
       version: session.version ? {
         difficulty: session.version.difficulty
       } : undefined,
