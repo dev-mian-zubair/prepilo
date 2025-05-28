@@ -40,54 +40,65 @@ const MeetingControls = ({
   }, []);
 
   return (
-    <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-4 flex items-center justify-between">
+    <div className="flex justify-center items-center gap-4">
+      {meetingType === "interview" && (
+        <div className="text-white text-lg font-medium">
+          {formatTime(elapsedTime)}
+        </div>
+      )}
+      <Button
+        onPress={toggleVideo}
+        className="rounded-full bg-gray-800 hover:bg-gray-700 transition-colors"
+        title={isVideoOff ? "Turn on camera" : "Turn off camera"}
+      >
+        {isVideoOff ? <VideoOff className="w-5 h-5 text-white" /> : <Video className="w-5 h-5 text-white" />}
+      </Button>
       <div className="flex items-center gap-4">
+      {isPaused ? (
         <Button
-          className="rounded-xl"
-          isIconOnly
-          size="lg"
-          variant="light"
-          onPress={toggleVideo}
+          className="rounded-full bg-gray-800 hover:bg-gray-700 transition-colors"
+          onPress={onResume}
         >
-          {isVideoOff ? <VideoOff className="w-5 h-5" /> : <Video className="w-5 h-5" />}
+          <Play className="w-5 h-5 text-white" />
         </Button>
-        <span className="text-sm text-gray-400">{formatTime(elapsedTime)}</span>
-      </div>
-
-      <div className="flex items-center gap-4">
-        {isPaused ? (
-          <Button
-            className="rounded-xl"
-            isIconOnly
-            size="lg"
-            variant="light"
-            onPress={onResume}
-          >
-            <Play className="w-5 h-5" />
-          </Button>
         ) : (
-          <Button
-            className="rounded-xl"
-            isIconOnly
-            size="lg"
-            variant="light"
-            onPress={onPause}
-          >
-            <Pause className="w-5 h-5" />
-          </Button>
-        )}
         <Button
-          className="rounded-xl"
-          color="danger"
-          size="lg"
-          variant="light"
-          onPress={handleEndCall}
+          className="rounded-full bg-gray-800 hover:bg-gray-700 transition-colors"
+          onPress={onPause}
         >
-          <PhoneOff className="w-5 h-5" />
+          <Pause className="w-5 h-5 text-white" />
         </Button>
+        )}
       </div>
+      {meetingType === "interview" && (
+        <Button
+          onPress={() => handleSidebarAction("info")}
+          className={`rounded-full transition-colors ${
+            sidebarType === "info" ? "bg-blue-600 hover:bg-blue-700" : "bg-gray-800 hover:bg-gray-700"
+          }`}
+          title="Show interview information"
+        >
+          <InformationCircleIcon className="w-5 h-5 text-white" />
+        </Button>
+      )}
+      <Button
+        onPress={() => handleSidebarAction("conversation")}
+        className={`rounded-full transition-colors ${
+          sidebarType === "conversation" ? "bg-blue-600 hover:bg-blue-700" : "bg-gray-800 hover:bg-gray-700"
+        }`}
+        title="Conversation"
+      >
+        <ChatBubbleLeftRightIcon className="w-5 h-5 text-white" />
+      </Button>
+      <Button
+        onPress={handleEndCall}
+        className="rounded-full bg-red-600 hover:bg-red-700 transition-colors"
+        title="End call"
+      >
+        <XMarkIcon className="w-5 h-5 text-gray-400 text-white" />
+      </Button>
     </div>
   );
 };
 
-export default MeetingControls; 
+export default MeetingControls;
