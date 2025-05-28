@@ -3,6 +3,7 @@ import { XMarkIcon } from "@heroicons/react/24/outline";
 import { SidebarType } from "@/types/interview";
 import { Session } from "@/types/session.types";
 import { Interview } from "@/types/interview";
+import { useInterviewAgent } from "@/contexts/InterviewAgentContext";
 
 interface ActionSidebarProps {
   messages: any[];
@@ -13,6 +14,8 @@ interface ActionSidebarProps {
 }
 
 const ActionSidebar = ({ messages, type, onClose, session, interview }: ActionSidebarProps) => {
+  const { feedback, isGeneratingFeedback } = useInterviewAgent();
+
   const renderContent = () => {
     if (type === "info" && session && interview) {
       return (
@@ -57,6 +60,33 @@ const ActionSidebar = ({ messages, type, onClose, session, interview }: ActionSi
       );
     }
 
+    if (type === "feedback") {
+      if (isGeneratingFeedback) {
+        return (
+          <div className="flex flex-col h-full items-center justify-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+            <p className="mt-4 text-gray-400">Generating feedback...</p>
+          </div>
+        );
+      }
+
+      if (!feedback) {
+        return (
+          <div className="flex flex-col h-full items-center justify-center">
+            <p className="text-gray-400">No feedback generated yet</p>
+          </div>
+        );
+      }
+
+      return (
+        <div className="space-y-6">
+          <div className="bg-gray-800 rounded-lg p-4">
+            <pre className="text-sm text-white whitespace-pre-wrap">{feedback}</pre>
+          </div>
+        </div>
+      );
+    }
+
     return (
       <div className="space-y-4">
         {messages.map((message, index) => (
@@ -86,7 +116,7 @@ const ActionSidebar = ({ messages, type, onClose, session, interview }: ActionSi
     <div className="h-full flex flex-col">
       <div className="p-4 border-b border-gray-800 flex justify-between items-center">
         <h2 className="text-lg font-semibold text-white">
-          {type === "conversation" ? "Conversation" : "Interview Information"}
+          {type === "conversation" ? "Conversation" : type === "info" ? "Interview Information" : "Feedback"}
         </h2>
         <button
           onClick={onClose}

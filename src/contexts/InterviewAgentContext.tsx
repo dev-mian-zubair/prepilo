@@ -2,7 +2,7 @@ import React, { createContext, useContext, useState, useCallback, useRef } from 
 import { Session } from "@/types/session.types";
 import { SidebarType } from "@/types/interview";
 import { CallStatus } from "@/enums";
-import { handleIncompleteSession, handlePauseSession, handleResumeSession, getSessionTranscript } from "@/actions/interview-session";
+import { handleIncompleteSession, handlePauseSession, handleResumeSession, getSessionTranscript, generateFeedback } from "@/actions/interview-session";
 import { useVapiCall } from "@/hooks/useVapiCall";
 import { Interview } from "@/types/interview";
 import { interviewer, resumingInterviewer } from "@/helpers/agent.helper";
@@ -25,6 +25,8 @@ interface InterviewAgentContextType {
   session: Session;
   interview: Interview;
   isPaused: boolean;
+  feedback: string | null;
+  isGeneratingFeedback: boolean;
 
   // Actions
   setSidebarType: (type: SidebarType) => void;
@@ -37,6 +39,7 @@ interface InterviewAgentContextType {
   setError: (error: string | null) => void;
   pauseSession: () => Promise<void>;
   resumeSession: () => Promise<void>;
+  generateFeedback: () => Promise<void>;
 }
 
 const InterviewAgentContext = createContext<InterviewAgentContextType | undefined>(undefined);
@@ -61,6 +64,8 @@ export const InterviewAgentProvider: React.FC<InterviewAgentProviderProps> = ({
   const [isPaused, setIsPaused] = useState(false);
   const [storedMessages, setStoredMessages] = useState<Message[]>([]);
   const sidebarUpdateRef = useRef(false);
+  const [feedback, setFeedback] = useState<string | null>(null);
+  const [isGeneratingFeedback, setIsGeneratingFeedback] = useState(false);
 
   const {
     callStatus,
@@ -230,6 +235,32 @@ export const InterviewAgentProvider: React.FC<InterviewAgentProviderProps> = ({
     }, 100);
   }, []);
 
+  const handleGenerateFeedback = useCallback(async () => {
+    try {
+      setIsGeneratingFeedback(true);
+      setError(null);
+
+      // Format transcript
+      const transcript = messages
+        .filter((msg: Message) => msg.role === 'user' || msg.role === 'assistant')
+        .map((msg: Message) => `${msg.role.toUpperCase()}: ${msg.content}`)
+        .join('\n\n');
+
+      const result = await generateFeedback(session.id, transcript);
+      if (!result.success || !result.feedback) {
+        throw new Error(result.error || 'No feedback generated');
+      }
+
+      setFeedback(result.feedback);
+      setSidebarType("feedback");
+    } catch (err) {
+      console.error("Failed to generate feedback:", err);
+      setError("Failed to generate feedback. Please try again.");
+    } finally {
+      setIsGeneratingFeedback(false);
+    }
+  }, [messages, session.id, setSidebarType]);
+
   const value = {
     // States
     sidebarType,
@@ -243,6 +274,8 @@ export const InterviewAgentProvider: React.FC<InterviewAgentProviderProps> = ({
     session,
     interview,
     isPaused,
+    feedback,
+    isGeneratingFeedback,
 
     // Actions
     setSidebarType: handleSidebarTypeChange,
@@ -255,6 +288,7 @@ export const InterviewAgentProvider: React.FC<InterviewAgentProviderProps> = ({
     setError,
     pauseSession,
     resumeSession,
+    generateFeedback: handleGenerateFeedback,
   };
 
   return (
