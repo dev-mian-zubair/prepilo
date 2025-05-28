@@ -4,7 +4,7 @@ import { Button } from "@heroui/button";
 import { useInterviewAgent } from "@/contexts/InterviewAgentContext";
 import { MeetingType } from "@/types/interview";
 import { SidebarType } from "@/types/interview";
-import { VideoCameraIcon, VideoCameraSlashIcon, ChatBubbleLeftRightIcon, XMarkIcon, InformationCircleIcon } from "@heroicons/react/24/outline";
+import { ChatBubbleLeftRightIcon, XMarkIcon, InformationCircleIcon, DocumentTextIcon } from "@heroicons/react/24/outline";
 
 interface MeetingControlsProps {
   elapsedTime: number;
@@ -15,6 +15,7 @@ interface MeetingControlsProps {
   isPaused: boolean;
   onPause: () => Promise<void>;
   onResume: () => Promise<void>;
+  onGenerateFeedback: () => Promise<void>;
 }
 
 const MeetingControls = ({
@@ -26,6 +27,7 @@ const MeetingControls = ({
   isPaused,
   onPause,
   onResume,
+  onGenerateFeedback,
 }: MeetingControlsProps) => {
   const { sidebarType, setSidebarType } = useInterviewAgent();
 
@@ -53,33 +55,42 @@ const MeetingControls = ({
       >
         {isVideoOff ? <VideoOff className="w-5 h-5 text-white" /> : <Video className="w-5 h-5 text-white" />}
       </Button>
-      <div className="flex items-center gap-4">
-      {isPaused ? (
-        <Button
-          className="rounded-full bg-gray-800 hover:bg-gray-700 transition-colors"
-          onPress={onResume}
-        >
-          <Play className="w-5 h-5 text-white" />
-        </Button>
-        ) : (
-        <Button
-          className="rounded-full bg-gray-800 hover:bg-gray-700 transition-colors"
-          onPress={onPause}
-        >
-          <Pause className="w-5 h-5 text-white" />
-        </Button>
-        )}
-      </div>
       {meetingType === "interview" && (
-        <Button
-          onPress={() => handleSidebarAction("info")}
-          className={`rounded-full transition-colors ${
-            sidebarType === "info" ? "bg-blue-600 hover:bg-blue-700" : "bg-gray-800 hover:bg-gray-700"
-          }`}
-          title="Show interview information"
-        >
-          <InformationCircleIcon className="w-5 h-5 text-white" />
-        </Button>
+        <>
+          <div className="flex items-center gap-4">
+            {isPaused ? (
+              <Button
+                className="rounded-full bg-gray-800 hover:bg-gray-700 transition-colors"
+                onPress={onResume}
+              >
+                <Play className="w-5 h-5 text-white" />
+              </Button>
+            ) : (
+              <Button
+                className="rounded-full bg-gray-800 hover:bg-gray-700 transition-colors"
+                onPress={onPause}
+              >
+                <Pause className="w-5 h-5 text-white" />
+              </Button>
+            )}
+          </div>
+          <Button
+            onPress={() => handleSidebarAction("info")}
+            className={`rounded-full transition-colors ${
+              sidebarType === "info" ? "bg-blue-600 hover:bg-blue-700" : "bg-gray-800 hover:bg-gray-700"
+            }`}
+            title="Show interview information"
+          >
+            <InformationCircleIcon className="w-5 h-5 text-white" />
+          </Button>
+          <Button
+            onPress={onGenerateFeedback}
+            className="rounded-full bg-gray-800 hover:bg-gray-700 transition-colors"
+            title="Generate feedback"
+          >
+            <DocumentTextIcon className="w-5 h-5 text-white" />
+          </Button>
+        </>
       )}
       <Button
         onPress={() => handleSidebarAction("conversation")}
