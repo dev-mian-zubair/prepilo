@@ -106,7 +106,6 @@ export const InterviewAgentProvider: React.FC<InterviewAgentProviderProps> = ({
   };
 
   useEffect(() => {
-    console.log("session", session);
     loadSessionTranscript();
   }, [session]);
 
@@ -157,17 +156,6 @@ export const InterviewAgentProvider: React.FC<InterviewAgentProviderProps> = ({
       if (!result.success || !result.transcript) {
         throw new Error(result.error || 'No transcript found');
       }
-
-      // Convert transcript back to messages
-      const previousMessages = result.transcript
-        .split('\n\n')
-        .map(line => {
-          const [role, content] = line.split(': ');
-          return {
-            role: role.toLowerCase() as 'user' | 'assistant',
-            content: content.trim()
-          };
-        });
 
       // Format questions for context
       const formattedQuestions = session.questions

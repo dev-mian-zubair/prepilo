@@ -4,7 +4,7 @@ import Webcam from "react-webcam";
 import AgentLayout from "./AgentLayout";
 import { useAuth } from "@/providers/AuthProvider";
 import { useInterviewAgent } from "@/contexts/InterviewAgentContext";
-import { interviewer } from "@/helpers/agent.helper";
+import { interviewer, resumingInterviewer } from "@/helpers/agent.helper";
 import "@/styles/scrollbar.css";
 import { Interview } from "@/types/interview";
 
@@ -57,12 +57,24 @@ const InterviewAgent = ({ interview }: InterviewAgentProps) => {
       const formattedQuestions = session.questions
         .map((question: { text: string }) => `- ${question.text}`)
         .join("\n");
-      await startCall({
-        interviewer,
-        variables: {
+
+      if (session.transcript) {
+        // Start new call with previous transcript and questions
+        await startCall({
+          interviewer: resumingInterviewer,
+          variables: {
+            questions: formattedQuestions,
+            previousTranscript: session.transcript,
+          },
+        });
+      } else {
+        await startCall({
+          interviewer,
+          variables: {
           questions: formattedQuestions,
-        },
-      });
+          },
+        });
+      }
       initializedRef.current = true;
     } catch (err) {
       console.error("Failed to start call:", err);
