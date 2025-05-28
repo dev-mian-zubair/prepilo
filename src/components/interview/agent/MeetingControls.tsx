@@ -7,7 +7,6 @@ import { SidebarType } from "@/types/interview";
 import { ChatBubbleLeftRightIcon, XMarkIcon, InformationCircleIcon, DocumentTextIcon } from "@heroicons/react/24/outline";
 
 interface MeetingControlsProps {
-  elapsedTime: number;
   handleEndCall: () => void;
   isVideoOff: boolean;
   meetingType: MeetingType;
@@ -18,7 +17,6 @@ interface MeetingControlsProps {
 }
 
 const MeetingControls = ({
-  elapsedTime = 0,
   handleEndCall,
   isVideoOff,
   meetingType,
@@ -43,19 +41,8 @@ const MeetingControls = ({
     }
   }, [generateFeedback, setSidebarType]);
 
-  const formatTime = useCallback((seconds: number) => {
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = seconds % 60;
-    return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
-  }, []);
-
   return (
     <div className="flex justify-center items-center gap-4">
-      {meetingType === "interview" && (
-        <div className="text-white text-lg font-medium">
-          {formatTime(elapsedTime)}
-        </div>
-      )}
       <Button
         onPress={toggleVideo}
         className="rounded-full bg-gray-800 hover:bg-gray-700 transition-colors"
@@ -90,16 +77,6 @@ const MeetingControls = ({
             title="Show interview information"
           >
             <InformationCircleIcon className="w-5 h-5 text-white" />
-          </Button>
-          <Button
-            onPress={handleGenerateFeedback}
-            className={`rounded-full transition-colors ${
-              sidebarType === "feedback" ? "bg-blue-600 hover:bg-blue-700" : "bg-gray-800 hover:bg-gray-700"
-            }`}
-            title="Generate feedback"
-            isDisabled={isGeneratingFeedback}
-          >
-            <DocumentTextIcon className="w-5 h-5 text-white" />
           </Button>
         </>
       )}

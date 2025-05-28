@@ -15,7 +15,6 @@ interface Message {
 interface InterviewAgentContextType {
   // States
   sidebarType: SidebarType;
-  elapsedTime: number;
   error: string | null;
   isProcessing: boolean;
   messages: Message[];
@@ -35,7 +34,6 @@ interface InterviewAgentContextType {
   handleUserLeave: () => Promise<void>;
   handleFinalClose: () => Promise<void>;
   startCall: (params: { interviewer: any; variables: any }) => Promise<void>;
-  setElapsedTime: (time: number | ((prev: number) => number)) => void;
   setError: (error: string | null) => void;
   pauseSession: () => Promise<void>;
   resumeSession: () => Promise<void>;
@@ -58,7 +56,6 @@ export const InterviewAgentProvider: React.FC<InterviewAgentProviderProps> = ({
   onClose,
 }) => {
   const [sidebarType, setSidebarType] = useState<SidebarType>("conversation");
-  const [elapsedTime, setElapsedTime] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
@@ -294,7 +291,6 @@ export const InterviewAgentProvider: React.FC<InterviewAgentProviderProps> = ({
   const value = {
     // States
     sidebarType,
-    elapsedTime,
     error,
     isProcessing,
     messages: isPaused ? storedMessages : messages,
@@ -314,7 +310,6 @@ export const InterviewAgentProvider: React.FC<InterviewAgentProviderProps> = ({
     handleUserLeave,
     handleFinalClose,
     startCall,
-    setElapsedTime,
     setError,
     pauseSession,
     resumeSession,

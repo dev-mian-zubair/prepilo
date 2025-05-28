@@ -129,7 +129,6 @@ const AgentLayout = ({
           {!error && !isProcessing && (
             <div className="max-w-4xl mx-auto">
               <MeetingControls
-                elapsedTime={elapsedTime}
                 handleEndCall={onEndCall}
                 isVideoOff={isVideoOff}
                 meetingType={meetingType}
