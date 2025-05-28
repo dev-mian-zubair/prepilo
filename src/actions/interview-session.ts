@@ -271,7 +271,8 @@ export async function getInterviewSessions(interviewId: string): Promise<Session
               }
             }
           }
-        }
+        },
+        feedback: true
       },
       orderBy: {
         createdAt: 'desc'
@@ -290,6 +291,17 @@ export async function getInterviewSessions(interviewId: string): Promise<Session
       status: session.status,
       version: session.version ? {
         difficulty: session.version.difficulty
+      } : undefined,
+      feedback: session.feedback ? {
+        technical: session.feedback.technical,
+        communication: session.feedback.communication,
+        summary: session.feedback.summary,
+        questionAnalysis: session.feedback.questionAnalysis as Array<{
+          question: string;
+          analysis: string;
+          strengths: string[];
+          improvements: string[];
+        }>
       } : undefined
     }));
   } catch (error) {
