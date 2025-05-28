@@ -11,6 +11,7 @@ interface UseVapiCallReturn {
   toggleVideo: () => void;
   handleLeaveCall: () => void;
   startCall: (params: any) => Promise<void>;
+  setMessages: (messages: SavedMessage[] | ((prev: SavedMessage[]) => SavedMessage[])) => void;
 }
 
 export const useVapiCall = (): UseVapiCallReturn => {
@@ -163,5 +164,6 @@ export const useVapiCall = (): UseVapiCallReturn => {
     toggleVideo,
     handleLeaveCall,
     startCall,
+    setMessages,
   };
 };

@@ -3,6 +3,7 @@ import { Session } from "@/types/session.types";
 import { Interview } from "@/types/interview.types";
 import { Difficulty } from "@prisma/client";
 import { createSession } from "@/actions/interview-session";
+import { handleResumeSession } from "@/actions/interview-session";
 
 interface InterviewLauncherContextType {
   // States
@@ -39,11 +40,21 @@ export const InterviewLauncherProvider = ({ children, interview, sessions, onClo
   const [showInterviewDetails, setShowInterviewDetails] = useState(false);
   const [activeSession, setActiveSession] = useState<Session | null>(null);
 
-  const handleResume = (sessionId: string) => {
-    const session = sessions.find(s => s.id === sessionId);
-    if (session) {
-      setActiveSession(session);
-      setActiveSessionId(sessionId);
+  const handleResume = async (sessionId: string) => {
+    try {
+      const result = await handleResumeSession(sessionId);
+      if (result.success && result.session) {
+        const session = sessions.find(s => s.id === sessionId);
+        if (session) {
+          setActiveSession(session);
+          setActiveSessionId(sessionId);
+        }
+      } else {
+        throw new Error(result.error || "Failed to resume session");
+      }
+    } catch (err) {
+      console.error("Failed to resume session:", err);
+      setError(err instanceof Error ? err.message : "Failed to resume session");
     }
   };
 

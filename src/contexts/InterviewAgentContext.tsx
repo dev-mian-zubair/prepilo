@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useCallback, useRef } from "react";
+import React, { createContext, useContext, useState, useCallback, useRef, useEffect } from "react";
 import { Session } from "@/types/session.types";
 import { SidebarType } from "@/types/interview";
 import { CallStatus } from "@/enums";
@@ -75,7 +75,40 @@ export const InterviewAgentProvider: React.FC<InterviewAgentProviderProps> = ({
     toggleVideo,
     handleLeaveCall: originalHandleLeaveCall,
     startCall,
+    setMessages,
   } = useVapiCall();
+
+  // Load transcript from session when component mounts or session changes
+  const loadSessionTranscript = () => {
+    if (session?.transcript) {
+      try {
+        // Convert transcript to messages format
+        const transcriptMessages = session.transcript
+          .split('\n\n')
+          .map(line => {
+            const [role, content] = line.split(': ');
+            return {
+              role: role.toLowerCase() as 'user' | 'assistant',
+              content: content.trim()
+            };
+          });
+
+
+        console.log("transcriptMessages", transcriptMessages);
+        console.log("session", session);
+        
+        setMessages(transcriptMessages);
+      } catch (err) {
+        console.error("Failed to load session transcript:", err);
+        setError("Failed to load session transcript");
+      }
+    }
+  };
+
+  useEffect(() => {
+    console.log("session", session);
+    loadSessionTranscript();
+  }, [session]);
 
   const pauseSession = useCallback(async () => {
     try {
