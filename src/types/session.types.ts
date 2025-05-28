@@ -9,13 +9,19 @@ export interface Session {
     technology?: string;
   }[];
   startedAt: Date;
-  status: SessionStatus;
+  status: 'IN_PROGRESS' | 'COMPLETED' | 'PAUSED' | 'CANCELLED';
   version?: {
-    difficulty: Difficulty;
-    interview?: {
-      title: string;
-      focusAreas: string[];
-      duration: number;
-    };
+    difficulty: string;
+  };
+  feedback?: {
+    technical: number;
+    communication: number;
+    summary: string;
+    questionAnalysis: Array<{
+      question: string;
+      analysis: string;
+      strengths: string[];
+      improvements: string[];
+    }>;
   };
 }

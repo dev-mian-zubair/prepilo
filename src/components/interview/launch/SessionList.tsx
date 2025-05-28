@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Session } from '@/types/session.types';
 import { Button } from '@heroui/button';
-import { Clock, Play, RefreshCw, X, Rocket } from 'lucide-react';
+import { Clock, Play, RefreshCw, X, Rocket, Star, ChevronDown, ChevronUp } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { Interview } from '@/types/interview';
 
@@ -22,6 +22,12 @@ const SessionList = ({
   interview,
   onClose 
 }: SessionListProps) => {
+  const [expandedSessionId, setExpandedSessionId] = useState<string | null>(null);
+
+  const toggleSession = (sessionId: string) => {
+    setExpandedSessionId(expandedSessionId === sessionId ? null : sessionId);
+  };
+
   const getStatusColor = (status: Session['status']) => {
     switch (status) {
       case 'COMPLETED':
@@ -105,6 +111,80 @@ const SessionList = ({
       default:
         return null;
     }
+  };
+
+  const renderFeedback = (session: Session) => {
+    if (!session.feedback) return null;
+
+    const isExpanded = expandedSessionId === session.id;
+
+    return (
+      <div className="mt-4 pt-4 border-t border-gray-700">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
+              <Star className="w-4 h-4 text-yellow-400" />
+              <span className="text-sm font-medium text-white">Technical: {session.feedback.technical}/100</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Star className="w-4 h-4 text-blue-400" />
+              <span className="text-sm font-medium text-white">Communication: {session.feedback.communication}/100</span>
+            </div>
+          </div>
+          <Button
+            onPress={() => toggleSession(session.id)}
+            isIconOnly
+            variant="light"
+            className="text-gray-400 hover:text-white"
+          >
+            {isExpanded ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
+          </Button>
+        </div>
+        
+        {isExpanded && (
+          <div className="space-y-4">
+            <div className="bg-gray-900/50 rounded-lg p-4">
+              <h4 className="text-sm font-medium text-white mb-2">Summary</h4>
+              <p className="text-sm text-gray-400">{session.feedback.summary}</p>
+            </div>
+            
+            {session.feedback.questionAnalysis && (
+              <div className="space-y-3">
+                <h4 className="text-sm font-medium text-white">Question Analysis</h4>
+                {session.feedback.questionAnalysis.map((analysis, index) => (
+                  <div key={index} className="bg-gray-900/50 rounded-lg p-4">
+                    <h5 className="text-sm font-medium text-white mb-2">{analysis.question}</h5>
+                    <p className="text-sm text-gray-400 mb-3">{analysis.analysis}</p>
+                    
+                    {analysis.strengths.length > 0 && (
+                      <div className="mb-3">
+                        <h6 className="text-xs font-medium text-green-400 mb-1">Strengths</h6>
+                        <ul className="list-disc list-inside text-sm text-gray-400">
+                          {analysis.strengths.map((strength, i) => (
+                            <li key={i}>{strength}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                    
+                    {analysis.improvements.length > 0 && (
+                      <div>
+                        <h6 className="text-xs font-medium text-yellow-400 mb-1">Areas for Improvement</h6>
+                        <ul className="list-disc list-inside text-sm text-gray-400">
+                          {analysis.improvements.map((improvement, i) => (
+                            <li key={i}>{improvement}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    );
   };
 
   return (
@@ -198,6 +278,7 @@ const SessionList = ({
                     {getActionButton(session)}
                   </div>
                 </div>
+                {renderFeedback(session)}
               </div>
             ))
           )}
