@@ -115,9 +115,20 @@ export const InterviewAgentProvider: React.FC<InterviewAgentProviderProps> = ({
 
       // Get stored transcript from database
       const result = await getSessionTranscript(session.id);
-      if (!result.success) {
-        throw new Error(result.error);
+      if (!result.success || !result.transcript) {
+        throw new Error(result.error || 'No transcript found');
       }
+
+      // Convert transcript back to messages
+      const previousMessages = result.transcript
+        .split('\n\n')
+        .map(line => {
+          const [role, content] = line.split(': ');
+          return {
+            role: role.toLowerCase() as 'user' | 'assistant',
+            content: content.trim()
+          };
+        });
 
       // Format questions for context
       const formattedQuestions = session.questions
