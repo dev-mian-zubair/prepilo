@@ -53,7 +53,23 @@ End the conversation on a polite and positive note.
 };
 
 export const resumingInterviewer: CreateAssistantDTO = {
-  ...interviewer,
+  name: "Interviewer",
+  firstMessage:
+    "Welcome back! I'm glad we can continue our discussion. Let's pick up where we left off.",
+  transcriber: {
+    provider: "deepgram",
+    model: "nova-2",
+    language: "en",
+  },
+  voice: {
+    provider: "11labs",
+    voiceId: "sarah",
+    stability: 0.4,
+    similarityBoost: 0.8,
+    speed: 0.9,
+    style: 0.5,
+    useSpeakerBoost: true,
+  },
   model: {
     provider: "openai",
     model: "gpt-4",

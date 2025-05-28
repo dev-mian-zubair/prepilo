@@ -109,6 +109,7 @@ export const InterviewAgentProvider: React.FC<InterviewAgentProviderProps> = ({
 
       // Update session state to IN_PROGRESS
       const sessionResult = await handleResumeSession(session.id);
+      console.log("sessionResult", sessionResult);
       if (!sessionResult.success) {
         throw new Error(sessionResult.error);
       }

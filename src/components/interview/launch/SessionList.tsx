@@ -57,10 +57,7 @@ const SessionList = ({
       case 'IN_PROGRESS':
         return (
           <Button
-            onClick={(e) => {
-              e.stopPropagation();
-              onResume(session.id);
-            }}
+            onPress={() => onResume(session.id)}
             className="flex items-center gap-2"
             color="primary"
             size="sm"
@@ -72,10 +69,7 @@ const SessionList = ({
       case 'PAUSED':
         return (
           <Button
-            onClick={(e) => {
-              e.stopPropagation();
-              onResume(session.id);
-            }}
+            onPress={() => onResume(session.id)}
             className="flex items-center gap-2"
             color="warning"
             size="sm"
@@ -87,10 +81,7 @@ const SessionList = ({
       case 'COMPLETED':
         return (
           <Button
-            onClick={(e) => {
-              e.stopPropagation();
-              onReattempt();
-            }}
+            onPress={onReattempt}
             className="flex items-center gap-2"
             color="success"
             size="sm"
@@ -102,10 +93,7 @@ const SessionList = ({
       case 'CANCELLED':
         return (
           <Button
-            onClick={(e) => {
-              e.stopPropagation();
-              onReattempt();
-            }}
+            onPress={onReattempt}
             className="flex items-center gap-2"
             color="danger"
             size="sm"
@@ -139,7 +127,7 @@ const SessionList = ({
             </div>
             <div className="flex items-center gap-3">
               <Button
-                onClick={onReattempt}
+                onPress={onReattempt}
                 className="flex items-center gap-2"
                 color="primary"
               >
@@ -147,7 +135,7 @@ const SessionList = ({
                 New Attempt
               </Button>
               <Button
-                onClick={onClose}
+                onPress={onClose}
                 isIconOnly
                 variant="light"
                 className="text-gray-400 hover:text-white"
@@ -173,7 +161,7 @@ const SessionList = ({
                 Begin your interview preparation journey. Practice with our AI interviewer and get real-time feedback to improve your skills.
               </p>
               <Button
-                onClick={onReattempt}
+                onPress={onReattempt}
                 className="flex items-center gap-2"
                 color="primary"
                 size="lg"
