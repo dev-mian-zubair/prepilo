@@ -281,6 +281,7 @@ export async function getInterviewSessions(interviewId: string): Promise<Session
 
     return sessions.map(session => ({
       id: session.id,
+      transcript: session.transcript || "",
       questions: session.version?.questions.map(q => ({
         id: q.id,
         text: q.text,
@@ -392,7 +393,8 @@ export async function handleResumeSession(sessionId: string) {
             questions: true,
             interview: true
           }
-        }
+        },
+        feedback: true
       }
     });
 

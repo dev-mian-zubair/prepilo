@@ -24,4 +24,5 @@ export interface Session {
       improvements: string[];
     }>;
   };
+  transcript?: string;
 }
