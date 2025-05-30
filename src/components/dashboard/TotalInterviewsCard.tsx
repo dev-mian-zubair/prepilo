@@ -6,7 +6,7 @@ export default async function TotalInterviewsCard() {
   const { completed, inProgress, paused } = await getInterviewStats();
 
   return (
-    <Card className="h-full bg-white dark:bg-content2 shadow-lg rounded-2xl p-6 transition hover:shadow-xl border-0">
+    <Card className="h-full bg-white dark:bg-content1 shadow-lg rounded-2xl p-6 transition hover:shadow-xl border-0">
       <CardHeader className="flex items-center justify-between mb-4 p-0">
         <div className="flex items-center gap-3">
           <div className="p-2 rounded-full bg-primary/10 text-primary">
