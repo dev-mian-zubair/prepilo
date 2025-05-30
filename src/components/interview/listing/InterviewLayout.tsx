@@ -1,10 +1,7 @@
 "use client";
-import { useState } from "react";
 import { Card, CardBody, CardHeader } from "@heroui/card";
 
-import InterviewViewToggle from "./InterviewViewToggle";
 import InterviewGrid from "./InterviewGrid";
-import InterviewList from "./InterviewList";
 
 import { InterviewListType } from "@/types/interview";
 
@@ -13,8 +10,6 @@ export default function InterviewLayout({
 }: {
   interviews: InterviewListType[];
 }) {
-  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
-
   return (
     <div className="min-h-screen">
       <Card className="shadow-none bg-transparent border-none">
@@ -27,17 +22,9 @@ export default function InterviewLayout({
               ({interviews.length} total)
             </span>
           </div>
-          <InterviewViewToggle
-            viewMode={viewMode}
-            onViewModeChange={setViewMode}
-          />
         </CardHeader>
         <CardBody>
-          {viewMode === "grid" ? (
-            <InterviewGrid interviews={interviews} />
-          ) : (
-            <InterviewList />
-          )}
+          <InterviewGrid interviews={interviews} />
         </CardBody>
       </Card>
     </div>
