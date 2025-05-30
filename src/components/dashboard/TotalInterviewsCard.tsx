@@ -1,6 +1,6 @@
+import { getInterviewStats } from "@/actions/dashboard";
 import { Card, CardHeader, CardBody } from "@heroui/card";
 import { BarChart3 } from "lucide-react";
-import { getInterviewStats } from "@/lib/stats";
 
 export default async function TotalInterviewsCard() {
   const { completed, inProgress, paused } = await getInterviewStats();

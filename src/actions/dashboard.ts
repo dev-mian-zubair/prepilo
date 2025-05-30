@@ -1,6 +1,5 @@
-// lib/stats.ts
-import prisma from './prisma';
 import { getUser } from '@/lib/auth';
+import prisma from '@/lib/prisma';
 
 export async function getInterviewStats() {
   const user = await getUser();
