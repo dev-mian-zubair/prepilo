@@ -1,16 +1,27 @@
-import { getUser } from '@/lib/auth';
-import prisma from '@/lib/prisma';
+import { getUser } from "@/lib/auth";
+import prisma from "@/lib/prisma";
 
 export async function getInterviewStats() {
   const user = await getUser();
 
   if (!user) return { completed: 0, inProgress: 0, paused: 0 };
 
-  const [completed, inProgress, paused] = await Promise.all([
-    prisma.session.count({ where: { userId: user.id, status: "COMPLETED" } }),
-    prisma.session.count({ where: { userId: user.id, status: "IN_PROGRESS" } }),
-    prisma.session.count({ where: { userId: user.id, status: "PAUSED" } }),
-  ]);
+  const results = await prisma.session.groupBy({
+    by: ["status"],
+    where: { userId: user.id },
+    _count: true,
+  });
 
-  return { completed, inProgress, paused };
+  const stats = {
+    completed: 0,
+    inProgress: 0,
+    paused: 0,
+  };
+
+  for (const result of results) {
+    const key = result.status.toLowerCase() as keyof typeof stats;
+    stats[key] = result._count;
+  }
+
+  return stats;
 }
