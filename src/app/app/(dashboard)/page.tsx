@@ -1,9 +1,6 @@
 import { getCompletedSessionScores } from "@/actions/dashboard";
 import SessionScoreTimeline from "@/components/dashboard/SessionScoreTimeline";
 import TotalInterviewsCard from "@/components/dashboard/TotalInterviewsCard";
-import PerformanceOverview from "@/components/dashboard/performanceOverview";
-import LowestScoreInterviews from "@/components/dashboard/lowestScoreInterviews";
-import InterviewMetrics from "@/components/dashboard/interviewMetrics";
 
 export default async function DashboardPage() {
   const timelineData = await getCompletedSessionScores();
@@ -18,10 +15,6 @@ export default async function DashboardPage() {
           <SessionScoreTimeline data={timelineData} />
         </div>
       </div>
-
-      <PerformanceOverview />
-      <LowestScoreInterviews />
-      <InterviewMetrics />
     </div>
   );
 }
