@@ -23,7 +23,7 @@ export async function getInterviewStats() {
     stats[key] = result._count;
   }
 
-  // return stats;
+  return stats;
   return {  
     completed: 10,
     inProgress: 12,
@@ -52,10 +52,10 @@ export async function getCompletedSessionScores() {
     },
   });
 
-  // return sessions.map((s) => ({
-  //   score: s.overallScore!,
-  //   date: s.endedAt ?? new Date(), // fallback if somehow endedAt is null
-  // }));
+  return sessions.map((s) => ({
+    score: s.overallScore!,
+    date: s.endedAt ?? new Date(), // fallback if somehow endedAt is null
+  }));
   return [
     { score: 75, date: new Date("2025-05-01") },
     { score: 82, date: new Date("2025-05-05") },
@@ -74,3 +74,98 @@ export async function getCompletedSessionScores() {
     { score: 90, date: new Date("2025-05-29") },
   ];
 }
+
+export async function getSessionsByDifficulty() {
+  const user = await getUser();
+  if (!user) {
+    return {
+      beginner: { count: 0, avgScore: 0 },
+      intermediate: { count: 0, avgScore: 0 },
+      advanced: { count: 0, avgScore: 0 },
+      totalAvgScore: 0,
+    };
+  }
+
+  const difficulties = ["BEGINNER", "INTERMEDIATE", "ADVANCED"] as const;
+
+  const data = await Promise.all(
+    difficulties.map(async (difficulty) => {
+      const result = await prisma.session.aggregate({
+        where: {
+          userId: user.id,
+          status: "COMPLETED",
+          overallScore: { not: null },
+          version: {
+            difficulty,
+          },
+        },
+        _count: true,
+        _avg: {
+          overallScore: true,
+        },
+      });
+
+      return {
+        difficulty: difficulty.toLowerCase(),
+        count: result._count,
+        avgScore: Math.round(result._avg.overallScore || 0),
+      };
+    })
+  );
+
+  const total = await prisma.session.aggregate({
+    where: {
+      userId: user.id,
+      status: "COMPLETED",
+      overallScore: { not: null },
+    },
+    _avg: {
+      overallScore: true,
+    },
+  });
+
+  return {
+    beginner: data.find((d) => d.difficulty === "beginner")!,
+    intermediate: data.find((d) => d.difficulty === "intermediate")!,
+    advanced: data.find((d) => d.difficulty === "advanced")!,
+    totalAvgScore: Math.round(total._avg.overallScore || 0),
+  };
+}
+
+export async function getSessionDurationSummary() {
+  const user = await getUser();
+  if (!user) return { totalMinutes: 0 };
+
+  const sessions = await prisma.session.findMany({
+    where: {
+      userId: user.id,
+      status: "COMPLETED",
+      AND: [
+        { startedAt: { not: undefined } },
+        { endedAt: { not: undefined } },
+      ],
+    },
+    select: {
+      startedAt: true,
+      endedAt: true,
+    },
+  });
+
+  const totalMs = sessions.reduce((acc, session) => {
+    if (session.startedAt && session.endedAt) {
+      const start = new Date(session.startedAt).getTime();
+      const end = new Date(session.endedAt).getTime();
+      const duration = end - start;
+      return acc + (duration > 0 ? duration : 0);
+    }
+    return acc;
+  }, 0);
+
+  const totalMinutes = Math.floor(totalMs / 1000 / 60);
+
+  return { totalMinutes };
+}
+
+
+
+
