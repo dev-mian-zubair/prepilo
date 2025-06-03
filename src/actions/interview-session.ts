@@ -76,6 +76,7 @@ async function generateSessionFeedback(session: any, transcript: string) {
       {
         "technical": 0-100,
         "communication": 0-100,
+        "overallScore": 0-100,
         "summary": "Overall feedback summary",
         "questionAnalysis": [
           {
@@ -90,6 +91,7 @@ async function generateSessionFeedback(session: any, transcript: string) {
       Important:
       - Technical score reflects technical accuracy and depth.
       - Communication score reflects clarity and articulation.
+      - Overall score is the average of the technical and communication scores.
       - Analyze how well each question was answered in the transcript.
       - Provide specific strengths and areas for improvement for each question.`,
       system:
@@ -119,6 +121,7 @@ async function generateSessionFeedback(session: any, transcript: string) {
     if (
       typeof feedbackResult.technical !== 'number' ||
       typeof feedbackResult.communication !== 'number' ||
+      typeof feedbackResult.overallScore !== 'number' ||
       typeof feedbackResult.summary !== 'string' ||
       !Array.isArray(feedbackResult.questionAnalysis)
     ) {
@@ -128,6 +131,7 @@ async function generateSessionFeedback(session: any, transcript: string) {
     return {
       technical: Number(feedbackResult.technical),
       communication: Number(feedbackResult.communication),
+      overallScore: Number(feedbackResult.overallScore),
       summary: feedbackResult.summary,
       questionAnalysis: feedbackResult.questionAnalysis,
     };
@@ -166,16 +170,6 @@ export async function handleInProgressSession(sessionId: string, error?: string,
       throw new Error("Access denied: You are not the session owner");
     }
 
-    // If session is already completed or cancelled, return current state
-    if (session.status !== "IN_PROGRESS") {
-      return {
-        success: true,
-        session,
-        isComplete: session.status === "COMPLETED",
-        error: error || null
-      };
-    }
-
     const sessionEndTime = new Date();
 
     // Generate feedback if transcript is provided and not empty
@@ -184,39 +178,40 @@ export async function handleInProgressSession(sessionId: string, error?: string,
       feedback = await generateSessionFeedback(session, transcript);
     }
 
-    console.log("feedback", feedback);
-    console.log("transcript", transcript);
-
-    // Update session
+    // First update the session without feedback
     const updatedSession = await prisma.session.update({
       where: { id: sessionId },
       data: {
         status: "COMPLETED",
         endedAt: sessionEndTime,
         transcript: transcript || '',
-        overallScore: feedback?.technical || null,
-        ...(feedback && {
-          feedback: {
-            update: {
-              technical: feedback.technical,
-              communication: feedback.communication,
-              summary: feedback.summary,
-              questionAnalysis: feedback.questionAnalysis,
-            },
-            create: {
-              technical: feedback.technical,
-              communication: feedback.communication,
-              summary: feedback.summary,
-              questionAnalysis: feedback.questionAnalysis,
-            },
-          },
-        }),
+        overallScore: feedback?.overallScore || null,
       },
       include: {
         version: { include: { interview: true } },
         feedback: true,
       },
     });
+
+    // Then create feedback separately if it exists
+    if (feedback) {
+      await prisma.feedback.upsert({
+        where: { sessionId },
+        create: {
+          sessionId,
+          technical: feedback.technical,
+          communication: feedback.communication,
+          summary: feedback.summary,
+          questionAnalysis: feedback.questionAnalysis,
+        },
+        update: {
+          technical: feedback.technical,
+          communication: feedback.communication,
+          summary: feedback.summary,
+          questionAnalysis: feedback.questionAnalysis,
+        },
+      });
+    }
 
     return { 
       success: true, 
