@@ -2,7 +2,7 @@ import React, { createContext, useContext, useState, useCallback, useRef, useEff
 import { Session } from "@/types/session.types";
 import { SidebarType } from "@/types/interview";
 import { CallStatus } from "@/enums";
-import { handleIncompleteSession, handlePauseSession, handleResumeSession, getSessionTranscript, generateFeedback } from "@/actions/interview-session";
+import { handleInProgressSession, handlePauseSession, handleResumeSession, getSessionTranscript, generateFeedback } from "@/actions/interview-session";
 import { useVapiCall } from "@/hooks/useVapiCall";
 import { Interview } from "@/types/interview";
 import { interviewer, resumingInterviewer } from "@/helpers/agent.helper";
@@ -194,11 +194,11 @@ export const InterviewAgentProvider: React.FC<InterviewAgentProviderProps> = ({
         .map((msg: Message) => `${msg.role.toUpperCase()}: ${msg.content}`)
         .join('\n\n');
 
-      const result = await handleIncompleteSession(session.id, "User ended the call. Session will be evaluated for completion.", transcript);
-      if (result.success && result.elapsedMinutes !== undefined && result.sessionDuration !== undefined && result.completionPercentage !== undefined) {
+      const result = await handleInProgressSession(session.id, "User ended the call. Session will be evaluated for completion.", transcript);
+      if (result.success) {
         const message = result.isComplete 
-          ? `Session completed with feedback generated. (${result.elapsedMinutes.toFixed(1)}/${result.sessionDuration} minutes)`
-          : `Session marked as incomplete (${result.elapsedMinutes.toFixed(1)}/${result.sessionDuration} minutes, ${result.completionPercentage.toFixed(1)}% complete).`;
+          ? `Session completed with feedback generated.`
+          : `Session marked as incomplete.`;
         setError(message);
       } else {
         setError(result.error || "Failed to handle session error. Please try again.");
@@ -226,11 +226,11 @@ export const InterviewAgentProvider: React.FC<InterviewAgentProviderProps> = ({
         .map((msg: Message) => `${msg.role.toUpperCase()}: ${msg.content}`)
         .join('\n\n');
 
-      const result = await handleIncompleteSession(session.id, "User ended the call. Session will be evaluated for completion.", transcript);
-      if (result.success && result.elapsedMinutes !== undefined && result.sessionDuration !== undefined && result.completionPercentage !== undefined) {
+      const result = await handleInProgressSession(session.id, "User ended the call. Session will be evaluated for completion.", transcript);
+      if (result.success) {
         const message = result.isComplete 
-          ? `Session completed with feedback generated. (${result.elapsedMinutes.toFixed(1)}/${result.sessionDuration} minutes)`
-          : `Session marked as incomplete (${result.elapsedMinutes.toFixed(1)}/${result.sessionDuration} minutes, ${result.completionPercentage.toFixed(1)}% complete).`;
+          ? `Session completed with feedback generated.`
+          : `Session is paused.`;
         setError(message);
       } else {
         setError(result.error || "Failed to handle session error. Please try again.");

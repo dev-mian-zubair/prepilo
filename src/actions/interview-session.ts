@@ -50,9 +50,6 @@ export async function createSession(
 
 async function generateSessionFeedback(session: any, transcript: string, completionPercentage: number) {
   const sessionDuration = session.version?.interview.duration || 0;
-  const sessionStartTime = session.startedAt;
-  const sessionEndTime = new Date();
-  const elapsedMinutes = (sessionEndTime.getTime() - sessionStartTime.getTime()) / (1000 * 60);
 
   try {
     const { text } = await generateText({
@@ -67,7 +64,6 @@ async function generateSessionFeedback(session: any, transcript: string, complet
       - Difficulty: ${session.version?.difficulty}
       - Focus Areas: ${session.version?.interview.focusAreas.join(", ")}
       - Duration: ${sessionDuration} minutes
-      - Elapsed Time: ${elapsedMinutes.toFixed(1)} minutes
 
       Questions:
       ${session.version.questions
@@ -144,7 +140,7 @@ async function generateSessionFeedback(session: any, transcript: string, complet
   }
 }
 
-export async function handleIncompleteSession(sessionId: string, error?: string, transcript?: string) {
+export async function handleInProgressSession(sessionId: string, error?: string, transcript?: string) {
   try {
     // 1. Get authenticated user
     const user = await getUser();
@@ -178,14 +174,7 @@ export async function handleIncompleteSession(sessionId: string, error?: string,
       return {
         success: true,
         session,
-        completionPercentage: session.endedAt ? 
-          ((session.endedAt.getTime() - session.startedAt.getTime()) / (1000 * 60)) / (session.version?.interview.duration || 1) * 100 : 
-          0,
         isComplete: session.status === "COMPLETED",
-        elapsedMinutes: session.endedAt ? 
-          (session.endedAt.getTime() - session.startedAt.getTime()) / (1000 * 60) : 
-          0,
-        sessionDuration: session.version?.interview.duration || 0,
         error: error || null
       };
     }
@@ -194,9 +183,8 @@ export async function handleIncompleteSession(sessionId: string, error?: string,
     const sessionDuration = session.version?.interview.duration || 0;
     const sessionStartTime = session.startedAt;
     const sessionEndTime = new Date();
-    const elapsedMinutes = (sessionEndTime.getTime() - sessionStartTime.getTime()) / (1000 * 60);
     const completionPercentage = sessionDuration > 0 
-      ? (elapsedMinutes / sessionDuration) * 100 
+      ? ((sessionEndTime.getTime() - sessionStartTime.getTime()) / (1000 * 60)) / sessionDuration * 100 
       : 0;
 
     // 4. Generate feedback if transcript is provided
@@ -238,10 +226,7 @@ export async function handleIncompleteSession(sessionId: string, error?: string,
     return { 
       success: true, 
       session: updatedSession,
-      completionPercentage,
       isComplete: true,
-      elapsedMinutes,
-      sessionDuration,
       error: error || null
     };
   } catch (error) {
