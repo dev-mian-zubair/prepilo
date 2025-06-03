@@ -48,7 +48,7 @@ export async function createSession(
   }
 }
 
-async function generateSessionFeedback(session: any, transcript: string, completionPercentage: number) {
+async function generateSessionFeedback(session: any, transcript: string) {
   const sessionDuration = session.version?.interview.duration || 0;
 
   try {
@@ -57,7 +57,6 @@ async function generateSessionFeedback(session: any, transcript: string, complet
       prompt: `ONLY respond with a JSON object containing feedback details.
 
       Based on the following interview transcript and questions, generate overall feedback for the interview.
-      Note: This is a partially completed interview (${completionPercentage.toFixed(1)}% complete).
 
       Session Details:
       - Interview: ${session.version?.interview.title}
@@ -77,7 +76,7 @@ async function generateSessionFeedback(session: any, transcript: string, complet
       {
         "technical": 0-100,
         "communication": 0-100,
-        "summary": "Overall feedback summary including note about partial completion",
+        "summary": "Overall feedback summary",
         "questionAnalysis": [
           {
             "question": "Question text",
@@ -91,8 +90,6 @@ async function generateSessionFeedback(session: any, transcript: string, complet
       Important:
       - Technical score reflects technical accuracy and depth.
       - Communication score reflects clarity and articulation.
-      - Summary should mention that this was a partially completed interview.
-      - Consider the completion percentage when generating scores.
       - Analyze how well each question was answered in the transcript.
       - Provide specific strengths and areas for improvement for each question.`,
       system:
@@ -179,21 +176,15 @@ export async function handleInProgressSession(sessionId: string, error?: string,
       };
     }
 
-    // 3. Calculate completion percentage based on time
-    const sessionDuration = session.version?.interview.duration || 0;
-    const sessionStartTime = session.startedAt;
     const sessionEndTime = new Date();
-    const completionPercentage = sessionDuration > 0 
-      ? ((sessionEndTime.getTime() - sessionStartTime.getTime()) / (1000 * 60)) / sessionDuration * 100 
-      : 0;
 
-    // 4. Generate feedback if transcript is provided
+    // Generate feedback if transcript is provided
     let feedback = null;
     if (transcript && session.version?.questions) {
-      feedback = await generateSessionFeedback(session, transcript, completionPercentage);
+      feedback = await generateSessionFeedback(session, transcript);
     }
 
-    // 5. Update session
+    // Update session
     const updatedSession = await prisma.session.update({
       where: { id: sessionId },
       data: {
@@ -414,15 +405,7 @@ export const generateFeedback = async (sessionId: string, transcript: string) =>
       throw new Error("Session or version not found");
     }
 
-    const sessionDuration = session.version.interview.duration || 0;
-    const sessionStartTime = session.startedAt;
-    const sessionEndTime = new Date();
-    const elapsedMinutes = (sessionEndTime.getTime() - sessionStartTime.getTime()) / (1000 * 60);
-    const completionPercentage = sessionDuration > 0 
-      ? (elapsedMinutes / sessionDuration) * 100 
-      : 0;
-
-    const feedback = await generateSessionFeedback(session, transcript, completionPercentage);
+    const feedback = await generateSessionFeedback(session, transcript);
 
     console.log(feedback);
 
