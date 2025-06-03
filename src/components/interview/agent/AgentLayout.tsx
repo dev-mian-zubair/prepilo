@@ -78,12 +78,6 @@ const AgentLayout = ({
             </div>
           )}
 
-          {isProcessing && (
-            <div className="absolute top-4 left-4 right-4 z-[40] bg-blue-500 text-white p-4 rounded-lg flex justify-between items-center">
-              <span>Processing session...</span>
-            </div>
-          )}
-
           <div className="relative w-full max-w-4xl aspect-video rounded-2xl overflow-hidden bg-gray-800">
             <div className="w-full h-full">
               <Webcam
