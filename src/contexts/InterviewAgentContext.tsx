@@ -31,7 +31,6 @@ interface InterviewAgentContextType {
   setSidebarType: (type: SidebarType) => void;
   toggleVideo: () => void;
   handleLeaveCall: () => Promise<void>;
-  handleUserLeave: () => Promise<void>;
   handleFinalClose: () => Promise<void>;
   startCall: (params: { interviewer: any; variables: any }) => Promise<void>;
   setError: (error: string | null) => void;
@@ -178,28 +177,31 @@ export const InterviewAgentProvider: React.FC<InterviewAgentProviderProps> = ({
   }, [session.questions, session.id, startCall]);
 
   const handleLeaveCall = useCallback(async () => {
-    if (isPaused) {
-      // If paused, just close without handling incomplete session
-      await originalHandleLeaveCall();
-      return;
-    }
-
-    // Only handle incomplete session if not paused
     try {
       setIsProcessing(true);
-      await originalHandleLeaveCall();
       
-      const transcript = messages
-        .filter((msg: Message) => msg.role === 'user' || msg.role === 'assistant')
-        .map((msg: Message) => `${msg.role.toUpperCase()}: ${msg.content}`)
-        .join('\n\n');
+      // End the VAPI call
+      originalHandleLeaveCall();
+
+      // If paused, just return without further processing
+      if (isPaused) {
+        return;
+      }
+      
+      // Format transcript only if we have messages
+      const transcript = messages.length > 0
+        ? messages
+            .filter((msg: Message) => msg.role === 'user' || msg.role === 'assistant')
+            .map((msg: Message) => `${msg.role.toUpperCase()}: ${msg.content}`)
+            .join('\n\n')
+        : '';
 
       const result = await handleInProgressSession(session.id, "User ended the call. Session will be evaluated for completion.", transcript);
       if (result.success) {
         const message = result.isComplete 
           ? `Session completed with feedback generated.`
-          : `Session marked as incomplete.`;
-        setError(message);
+          : `Session is paused.`;
+        setError(message);  
       } else {
         setError(result.error || "Failed to handle session error. Please try again.");
       }
@@ -215,33 +217,6 @@ export const InterviewAgentProvider: React.FC<InterviewAgentProviderProps> = ({
     await handleLeaveCall();
     onClose();
   }, [handleLeaveCall, onClose]);
-
-  const handleUserLeave = useCallback(async () => {
-    try {
-      setIsProcessing(true);
-      await handleLeaveCall();
-      
-      const transcript = messages
-        .filter((msg: Message) => msg.role === 'user' || msg.role === 'assistant')
-        .map((msg: Message) => `${msg.role.toUpperCase()}: ${msg.content}`)
-        .join('\n\n');
-
-      const result = await handleInProgressSession(session.id, "User ended the call. Session will be evaluated for completion.", transcript);
-      if (result.success) {
-        const message = result.isComplete 
-          ? `Session completed with feedback generated.`
-          : `Session is paused.`;
-        setError(message);
-      } else {
-        setError(result.error || "Failed to handle session error. Please try again.");
-      }
-    } catch (err) {
-      console.error("Failed to handle session error:", err);
-      setError("Failed to handle session error. Please try again.");
-    } finally {
-      setIsProcessing(false);
-    }
-  }, [session, messages, handleLeaveCall]);
 
   const handleSidebarTypeChange = useCallback((type: SidebarType) => {
     if (sidebarUpdateRef.current) return;
@@ -307,7 +282,6 @@ export const InterviewAgentProvider: React.FC<InterviewAgentProviderProps> = ({
     setSidebarType: handleSidebarTypeChange,
     toggleVideo,
     handleLeaveCall,
-    handleUserLeave,
     handleFinalClose,
     startCall,
     setError,
