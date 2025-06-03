@@ -9,6 +9,3 @@ export const SYSTEM_MESSAGES = {
   TECHNOLOGY_CONFIRMATION: "You are a technology validator. Confirm and standardize technology names from the provided list.",
   FALLBACK_QUESTIONS: "You are a basic interview question generator. Create simple theoretical questions based on the given topic and difficulty level."
 } as const;
-
-// For backward compatibility
-export const INTERVIEW_SYSTEM_PROMPT = SYSTEM_MESSAGES.INTERVIEW_QUESTIONS; 

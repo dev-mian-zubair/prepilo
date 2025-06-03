@@ -172,4 +172,4 @@ export function buildFallbackQuestionsPrompt(interview: InterviewData, difficult
   return `ONLY respond with a JSON array of ${Math.floor(interview.duration / 5)} basic theoretical interview question strings about ${
     interview.technologyNames?.join(", ") || interview.title
   } for ${difficulty} level. Format: ["question1", "question2"]`;
-} 
+}
