@@ -2,10 +2,12 @@
 
 import { Difficulty } from "@prisma/client";
 import { generateText } from "ai";
-import { google } from "@ai-sdk/google";
+import { MODEL, SYSTEM_MESSAGES } from "@/actions/helpers/model.helper";
 
-import { findOrCreateVersion } from "./helpers/version/create.version";
+import { findOrCreateVersion } from "./helpers/version.helper";
 import { getCurrentUser } from "./helpers/common.helper";
+import { buildSessionFeedbackPrompt } from "@/actions/helpers/prompt.helper";
+import { safeParseModelResponse } from "@/actions/helpers/common.helper";
 
 import prisma from "@/lib/prisma";
 import { getUser } from "@/lib/auth";
@@ -49,74 +51,18 @@ export async function createSession(
 }
 
 async function generateSessionFeedback(session: any, transcript: string) {
-  const sessionDuration = session.version?.interview.duration || 0;
-
   try {
     const { text } = await generateText({
-      model: google("gemini-2.0-flash-001"),
-      prompt: `ONLY respond with a JSON object containing feedback details.
-
-      Based on the following interview transcript and questions, generate overall feedback for the interview.
-
-      Session Details:
-      - Interview: ${session.version?.interview.title}
-      - Difficulty: ${session.version?.difficulty}
-      - Focus Areas: ${session.version?.interview.focusAreas.join(", ")}
-      - Duration: ${sessionDuration} minutes
-
-      Questions:
-      ${session.version.questions
-        .map((q: { text: string; type: string }, i: number) => `${i + 1}. ${q.text} (Type: ${q.type})`)
-        .join("\n")}
-
-      Transcript:
-      ${transcript}
-
-      Required JSON format:
-      {
-        "technical": 0-100,
-        "communication": 0-100,
-        "overallScore": 0-100,
-        "summary": "Overall feedback summary",
-        "questionAnalysis": [
-          {
-            "question": "Question text",
-            "analysis": "Analysis of how well the candidate answered this question",
-            "strengths": ["List of strengths in the answer"],
-            "improvements": ["List of areas for improvement"]
-          }
-        ]
-      }
-
-      Important:
-      - Technical score reflects technical accuracy and depth.
-      - Communication score reflects clarity and articulation.
-      - Overall score is the average of the technical and communication scores.
-      - Analyze how well each question was answered in the transcript.
-      - Provide specific strengths and areas for improvement for each question.`,
-      system:
-        "You are an AI assistant that generates feedback for interview sessions based on the transcript and questions.",
+      model: MODEL,
+      prompt: buildSessionFeedbackPrompt(session, transcript),
+      system: SYSTEM_MESSAGES.INTERVIEW_FEEDBACK,
     });
 
     if (!text) {
       throw new Error("AI model returned empty response");
     }
 
-    const jsonStart = text.indexOf("{");
-    const jsonEnd = text.lastIndexOf("}") + 1;
-    
-    if (jsonStart === -1 || jsonEnd === 0) {
-      throw new Error("Invalid JSON response from AI model");
-    }
-
-    const jsonStr = text.slice(jsonStart, jsonEnd);
-    let feedbackResult;
-    
-    try {
-      feedbackResult = JSON.parse(jsonStr);
-    } catch (e) {
-      throw new Error("Failed to parse AI model response as JSON");
-    }
+    const feedbackResult = safeParseModelResponse(text);
 
     if (
       typeof feedbackResult.technical !== 'number' ||

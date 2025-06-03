@@ -29,3 +29,17 @@ export function validateRequestFields(
 
   return null;
 }
+
+export function safeParseModelResponse(text: string): any {
+  const jsonStart = text.indexOf("{");
+  const jsonEnd = text.lastIndexOf("}") + 1;
+  if (jsonStart === -1 || jsonEnd === 0) {
+    throw new Error("Invalid JSON response from AI model");
+  }
+  const jsonStr = text.slice(jsonStart, jsonEnd);
+  try {
+    return JSON.parse(jsonStr);
+  } catch (e) {
+    throw new Error("Failed to parse AI model response as JSON");
+  }
+} 

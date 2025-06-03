@@ -1,8 +1,10 @@
 import { generateText } from "ai";
-import { google } from "@ai-sdk/google";
 import { Difficulty, FocusArea, QuestionType } from "@prisma/client";
 
-import { getCurrentUser } from "../common.helper";
+import { getCurrentUser } from "./common.helper";
+import { buildVersionQuestionsPrompt, buildFallbackQuestionsPrompt } from "@/actions/helpers/prompt.helper";
+import { MODEL, SYSTEM_MESSAGES } from "@/actions/helpers/model.helper";
+import { safeParseModelResponse } from "@/actions/helpers/common.helper";
 
 import prisma from "@/lib/prisma";
 
@@ -85,46 +87,13 @@ export async function generateVersionQuestionsWithAI(
   retries = 2,
 ) {
   try {
-    const technologies = interview.technologies.map(
-      (t: any) => t.technology.name,
-    );
     const { text } = await generateText({
-      model: google("gemini-2.0-flash-001"),
-      prompt: `ONLY respond with the JSON array of theoretical interview questions.
-
-      Generate questions based on:
-      - Title: ${interview.title}
-      - Duration: ${interview.duration} minutes
-      - Difficulty: ${difficulty}
-      - Focus Areas: ${interview.focusAreas.join(", ")}
-      - Technologies: ${technologies.join(", ")}
-
-      Question Types: TECHNICAL, BEHAVIORAL, SYSTEM_DESIGN, PROBLEM_SOLVING
-
-      Required JSON format:
-      {
-        "questions": [
-          {
-            "text": "Question text",
-            "type": "QUESTION_TYPE",
-            "technology": "TechName" // if applicable
-          }
-        ]
-      }
-
-      Important:
-      - Only theoretical/conceptual questions
-      - No coding problems or examples
-      - No sample answers needed
-      - Match the specified difficulty level (BEGINNER: basic concepts, INTERMEDIATE: practical applications, ADVANCED: complex scenarios)`,
-      system:
-        "You are an interview question generator for theoretical/conceptual questions only. Never provide coding questions or examples.",
+      model: MODEL,
+      prompt: buildVersionQuestionsPrompt(interview, difficulty),
+      system: SYSTEM_MESSAGES.INTERVIEW_QUESTIONS,
     });
 
-    // Clean and validate response
-    const jsonStart = text.indexOf("{");
-    const jsonEnd = text.lastIndexOf("}") + 1;
-    const result = JSON.parse(text.slice(jsonStart, jsonEnd));
+    const result = safeParseModelResponse(text);
 
     if (!result?.questions) throw new Error("Invalid question format");
 
@@ -157,13 +126,12 @@ export async function generateVersionQuestionsWithAI(
 
     // Fallback - simple questions tailored to difficulty
     const { text } = await generateText({
-      model: google("gemini-2.0-flash-001"),
-      prompt: `ONLY respond with a JSON array of ${Math.floor(interview.duration / 5)} basic theoretical interview question strings about ${
-        interview.technologyNames.join(", ") || interview.title
-      } for ${difficulty} level. Format: ["question1", "question2"]`,
+      model: MODEL,
+      prompt: buildFallbackQuestionsPrompt(interview, difficulty),
+      system: SYSTEM_MESSAGES.FALLBACK_QUESTIONS,
     });
 
-    const questions = JSON.parse(text.match(/\[.*\]/)?.[0] || "[]");
+    const questions = safeParseModelResponse(text);
 
     return questions.map((text: string) => ({
       text: text.trim(),
