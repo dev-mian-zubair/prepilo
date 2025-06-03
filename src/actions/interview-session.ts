@@ -178,11 +178,14 @@ export async function handleInProgressSession(sessionId: string, error?: string,
 
     const sessionEndTime = new Date();
 
-    // Generate feedback if transcript is provided
+    // Generate feedback if transcript is provided and not empty
     let feedback = null;
-    if (transcript && session.version?.questions) {
+    if (transcript && transcript.trim() && session.version?.questions) {
       feedback = await generateSessionFeedback(session, transcript);
     }
+
+    console.log("feedback", feedback);
+    console.log("transcript", transcript);
 
     // Update session
     const updatedSession = await prisma.session.update({
@@ -190,6 +193,7 @@ export async function handleInProgressSession(sessionId: string, error?: string,
       data: {
         status: "COMPLETED",
         endedAt: sessionEndTime,
+        transcript: transcript || '',
         overallScore: feedback?.technical || null,
         ...(feedback && {
           feedback: {

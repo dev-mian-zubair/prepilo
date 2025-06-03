@@ -26,7 +26,7 @@ const InterviewAgent = ({ interview }: InterviewAgentProps) => {
     isAgentSpeaking,
     isPaused,
     toggleVideo,
-    handleUserLeave,
+    handleLeaveCall,
     handleFinalClose,
     startCall,
     setError,
@@ -123,7 +123,7 @@ const InterviewAgent = ({ interview }: InterviewAgentProps) => {
       session={session}
       interview={interview}
       onClose={handleFinalClose}
-      onEndCall={handleUserLeave}
+      onEndCall={handleLeaveCall}
       onToggleVideo={toggleVideo}
       isPaused={isPaused}
       onPause={pauseSession}
