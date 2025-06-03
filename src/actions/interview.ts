@@ -5,7 +5,7 @@ import {
   createInterviewResponse,
   generateInterviewDataWithJD,
   validateAndCreateInterview,
-} from "./helpers/interview/create.interview";
+} from "./helpers/interview.helper";
 
 import { getUser } from "@/lib/auth";
 import prisma from "@/lib/prisma";

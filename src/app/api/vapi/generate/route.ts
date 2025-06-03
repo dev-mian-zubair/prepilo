@@ -1,7 +1,7 @@
 import {
   generateInterviewDataWithAgentInfo,
   validateAndCreateInterview,
-} from "@/actions/helpers/interview/create.interview";
+} from "@/actions/helpers/interview.helper";
 
 export async function POST(request: Request) {
   try {

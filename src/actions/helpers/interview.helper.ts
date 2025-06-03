@@ -1,14 +1,19 @@
 import { generateText } from "ai";
-import { google } from "@ai-sdk/google";
 import { FocusArea } from "@prisma/client";
 
 import {
-  extractJSON,
   getCurrentUser,
   validateRequestFields,
-} from "../common.helper";
+} from "./common.helper";
+import {
+  buildInterviewDataWithJDPrompt,
+  buildInterviewDataWithAgentPrompt,
+  buildTechnologyConfirmationPrompt,
+} from "@/actions/helpers/prompt.helper";
+import { MODEL, SYSTEM_MESSAGES } from "@/actions/helpers/model.helper";
 
 import prisma from "@/lib/prisma";
+import { safeParseModelResponse } from "@/actions/helpers/common.helper";
 
 // Interface for creating an interview, aligned with schema
 export interface CreateInterviewInput {
@@ -61,31 +66,12 @@ export async function validateAndCreateInterview(data: CreateInterviewInput) {
 export async function generateInterviewDataWithJD(jobDescription: string) {
   try {
     const { text } = await generateText({
-      model: google("gemini-2.0-flash-001"),
-      prompt: `Strictly respond with ONLY a object with three keys: title, focusAreas and technologies. The title should be a job title, the focus areas should be an array of focus area names, and the technologies should be an array of technology names. No additional text or formatting.
-
-      Input job description: ${jobDescription}
-
-      Focus Areas: TECHNICAL, BEHAVIORAL, SYSTEM_DESIGN, PROBLEM_SOLVING
-
-      Required output format (ONLY THIS FORMAT):
-      {
-        "title": "Job title",
-        "focusAreas": ["FOCUS_AREA_1", "FOCUS_AREA_2"],
-        "technologies": ["TechName_1", "TechName_2"]
-      }
-
-      Example:
-      {
-        "title": "Software Engineer",
-        "focusAreas": ["BEHAVIORAL", "TECHNICAL"],
-        "technologies": ["React", "Node.js"]
-      }`,
-      system:
-        "You are a helpful assistant that processes job description. Only respond with the requested object, no additional text.",
+      model: MODEL,
+      prompt: buildInterviewDataWithJDPrompt(jobDescription),
+      system: SYSTEM_MESSAGES.INTERVIEW_DATA,
     });
 
-    return extractJSON(text);
+    return safeParseModelResponse(text);
   } catch (error) {
     console.error("Interview data generation failed:", error);
   }
@@ -106,35 +92,12 @@ export async function generateInterviewDataWithAgentInfo(data: any) {
     }
 
     const { text } = await generateText({
-      model: google("gemini-2.0-flash-001"),
-      prompt: `Strictly respond with ONLY a object with three keys: title, focusAreas and technologies. The title should be a job title, the focus areas should be an array of focus area names, and the technologies should be an array of technology names. No additional text or formatting.
-
-      Input:
-      The job role is ${role}.
-      The job experience level is ${level}.
-      The tech stack used in the job is: ${techstack}.
-      The focus areas: ${type}.
-
-      Focus Areas: TECHNICAL, BEHAVIORAL, SYSTEM_DESIGN, PROBLEM_SOLVING
-
-      Required output format (ONLY THIS FORMAT):
-      {
-        "title": "Job title",
-        "focusAreas": ["FOCUS_AREA_1", "FOCUS_AREA_2"],
-        "technologies": ["TechName_1", "TechName_2"]
-      }
-
-      Example:
-      {
-        "title": "Software Engineer",
-        "focusAreas": ["BEHAVIORAL", "TECHNICAL"],
-        "technologies": ["React", "Node.js"]
-      }`,
-      system:
-        "You are a helpful assistant that processes job description. Only respond with the requested object, no additional text.",
+      model: MODEL,
+      prompt: buildInterviewDataWithAgentPrompt({ type, role, level, techstack }),
+      system: SYSTEM_MESSAGES.INTERVIEW_DATA,
     });
 
-    return extractJSON(text);
+    return safeParseModelResponse(text);
   } catch (error) {
     throw error;
   }
@@ -173,21 +136,12 @@ export async function confirmTechnologiesWithAI(
 
   try {
     const { text } = await generateText({
-      model: google("gemini-2.0-flash-001"),
-      prompt: `Strictly respond with ONLY a JSON array of technology names. No additional text or formatting.
-
-      Input technologies: ${techNames.join(", ")}
-
-      Required output format (ONLY THIS FORMAT):
-      ["TechnologyName", "TechnologyName"]
-
-      Example:
-      ["React", "Node.js"]`,
-      system:
-        "You are a helpful assistant that processes technology names. Only respond with the requested JSON array, no additional text.",
+      model: MODEL,
+      prompt: buildTechnologyConfirmationPrompt(techNames),
+      system: SYSTEM_MESSAGES.TECHNOLOGY_CONFIRMATION,
     });
 
-    const result = extractJSON(text);
+    const result = safeParseModelResponse(text);
 
     if (!Array.isArray(result))
       throw new Error("Invalid format: Expected array");
