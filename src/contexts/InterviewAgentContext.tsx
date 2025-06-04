@@ -208,15 +208,12 @@ export const InterviewAgentProvider: React.FC<InterviewAgentProviderProps> = ({
         : '';
 
       const result = await handleInProgressSession(session.id, "User ended the call. Session will be evaluated for completion.", transcript);
+      console.log("result", result);
       if (result.success) {
         if (!result.feedback) {
           throw new Error('No feedback was generated');
         }
         setFeedback(result.feedback);
-        const message = result.isComplete 
-          ? `Session completed with feedback generated.`
-          : `Session is paused.`;
-        setEndCallError(message);  
       } else {
         setEndCallError(result.error || "Failed to handle session error. Please try again.");
       }
