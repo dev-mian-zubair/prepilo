@@ -1,5 +1,5 @@
 "use client";
-import { Card, CardBody, CardHeader } from "@heroui/card";
+import { Card, CardBody } from "@heroui/card";
 
 import InterviewGrid from "./InterviewGrid";
 
@@ -13,16 +13,6 @@ export default function InterviewLayout({
   return (
     <div className="min-h-screen">
       <Card className="shadow-none bg-transparent border-none">
-        <CardHeader className="flex justify-between items-center">
-          <div className="flex items-center gap-2">
-            <h2 className="text-large font-bold text-foreground tracking-tight">
-              Interview Attempts
-            </h2>
-            <span className="text-foreground/70">
-              ({interviews.length} total)
-            </span>
-          </div>
-        </CardHeader>
         <CardBody>
           <InterviewGrid interviews={interviews} />
         </CardBody>

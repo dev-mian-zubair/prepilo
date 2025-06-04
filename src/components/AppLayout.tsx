@@ -164,7 +164,7 @@ export function AppLayout({ children }: AppLayoutProps) {
         {/* Sidebar - Hidden on mobile */}
         <aside
           className={cn(
-            "hidden md:block bg-background-secondary",
+            "hidden md:block bg-background-secondary p-4",
             isCollapsed ? "w-16" : "w-64"
           )}
         >
@@ -195,10 +195,6 @@ export function AppLayout({ children }: AppLayoutProps) {
                   )}
                 </Link>
               ))}
-            </nav>
-
-            {/* Bottom Actions */}
-            <div className="p-3 space-y-1">
               <button
                 onClick={handleSignOut}
                 className={cn(
@@ -211,29 +207,12 @@ export function AppLayout({ children }: AppLayoutProps) {
                   <span className="truncate">Logout</span>
                 )}
               </button>
-
-              <button
-                onClick={handleSidebarToggle}
-                className={cn(
-                  "flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium",
-                  "text-foreground-secondary hover:bg-background-secondary/50 hover:text-foreground transition-colors duration-200"
-                )}
-              >
-                {isCollapsed ? (
-                  <PanelRightClose className="h-5 w-5 shrink-0" />
-                ) : (
-                  <PanelLeftClose className="h-5 w-5 shrink-0" />
-                )}
-                {!isCollapsed && (
-                  <span className="truncate">Collapse</span>
-                )}
-              </button>
-            </div>
+            </nav>
           </div>
         </aside>
 
         {/* Content Area */}
-        <main className="flex-1 overflow-auto bg-background">
+        <main className="flex-1 overflow-auto bg-background p-4">
           {children}
         </main>
       </div>
