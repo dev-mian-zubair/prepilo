@@ -7,7 +7,7 @@ const EndCallModal = () => {
   const { 
     isProcessing,
     showEndCallModal,
-    error,
+    endCallError,
     feedback,
     handleFinalClose,
   } = useInterviewAgent();
@@ -67,7 +67,7 @@ const EndCallModal = () => {
                 </div>
                 <p className="mt-4 text-sm text-gray-400 font-medium">Processing your request...</p>
               </div>
-            ) : error ? (
+            ) : endCallError ? (
               <div className="flex flex-col items-center justify-center py-6">
                 <div className="relative">
                   <div className="absolute inset-0 bg-red-500/20 rounded-full blur-xl"></div>
@@ -75,7 +75,7 @@ const EndCallModal = () => {
                     <XCircleIcon className="w-12 h-12 text-red-400" />
                   </div>
                 </div>
-                <p className="mt-4 text-red-400 text-center font-medium">{error}</p>
+                <p className="mt-4 text-red-400 text-center font-medium">{endCallError}</p>
               </div>
             ) : (
               <div className="text-center py-4">

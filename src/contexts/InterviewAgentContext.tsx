@@ -16,6 +16,8 @@ interface InterviewAgentContextType {
   // States
   sidebarType: SidebarType;
   error: string | null;
+  pauseError: string | null;
+  endCallError: string | null;
   isProcessing: boolean;
   messages: Message[];
   callStatus: CallStatus;
@@ -35,6 +37,8 @@ interface InterviewAgentContextType {
   handleFinalClose: () => Promise<void>;
   startCall: (params: { interviewer: any; variables: any }) => Promise<void>;
   setError: (error: string | null) => void;
+  setPauseError: (error: string | null) => void;
+  setEndCallError: (error: string | null) => void;
   pauseSession: () => Promise<void>;
   resumeSession: () => Promise<void>;
   generateFeedback: () => Promise<void>;
@@ -58,6 +62,8 @@ export const InterviewAgentProvider: React.FC<InterviewAgentProviderProps> = ({
 }) => {
   const [sidebarType, setSidebarType] = useState<SidebarType>("conversation");
   const [error, setError] = useState<string | null>(null);
+  const [pauseError, setPauseError] = useState<string | null>(null);
+  const [endCallError, setEndCallError] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [storedMessages, setStoredMessages] = useState<Message[]>([]);
@@ -110,6 +116,7 @@ export const InterviewAgentProvider: React.FC<InterviewAgentProviderProps> = ({
   const pauseSession = useCallback(async () => {
     try {
       setIsProcessing(true);
+      setPauseError(null);
       
       // Format transcript
       const transcript = messages
@@ -131,7 +138,7 @@ export const InterviewAgentProvider: React.FC<InterviewAgentProviderProps> = ({
       originalHandleLeaveCall();
     } catch (err) {
       console.error("Failed to pause session:", err);
-      setError("Failed to pause session. Please try again.");
+      setPauseError("Failed to pause session. Please try again.");
     } finally {
       setIsProcessing(false);
     }
@@ -181,6 +188,7 @@ export const InterviewAgentProvider: React.FC<InterviewAgentProviderProps> = ({
   const handleLeaveCall = useCallback(async () => {
     try {
       setIsProcessing(true);
+      setEndCallError(null);
       setShowEndCallModal(true);
       
       // End the VAPI call
@@ -208,13 +216,13 @@ export const InterviewAgentProvider: React.FC<InterviewAgentProviderProps> = ({
         const message = result.isComplete 
           ? `Session completed with feedback generated.`
           : `Session is paused.`;
-        setError(message);  
+        setEndCallError(message);  
       } else {
-        setError(result.error || "Failed to handle session error. Please try again.");
+        setEndCallError(result.error || "Failed to handle session error. Please try again.");
       }
     } catch (err) {
       console.error("Failed to handle session error:", err);
-      setError("Failed to handle session error. Please try again.");
+      setEndCallError("Failed to handle session error. Please try again.");
     } finally {
       setIsProcessing(false);
     }
@@ -275,6 +283,8 @@ export const InterviewAgentProvider: React.FC<InterviewAgentProviderProps> = ({
     // States
     sidebarType,
     error,
+    pauseError,
+    endCallError,
     isProcessing,
     messages: isPaused ? storedMessages : messages,
     callStatus,
@@ -294,6 +304,8 @@ export const InterviewAgentProvider: React.FC<InterviewAgentProviderProps> = ({
     handleFinalClose,
     startCall,
     setError,
+    setPauseError,
+    setEndCallError,
     pauseSession,
     resumeSession,
     generateFeedback: handleGenerateFeedback,
