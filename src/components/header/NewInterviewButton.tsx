@@ -20,7 +20,7 @@ const NewInterviewButton = () => {
         onPress={onOpen}
       >
         <PlusIcon />
-        Create
+        Create Interview
       </Button>
       <InterviewGeneratorModal isOpen={isOpen} onClose={onClose} />
     </>

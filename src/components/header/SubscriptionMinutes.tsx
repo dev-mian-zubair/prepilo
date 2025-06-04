@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { cn } from "@/lib/utils";
-import { InformationCircleIcon } from "@heroicons/react/24/outline";
+import { InformationCircleIcon, ClockIcon } from "@heroicons/react/24/outline";
 import SubscriptionWarningModal from "./SubscriptionWarningModal";
 
 interface Subscription {
@@ -19,31 +19,34 @@ export default function SubscriptionMinutes({
   const { used, total } = subscription;
   const percentage = (used / total) * 100;
   const isLow = percentage > 80;
+  const isCritical = percentage > 90;
 
   return (
     <>
-      <div className={cn(
-        "flex items-center gap-2 px-3 py-2.5 rounded-large",
-        isLow ? "bg-danger-100" : "bg-default-100/50",
-        className
-      )}>
-        <span className={cn(
-          "text-sm font-medium",
-          isLow ? "text-danger" : "text-foreground"
-        )}>
-          {used}
-        </span>
-        <span className="text-sm text-default-400">/</span>
-        <span className="text-sm text-default-400">{total}</span>
-        <span className="text-sm text-default-400">min</span>
-        {isLow && (
-          <button 
-            onClick={() => setIsModalOpen(true)}
-            className="ml-1 text-warning hover:text-warning-600 transition-colors"
-          >
-            <InformationCircleIcon className="w-4 h-4" />
-          </button>
+      <div
+        className={cn(
+          "flex flex-col gap-2 rounded-lg border h-11 items-center justify-center px-2 cursor-pointer",
+          isCritical ? "border-danger/50 bg-danger/5" : 
+          isLow ? "border-warning/50 bg-warning/5" : 
+          "border-default-200/50 bg-default-100/50",
+          className
         )}
+        onClick={() => setIsModalOpen(true)}
+      >
+        {/* Minutes counter */}
+        <div className="flex items-center justify-between text-sm">
+          <span className={cn(
+            "font-medium",
+            isCritical ? "text-danger" :
+            isLow ? "text-warning" :
+            "text-default-700"
+          )}>
+            {used} minutes used
+          </span>
+          <span className="text-default-500">
+            &nbsp;{total - used} remaining
+          </span>
+        </div>
       </div>
 
       <SubscriptionWarningModal
