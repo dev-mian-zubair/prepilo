@@ -72,7 +72,9 @@ export const useVapiCall = (): UseVapiCallReturn => {
       isInitialized.current = true;
       if (mounted.current) {
         setCallStatus(CallStatus.CONNECTING);
-        setMessages([]);
+        if (!params.variables?.previousTranscript) {
+          setMessages([]);
+        }
       }
 
       await Promise.all([cleanupVapi(), cleanupMediaStreams()]);

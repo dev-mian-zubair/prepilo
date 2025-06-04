@@ -6,6 +6,7 @@ import { handleInProgressSession, handlePauseSession, handleResumeSession, getSe
 import { useVapiCall } from "@/hooks/useVapiCall";
 import { Interview } from "@/types/interview";
 import { resumingInterviewer } from "@/helpers/agent.helper";
+import { transcriptToMessages } from "@/helpers/transcript";
 
 interface Message {
   role: "user" | "system" | "assistant";
@@ -88,18 +89,7 @@ export const InterviewAgentProvider: React.FC<InterviewAgentProviderProps> = ({
     if (session?.transcript) {
       try {
         // Convert transcript to messages format
-        const transcriptMessages = session.transcript
-          .split('\n\n')
-          .map(line => {
-            const [role, content] = line.split(': ');
-            return {
-              role: role.toLowerCase() as 'user' | 'assistant',
-              content: content.trim()
-            };
-          });
-
-        console.log("transcriptMessages", transcriptMessages);
-        console.log("session", session);
+        const transcriptMessages = transcriptToMessages(session.transcript);
         
         setMessages(transcriptMessages);
       } catch (err) {
@@ -151,7 +141,6 @@ export const InterviewAgentProvider: React.FC<InterviewAgentProviderProps> = ({
 
       // Update session state to IN_PROGRESS
       const sessionResult = await handleResumeSession(session.id);
-      console.log("sessionResult", sessionResult);
       if (!sessionResult.success) {
         throw new Error(sessionResult.error);
       }

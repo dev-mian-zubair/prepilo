@@ -84,7 +84,10 @@ const SessionList = ({
         return (
           <div className="flex items-center gap-2">
             <Button
-              onPress={() => setSelectedSession(session)}
+              onPress={() => {
+                setSelectedSession(session);
+                setShowFeedbackModal(true);
+              }}
               className="flex items-center gap-2"
               color="primary"
               size="sm"
