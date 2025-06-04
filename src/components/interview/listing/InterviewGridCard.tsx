@@ -181,7 +181,7 @@ export default function InterviewGridCard({
               <Award size={16} />
               <span>Average Scores</span>
             </div>
-           <div className="flex items-center gap-4">
+           <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
              {['BEGINNER', 'INTERMEDIATE', 'ADVANCED'].map((level) => {
                const score = interview.versions[level as DifficultyLevel];
                const hasScore = score !== null && score !== undefined;
