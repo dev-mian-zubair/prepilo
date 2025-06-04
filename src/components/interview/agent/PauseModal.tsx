@@ -2,8 +2,7 @@ import React from "react";
 import { Modal, ModalContent, ModalHeader, ModalBody } from "@heroui/modal";
 import { Button } from "@heroui/button";
 import { useInterviewAgent } from "@/contexts/InterviewAgentContext";
-import { PauseCircleIcon, PlayCircleIcon, XCircleIcon } from "@heroicons/react/24/outline";
-import { PauseIcon } from "@heroicons/react/24/outline";
+import { PauseIcon, XCircleIcon } from "@heroicons/react/24/outline";
 
 const PauseModal = () => {
   const { 
@@ -11,6 +10,7 @@ const PauseModal = () => {
     pauseError,
     isPaused,
     resumeSession,
+    handleFinalClose
   } = useInterviewAgent();
 
   return (
@@ -91,6 +91,14 @@ const PauseModal = () => {
                     className="bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700"
                   >
                     Resume Session
+                  </Button>
+                  <Button
+                    color="danger"
+                    onPress={handleFinalClose}
+                    isDisabled={isProcessing}
+                    className="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700"
+                  >
+                    Leave Call
                   </Button>
                 </div>
               </div>
