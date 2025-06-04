@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { Session } from '@/types/session.types';
 import { Button } from '@heroui/button';
-import { Clock, Play, RefreshCw, X, Rocket, Star, ChevronDown, ChevronUp } from 'lucide-react';
+import { Clock, Play, RefreshCw, X, Rocket, Eye } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { Interview } from '@/types/interview';
-import FeedbackDisplay from '../feedback/FeedbackDisplay';
+import FeedbackModal from '../feedback/FeedbackModal';
+import SessionStatusModal from './SessionStatusModal';
 
 interface SessionListProps {
   sessions: Session[];
@@ -23,11 +24,9 @@ const SessionList = ({
   interview,
   onClose 
 }: SessionListProps) => {
-  const [expandedSessionId, setExpandedSessionId] = useState<string | null>(null);
-
-  const toggleSession = (sessionId: string) => {
-    setExpandedSessionId(expandedSessionId === sessionId ? null : sessionId);
-  };
+  const [selectedSession, setSelectedSession] = useState<Session | null>(null);
+  const [showStatusModal, setShowStatusModal] = useState<boolean>(false);
+  const [showFeedbackModal, setShowFeedbackModal] = useState<boolean>(false);
 
   const getStatusColor = (status: Session['status']) => {
     switch (status) {
@@ -83,58 +82,25 @@ const SessionList = ({
         );
       case 'COMPLETED':
         return (
-          <Button
-            onPress={onReattempt}
-            className="flex items-center gap-2"
-            color="success"
-            size="sm"
-          >
-            <RefreshCw className="w-4 h-4" />
-            Retry
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button
+              onPress={() => setSelectedSession(session)}
+              className="flex items-center gap-2"
+              color="primary"
+              size="sm"
+            >
+              <Eye className="w-4 h-4" />
+              View Feedback
+            </Button>
+          </div>
         );
       default:
         return null;
     }
   };
 
-  const renderFeedback = (session: Session) => {
-    if (!session.feedback) return null;
-
-    const isExpanded = expandedSessionId === session.id;
-
-    return (
-      <div className="mt-4 pt-4 border-t border-gray-700">
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2">
-              <Star className="w-4 h-4 text-yellow-400" />
-              <span className="text-sm font-medium text-white">Technical: {session.feedback.technical}/100</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Star className="w-4 h-4 text-blue-400" />
-              <span className="text-sm font-medium text-white">Communication: {session.feedback.communication}/100</span>
-            </div>
-          </div>
-          <Button
-            onPress={() => toggleSession(session.id)}
-            isIconOnly
-            variant="light"
-            className="text-gray-400 hover:text-white"
-          >
-            {isExpanded ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
-          </Button>
-        </div>
-        
-        {isExpanded && (
-          <FeedbackDisplay feedback={JSON.stringify(session.feedback)} />
-        )}
-      </div>
-    );
-  };
-
   return (
-    <div className="h-screen flex flex-col">
+    <div className="h-screen flex flex-col overflow-hidden">
       {/* Sticky Header */}
       <div className="sticky top-0 z-10 bg-gray-900 border-b border-gray-800 p-6">
         <div className="max-w-4xl mx-auto">
@@ -201,12 +167,33 @@ const SessionList = ({
               <div
                 key={session.id}
                 className="group w-full text-left bg-gray-800 hover:bg-gray-700 rounded-xl p-6 transition-all duration-200 
-                  hover:scale-[1.01] hover:shadow-lg"
+                  hover:scale-[1.01] hover:shadow-lg cursor-pointer"
+                onClick={() => {
+                  if (session.status === 'COMPLETED') {
+                    setSelectedSession(session);
+                    setShowFeedbackModal(true);
+                  } else {
+                    setSelectedSession(session);
+                    setShowStatusModal(true);
+                  }
+                }}
               >
                 <div className="flex items-center justify-between w-full">
                   <div className="flex items-center gap-4">
-                    <div className="flex-shrink-0 w-12 h-12 flex items-center justify-center rounded-full bg-primary/5 group-hover:bg-primary/10 transition-colors">
-                      <Play className="w-5 h-5 text-primary" />
+                    <div className={`flex-shrink-0 w-12 h-12 flex items-center justify-center rounded-full transition-colors ${
+                      session.status === 'COMPLETED' ? 'bg-green-500/5' :
+                      session.status === 'PAUSED' ? 'bg-yellow-500/5' :
+                      session.status === 'IN_PROGRESS' ? 'bg-blue-500/5' :
+                      'bg-gray-500/5'
+                    } ${
+                      session.status === 'COMPLETED' ? 'group-hover:bg-green-500/10' :
+                      session.status === 'PAUSED' ? 'group-hover:bg-yellow-500/10' :
+                      session.status === 'IN_PROGRESS' ? 'group-hover:bg-blue-500/10' :
+                      'group-hover:bg-gray-500/10'
+                    }`}>
+                      <Play className={`w-5 h-5 ${
+                        getStatusColor(session.status).replace('/20', '').replace('bg-', 'text-')
+                      }`}/>
                     </div>
                     <div className="flex flex-col">
                       <span className="text-lg font-semibold text-white group-hover:text-primary transition-colors">
@@ -215,21 +202,60 @@ const SessionList = ({
                       <span className="text-sm text-gray-400">
                         {session.version?.difficulty || 'Unknown'} Level
                       </span>
+                      {session.feedback && (
+                        <div className="flex items-center gap-4 mt-2">
+                          <div className="flex items-center gap-1">
+                            <span className="text-xs text-blue-400">Tech:</span>
+                            <span className="text-xs font-medium text-white">{session.feedback.technical}%</span>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <span className="text-xs text-green-400">Comm:</span>
+                            <span className="text-xs font-medium text-white">{session.feedback.communication}%</span>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <span className="text-xs text-purple-400">Overall:</span>
+                            <span className="text-xs font-medium text-white">
+                              {session.overallScore?.toFixed(0)}%
+                            </span>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
-                    <span className={`px-3 py-1 rounded-full text-sm ${getStatusColor(session.status)}`}>
-                      {getStatusLabel(session.status)}
-                    </span>
                     {getActionButton(session)}
                   </div>
                 </div>
-                {renderFeedback(session)}
               </div>
             ))
           )}
         </div>
       </div>
+
+      {/* Feedback Modal */}
+      {showFeedbackModal && selectedSession && (
+        <FeedbackModal
+          isOpen={showFeedbackModal}
+          onClose={() => setShowFeedbackModal(false)}
+          feedback={selectedSession.feedback ? JSON.stringify(selectedSession.feedback) : null}
+          sessionDate={formatDistanceToNow(new Date(selectedSession.startedAt), { addSuffix: true })}
+          session={{
+            ...selectedSession,
+            startedAt: selectedSession.startedAt.toISOString(),
+            endedAt: selectedSession.endedAt?.toISOString(),
+          }}
+        />
+      )}
+
+      {/* Session Status Modal */}
+      {showStatusModal && selectedSession && (
+        <SessionStatusModal
+          isOpen={showStatusModal}
+          onClose={() => setShowStatusModal(false)}
+          session={selectedSession}
+          onResumeSession={onResume}
+        />
+      )}
     </div>
   );
 };

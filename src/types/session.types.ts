@@ -25,4 +25,7 @@ export interface Session {
     }>;
   };
   transcript?: string;
+  overallScore?: number;
+  duration?: number;
+  endedAt?: Date;
 }

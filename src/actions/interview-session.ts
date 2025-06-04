@@ -204,6 +204,7 @@ export async function getInterviewSessions(interviewId: string): Promise<Session
     return sessions.map(session => ({
       id: session.id,
       transcript: session.transcript || "",
+      overallScore: session.overallScore || 0,
       questions: session.version?.questions.map(q => ({
         id: q.id,
         text: q.text,
