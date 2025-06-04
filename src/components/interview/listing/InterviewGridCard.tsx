@@ -55,6 +55,7 @@ interface InterviewGridCardProps {
 export default function InterviewGridCard({
   interview,
 }: InterviewGridCardProps) {
+  console.log(interview);
   const [showAllTechnologies, setShowAllTechnologies] = useState(false);
   const [showAllFocusAreas, setShowAllFocusAreas] = useState(false);
 
@@ -102,19 +103,8 @@ export default function InterviewGridCard({
   return (
     <Card className="group border border-gray-700 bg-gray-800 min-h-[300px] shadow-none hover:shadow-xl hover:border-primary-400 transition-all duration-200">
       <CardBody className="p-6 flex flex-col gap-4">
-        {/* Title and Difficulty */}
-        <div className="flex items-start justify-between">
-          <h2 className="text-xl font-bold line-clamp-2 text-white mr-4">{interview.title}</h2>
-           {interview.versions.BEGINNER !== undefined && (
-             <Chip
-               size="sm"
-               variant="flat"
-               className={`text-xs font-semibold px-2 py-1 ${getDifficultyColor(interview.versions.BEGINNER !== null ? 'BEGINNER' : interview.versions.INTERMEDIATE !== null ? 'INTERMEDIATE' : 'ADVANCED')}`}
-             >
-               {interview.versions.BEGINNER !== null ? 'Beginner' : interview.versions.INTERMEDIATE !== null ? 'Intermediate' : 'Advanced'}
-             </Chip>
-           )}
-        </div>
+        {/* Title */}
+        <h2 className="text-xl font-bold line-clamp-2 text-white mr-4">{interview.title}</h2>
 
          {/* Technologies */}
         <div>
