@@ -4,6 +4,7 @@ import { Button } from '@heroui/button';
 import { Clock, Play, RefreshCw, X, Rocket, Star, ChevronDown, ChevronUp } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { Interview } from '@/types/interview';
+import FeedbackDisplay from '../feedback/FeedbackDisplay';
 
 interface SessionListProps {
   sessions: Session[];
@@ -126,46 +127,7 @@ const SessionList = ({
         </div>
         
         {isExpanded && (
-          <div className="space-y-4">
-            <div className="bg-gray-900/50 rounded-lg p-4">
-              <h4 className="text-sm font-medium text-white mb-2">Summary</h4>
-              <p className="text-sm text-gray-400">{session.feedback.summary}</p>
-            </div>
-            
-            {session.feedback.questionAnalysis && (
-              <div className="space-y-3">
-                <h4 className="text-sm font-medium text-white">Question Analysis</h4>
-                {session.feedback.questionAnalysis.map((analysis, index) => (
-                  <div key={index} className="bg-gray-900/50 rounded-lg p-4">
-                    <h5 className="text-sm font-medium text-white mb-2">{analysis.question}</h5>
-                    <p className="text-sm text-gray-400 mb-3">{analysis.analysis}</p>
-                    
-                    {analysis.strengths.length > 0 && (
-                      <div className="mb-3">
-                        <h6 className="text-xs font-medium text-green-400 mb-1">Strengths</h6>
-                        <ul className="list-disc list-inside text-sm text-gray-400">
-                          {analysis.strengths.map((strength, i) => (
-                            <li key={i}>{strength}</li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
-                    
-                    {analysis.improvements.length > 0 && (
-                      <div>
-                        <h6 className="text-xs font-medium text-yellow-400 mb-1">Areas for Improvement</h6>
-                        <ul className="list-disc list-inside text-sm text-gray-400">
-                          {analysis.improvements.map((improvement, i) => (
-                            <li key={i}>{improvement}</li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
+          <FeedbackDisplay feedback={JSON.stringify(session.feedback)} />
         )}
       </div>
     );
