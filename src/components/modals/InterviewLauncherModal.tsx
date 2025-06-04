@@ -6,7 +6,7 @@ import LaunchInterview from "../interview/launch/LaunchInterview";
 interface InterviewLauncherModalProps {
   isOpen: boolean;
   onClose: () => void;
-  interview?: { id: string };
+  interview: { id: string } | null;
 }
 
 const InterviewLauncherModal = ({
