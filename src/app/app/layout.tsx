@@ -27,7 +27,7 @@ export default function RootLayout({
   return (
     <html suppressHydrationWarning lang="en">
       <body className={clsx(fontSans.className)}>
-        <Providers themeProps={{ attribute: "class", defaultTheme: "system" }}>
+        <Providers themeProps={{ attribute: "class", defaultTheme: "dark" }}>
           <AppLayout>{children}</AppLayout>
         </Providers>
       </body>
