@@ -162,6 +162,7 @@ export async function handleInProgressSession(sessionId: string, error?: string,
     return { 
       success: true, 
       session: updatedSession,
+      feedback: JSON.stringify(feedback, null, 2),
       isComplete: true,
       error: error || null
     };

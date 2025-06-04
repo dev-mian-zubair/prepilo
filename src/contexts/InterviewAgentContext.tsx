@@ -5,7 +5,7 @@ import { CallStatus } from "@/enums";
 import { handleInProgressSession, handlePauseSession, handleResumeSession, getSessionTranscript, generateFeedback } from "@/actions/interview-session";
 import { useVapiCall } from "@/hooks/useVapiCall";
 import { Interview } from "@/types/interview";
-import { interviewer, resumingInterviewer } from "@/helpers/agent.helper";
+import { resumingInterviewer } from "@/helpers/agent.helper";
 
 interface Message {
   role: "user" | "system" | "assistant";
@@ -26,6 +26,7 @@ interface InterviewAgentContextType {
   isPaused: boolean;
   feedback: string | null;
   isGeneratingFeedback: boolean;
+  showEndCallModal: boolean;
 
   // Actions
   setSidebarType: (type: SidebarType) => void;
@@ -37,6 +38,7 @@ interface InterviewAgentContextType {
   pauseSession: () => Promise<void>;
   resumeSession: () => Promise<void>;
   generateFeedback: () => Promise<void>;
+  setShowEndCallModal: (show: boolean) => void;
 }
 
 const InterviewAgentContext = createContext<InterviewAgentContextType | undefined>(undefined);
@@ -62,6 +64,7 @@ export const InterviewAgentProvider: React.FC<InterviewAgentProviderProps> = ({
   const sidebarUpdateRef = useRef(false);
   const [feedback, setFeedback] = useState<string | null>(null);
   const [isGeneratingFeedback, setIsGeneratingFeedback] = useState(false);
+  const [showEndCallModal, setShowEndCallModal] = useState(false);
 
   const {
     callStatus,
@@ -88,7 +91,6 @@ export const InterviewAgentProvider: React.FC<InterviewAgentProviderProps> = ({
               content: content.trim()
             };
           });
-
 
         console.log("transcriptMessages", transcriptMessages);
         console.log("session", session);
@@ -126,7 +128,7 @@ export const InterviewAgentProvider: React.FC<InterviewAgentProviderProps> = ({
       setIsPaused(true);
 
       // End the call without triggering incomplete session
-      await originalHandleLeaveCall();
+      originalHandleLeaveCall();
     } catch (err) {
       console.error("Failed to pause session:", err);
       setError("Failed to pause session. Please try again.");
@@ -179,6 +181,7 @@ export const InterviewAgentProvider: React.FC<InterviewAgentProviderProps> = ({
   const handleLeaveCall = useCallback(async () => {
     try {
       setIsProcessing(true);
+      setShowEndCallModal(true);
       
       // End the VAPI call
       originalHandleLeaveCall();
@@ -198,6 +201,10 @@ export const InterviewAgentProvider: React.FC<InterviewAgentProviderProps> = ({
 
       const result = await handleInProgressSession(session.id, "User ended the call. Session will be evaluated for completion.", transcript);
       if (result.success) {
+        if (!result.feedback) {
+          throw new Error('No feedback was generated');
+        }
+        setFeedback(result.feedback);
         const message = result.isComplete 
           ? `Session completed with feedback generated.`
           : `Session is paused.`;
@@ -211,12 +218,13 @@ export const InterviewAgentProvider: React.FC<InterviewAgentProviderProps> = ({
     } finally {
       setIsProcessing(false);
     }
-  }, [session, messages, originalHandleLeaveCall, isPaused]);
+  }, [session, messages, originalHandleLeaveCall, isPaused, showEndCallModal]);
 
   const handleFinalClose = useCallback(async () => {
-    await handleLeaveCall();
+    setShowEndCallModal(false);
+    setIsPaused(false);
     onClose();
-  }, [handleLeaveCall, onClose]);
+  }, [onClose, showEndCallModal, isPaused]);
 
   const handleSidebarTypeChange = useCallback((type: SidebarType) => {
     if (sidebarUpdateRef.current) return;
@@ -277,6 +285,7 @@ export const InterviewAgentProvider: React.FC<InterviewAgentProviderProps> = ({
     isPaused,
     feedback,
     isGeneratingFeedback,
+    showEndCallModal,
 
     // Actions
     setSidebarType: handleSidebarTypeChange,
@@ -288,6 +297,7 @@ export const InterviewAgentProvider: React.FC<InterviewAgentProviderProps> = ({
     pauseSession,
     resumeSession,
     generateFeedback: handleGenerateFeedback,
+    setShowEndCallModal,
   };
 
   return (

@@ -1,11 +1,12 @@
 import React, { useCallback } from "react";
-import { Video, VideoOff, PhoneOff, Pause, Play } from "lucide-react";
+import { Video, VideoOff, Pause, Play } from "lucide-react";
 import { Button } from "@heroui/button";
 import { useInterviewAgent } from "@/contexts/InterviewAgentContext";
 import { MeetingType } from "@/types/interview";
 import { SidebarType } from "@/types/interview";
-import { ChatBubbleLeftRightIcon, XMarkIcon, InformationCircleIcon, DocumentTextIcon } from "@heroicons/react/24/outline";
+import { ChatBubbleLeftRightIcon, XMarkIcon, InformationCircleIcon } from "@heroicons/react/24/outline";
 import PauseModal from "./PauseModal";
+import EndCallModal from "./EndCallModal";
 
 interface MeetingControlsProps {
   handleEndCall: () => void;
@@ -26,21 +27,11 @@ const MeetingControls = ({
   onPause,
   onResume,
 }: MeetingControlsProps) => {
-  const { sidebarType, setSidebarType, generateFeedback, isGeneratingFeedback } = useInterviewAgent();
+  const { sidebarType, setSidebarType } = useInterviewAgent();
 
   const handleSidebarAction = useCallback((type: SidebarType) => {
     setSidebarType(type);
   }, [setSidebarType]);
-
-  const handleGenerateFeedback = useCallback(async () => {
-    try {
-      setSidebarType("feedback");
-      await generateFeedback();
-    } catch (error) {
-      console.error("Failed to generate feedback:", error);
-      setSidebarType("feedback");
-    }
-  }, [generateFeedback, setSidebarType]);
 
   return (
     <>
@@ -100,6 +91,7 @@ const MeetingControls = ({
         </Button>
       </div>
       <PauseModal />
+      <EndCallModal />
     </>
   );
 };
