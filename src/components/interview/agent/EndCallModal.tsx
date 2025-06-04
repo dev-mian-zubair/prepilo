@@ -2,6 +2,7 @@ import React from "react";
 import { Modal, ModalContent, ModalHeader, ModalBody } from "@heroui/modal";
 import { useInterviewAgent } from "@/contexts/InterviewAgentContext";
 import { XCircleIcon, CheckCircleIcon } from "@heroicons/react/24/outline";
+import FeedbackDisplay from "../feedback/FeedbackDisplay";
 
 const EndCallModal = () => {
   const { 
@@ -85,9 +86,7 @@ const EndCallModal = () => {
                       <CheckCircleIcon className="w-5 h-5 text-green-400" />
                       <h3 className="text-lg font-semibold text-gray-200">Interview Feedback</h3>
                     </div>
-                    <div className="text-left text-gray-300 whitespace-pre-wrap">
-                      {feedback}
-                    </div>
+                    <FeedbackDisplay feedback={feedback} />
                   </div>
                 )}
               </div>
