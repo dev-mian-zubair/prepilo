@@ -119,8 +119,8 @@ const AgentLayout = ({
           </div>
         </div>
 
-        <div className={`absolute bottom-0 left-0 right-0 px-2 sm:px-4 pb-2 sm:pb-4 transition-all duration-300 ease-in-out ${sidebarPadding}`}>
-          {!error && !isProcessing && (
+        <div className={`absolute bottom-10 left-0 right-0 px-2 sm:px-4 pb-2 sm:pb-4 transition-all duration-300 ease-in-out ${sidebarPadding}`}>
+          {!error && (
             <div className="max-w-4xl mx-auto">
               <MeetingControls
                 handleEndCall={onEndCall}
