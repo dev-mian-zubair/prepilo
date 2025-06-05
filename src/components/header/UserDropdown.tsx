@@ -12,50 +12,50 @@ import { ChartPie, Settings, CircleHelp, LogOut } from "lucide-react";
 import { handleSignOut } from "@/helpers/auth.helper";
 
 const UserDropdown = ({ user }: { user: any }) => {
-  const iconClasses = "w-4 h-4";
+  const iconClasses = "w-5 h-5";
 
   return (
-    <Dropdown className="shadow-lg rounded-lg" placement="bottom-end">
+    <Dropdown className="shadow-lg rounded-xl" placement="bottom-end">
       <DropdownTrigger>
         <Avatar
           className="cursor-pointer border border-gray-200"
           color="primary"
-          size="md"
+          size="lg"
           src={user?.user_metadata?.avatar_url || "/default-avatar.png"}
         />
       </DropdownTrigger>
-      <DropdownMenu aria-label="User Actions" variant="flat">
+      <DropdownMenu aria-label="User Actions" variant="shadow" className="w-64">
         <DropdownItem
           key="app"
-          className="p-2"
+          className="p-2 rounded-xl"
           href="/app"
-          startContent={<ChartPie className={iconClasses} />}
+          startContent={<ChartPie className={iconClasses}/>}
         >
-          <span>Dashboard</span>
+          Dashboard
         </DropdownItem>
         <DropdownItem
           key="progress"
-          className="p-2"
+          className="p-2 rounded-xl"
           href="/settings"
           startContent={<Settings className={iconClasses} />}
         >
-          <span>Settings</span>
+          Settings
         </DropdownItem>
         <DropdownItem
           key="helpAndFeedback"
-          className="p-2"
+          className="p-2 rounded-xl"
           href="/help"
           startContent={<CircleHelp className={iconClasses} />}
         >
-          <span>Help & Feedback</span>
+          Help & Feedback
         </DropdownItem>
         <DropdownItem
           key="logout"
-          className="p-2 text-danger"
+          className="p-2 rounded-xl"
           startContent={<LogOut className={iconClasses} />}
           onPress={handleSignOut}
         >
-          <span>Log Out</span>
+          Log Out
         </DropdownItem>
       </DropdownMenu>
     </Dropdown>
