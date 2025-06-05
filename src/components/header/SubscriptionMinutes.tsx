@@ -25,7 +25,7 @@ export default function SubscriptionMinutes({
     <>
       <div
         className={cn(
-          "flex flex-col gap-2 rounded-xl border h-11 items-center justify-center px-2 cursor-pointer",
+          "flex flex-col gap-2 rounded-xl border h-12 items-center justify-center px-2 cursor-pointer",
           isCritical ? "border-danger/50 bg-danger/5" : 
           isLow ? "border-warning/50 bg-warning/5" : 
           "border-default-200/50 bg-default-100/50",
