@@ -91,20 +91,6 @@ model InterviewTechnology {
   @@id([interviewId, technologyId])
 }
 
-// Subscription: Tracks user's available interview minutes
-model Subscription {
-  id            String    @id @default(uuid())
-  userId        String    @unique
-  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  availableMinutes Int    @default(0)
-  totalMinutes     Int    @default(0)
-  lastRenewedAt   DateTime @default(now())
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-
-  @@index([userId])
-}
-
 // Session: Instance of a user taking an interview version
 model Session {
   id           String            @id @default(uuid())

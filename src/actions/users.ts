@@ -1,7 +1,6 @@
 "use server";
 
 import prisma from "@/lib/prisma";
-import { Subscription } from "@prisma/client";
 
 export interface IUser {
   id: string;
@@ -11,15 +10,11 @@ export interface IUser {
   provider: "google" | "github" | "email";
   createdAt: Date;
   updatedAt: Date;
-  subscription?: Subscription | null;
 }
 
 export async function getUser(id: string) {
   const user = await prisma.user.findUnique({
-    where: { id },
-    include: {
-      subscription: true
-    }
+    where: { id }
   });
 
   return user as IUser | null;
@@ -32,17 +27,7 @@ export async function createUser(user: Partial<IUser>) {
       email: user.email!,
       name: user.name!,
       avatar: user.avatar || "",
-      provider: user.provider!,
-      subscription: {
-        create: {
-          availableMinutes: 20,
-          totalMinutes: 20,
-          lastRenewedAt: new Date(),
-        }
-      }
-    },
-    include: {
-      subscription: true
+      provider: user.provider!
     }
   });
 
@@ -52,10 +37,7 @@ export async function createUser(user: Partial<IUser>) {
 export async function updateUser(id: string, updates: Partial<IUser>) {
   const updatedUser = await prisma.user.update({
     where: { id },
-    data: updates as any,
-    include: {
-      subscription: true
-    }
+    data: updates as any
   });
 
   return updatedUser as IUser;

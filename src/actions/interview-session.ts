@@ -12,7 +12,6 @@ import { safeParseModelResponse } from "@/actions/helpers/common.helper";
 import prisma from "@/lib/prisma";
 import { getUser } from "@/lib/auth";
 import { Session } from "@/types/session.types";
-import { checkAvailableMinutes, deductMinutes } from "@/actions/subscription";
 
 export async function startSession(
   interviewId: string,
@@ -22,15 +21,6 @@ export async function startSession(
     const user = await getCurrentUser();
     const version = await findOrCreateVersion(interviewId, difficulty);
 
-    // Get interview to check duration
-    const interview = await prisma.interview.findUnique({ where: { id: interviewId } });
-    if (!interview) throw new Error("Interview not found");
-
-    // Check if user has enough minutes
-    const hasEnoughMinutes = await checkAvailableMinutes(interview.duration);
-    if (!hasEnoughMinutes) {
-      throw new Error("Insufficient subscription minutes");
-    }
 
     const session = await prisma.session.create({
       data: {
@@ -90,14 +80,6 @@ export async function endSession(sessionId: string, error?: string, transcript?:
       throw new Error("Access denied: You are not the session owner");
     }
 
-    const sessionEndTime = new Date();
-    const durationMinutes = Math.ceil((sessionEndTime.getTime() - session.startedAt.getTime()) / (1000 * 60));
-
-    // Deduct minutes from subscription
-    const deducted = await deductMinutes(durationMinutes);
-    if (!deducted) {
-      throw new Error("Failed to deduct subscription minutes");
-    }
 
     // Generate feedback if transcript is provided and not empty
     let feedback = null;
@@ -110,10 +92,9 @@ export async function endSession(sessionId: string, error?: string, transcript?:
       where: { id: sessionId },
       data: {
         status: "COMPLETED",
-        endedAt: sessionEndTime,
+        endedAt: new Date(),
         transcript: transcript || '',
         overallScore: feedback?.overallScore || null,
-        duration: durationMinutes,
       },
       include: {
         version: { include: { interview: true } },
