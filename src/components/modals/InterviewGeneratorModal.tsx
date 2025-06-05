@@ -7,7 +7,7 @@ import { X } from "lucide-react";
 import GenerateInterviewByAgent from "../interview/generate/GenerateInterviewByAgent";
 import GenerateInterviewManually from "../interview/generate/GenerateInterviewManually";
 import LaunchInterview from "../interview/launch/LaunchInterview";
-import InterviewMethodSelector from "../interview/generate/SelectCreationMethod";
+import InterviewMethodSelector from "../interview/generate/InterviewMethodSelector";
 import GenerateInterviewByJD from "../interview/generate/GenerateInterviewByJD";
 
 import { InterviewType } from "@/enums";

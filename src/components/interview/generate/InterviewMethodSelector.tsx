@@ -42,13 +42,13 @@ const InterviewMethodSelector = ({ onSelect }: { onSelect: (type: string) => voi
       description: "Fill out a form to customize questions and settings for your interview. Perfect for specific requirements.",
       value: "manually"
     },
-    {
-      icon: "✨",
-      title: "Create with AI Agent",
-      subtitle: "AI-powered interview generation",
-      description: "Let our AI agent guide you through creating a personalized interview based on your needs.",
-      value: "agent"
-    },
+    // {
+    //   icon: "✨",
+    //   title: "Create with AI Agent",
+    //   subtitle: "AI-powered interview generation",
+    //   description: "Let our AI agent guide you through creating a personalized interview based on your needs.",
+    //   value: "agent"
+    // },
     {
       icon: "📄",
       title: "Create from Job Description",
