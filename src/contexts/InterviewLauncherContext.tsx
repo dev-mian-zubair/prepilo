@@ -2,7 +2,7 @@ import React, { createContext, useContext, useState } from "react";
 import { Session } from "@/types/session.types";
 import { Interview } from "@/types/interview.types";
 import { Difficulty } from "@prisma/client";
-import { createSession } from "@/actions/interview-session";
+import { startSession } from "@/actions/interview-session";
 import { handleResumeSession } from "@/actions/interview-session";
 
 interface InterviewLauncherContextType {
@@ -61,7 +61,7 @@ export const InterviewLauncherProvider = ({ children, interview, sessions, onClo
   const handleCreateSession = async (difficulty: Difficulty): Promise<Session> => {
     try {
       setError(null);
-      const result = await createSession(interview.id, difficulty);
+      const result = await startSession(interview.id, difficulty);
       if (result.success && result.session) {
         return {
           ...result.session,
