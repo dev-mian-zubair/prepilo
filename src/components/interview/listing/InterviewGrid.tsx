@@ -1,11 +1,29 @@
 "use client";
 import React, { useState } from "react";
 import { useDisclosure } from "@heroui/modal";
+import { Button } from "@heroui/button";
+import { Plus } from "lucide-react";
 
 import InterviewGridCard from "./InterviewGridCard";
 
 import { InterviewListType } from "@/types/interview";
 import InterviewLauncherModal from "@/components/modals/InterviewLauncherModal";
+import NewInterviewButton from "@/components/header/NewInterviewButton";
+
+const NoInterviewsCTA = () => {
+  return (
+    <div className="w-full flex flex-col items-center justify-center py-12 px-4 text-center">
+      <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-6">
+        <Plus className="w-8 h-8 text-primary" />
+      </div>
+      <h3 className="text-xl font-semibold text-foreground mb-2">No Interviews Yet</h3>
+      <p className="text-foreground/60 mb-6 max-w-md">
+        Start your interview preparation journey by creating your first interview. Choose from various methods to create questions tailored to your needs.
+      </p>
+      <NewInterviewButton />
+    </div>
+  );
+};
 
 export default function InterviewGrid({
   interviews,
@@ -31,6 +49,10 @@ export default function InterviewGrid({
       onOpen();
     }
   };
+
+  if (!interviews.length) {
+    return <NoInterviewsCTA />;
+  }
 
   return (
     <>
