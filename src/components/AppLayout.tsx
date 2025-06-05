@@ -16,7 +16,7 @@ import HeaderRightActions from "./header/HeaderRightActions";
 import SubscriptionMinutes from "./header/SubscriptionMinutes";
 
 import { cn } from "@/lib/utils";
-import { getSubscriptionMinutes } from "@/services/mock/subscription";
+import { getSubscriptionStatus } from "@/actions/subscription";
 import { handleSignOut } from "@/helpers/auth.helper";
 
 interface AppLayoutProps {
@@ -26,7 +26,7 @@ interface AppLayoutProps {
 export function AppLayout({ children }: AppLayoutProps) {
   const pathname = usePathname();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [subscription, setSubscription] = useState<{
+  const [subscriptionData, setSubscriptionData] = useState<{
     used: number;
     total: number;
   } | null>(null);
@@ -34,8 +34,13 @@ export function AppLayout({ children }: AppLayoutProps) {
   useEffect(() => {
     const fetchSubscription = async () => {
       try {
-        const data = await getSubscriptionMinutes();
-        setSubscription(data);
+        const data = await getSubscriptionStatus();
+        if (data) {
+          setSubscriptionData({
+            used: data.totalMinutes - data.availableMinutes,
+            total: data.totalMinutes
+          });
+        }
       } catch (error) {
         console.error("Failed to fetch subscription data:", error);
       }
@@ -72,9 +77,9 @@ export function AppLayout({ children }: AppLayoutProps) {
             </Link>
           </div>
           <div className="flex items-center gap-4">
-            {subscription && (
+            {subscriptionData && (
               <div className="hidden md:block">
-                <SubscriptionMinutes subscription={subscription} />
+                <SubscriptionMinutes subscription={subscriptionData} />
               </div>
             )}
             <div className="hidden md:block">
@@ -129,9 +134,9 @@ export function AppLayout({ children }: AppLayoutProps) {
               ))}
             </nav>
             <div className="p-4 space-y-4">
-              {subscription && (
+              {subscriptionData && (
                 <div className="md:hidden">
-                  <SubscriptionMinutes subscription={subscription} />
+                  <SubscriptionMinutes subscription={subscriptionData} />
                 </div>
               )}
               <div className="md:hidden">

@@ -12,7 +12,7 @@ import { safeParseModelResponse } from "@/actions/helpers/common.helper";
 import prisma from "@/lib/prisma";
 import { getUser } from "@/lib/auth";
 import { Session } from "@/types/session.types";
-import { subscription } from "@/actions/subscription";
+import { checkAvailableMinutes, deductMinutes } from "@/actions/subscription";
 
 export async function startSession(
   interviewId: string,
@@ -27,7 +27,7 @@ export async function startSession(
     if (!interview) throw new Error("Interview not found");
 
     // Check if user has enough minutes
-    const hasEnoughMinutes = await subscription.checkAvailableMinutes(interview.duration);
+    const hasEnoughMinutes = await checkAvailableMinutes(interview.duration);
     if (!hasEnoughMinutes) {
       throw new Error("Insufficient subscription minutes");
     }
@@ -94,7 +94,7 @@ export async function endSession(sessionId: string, error?: string, transcript?:
     const durationMinutes = Math.ceil((sessionEndTime.getTime() - session.startedAt.getTime()) / (1000 * 60));
 
     // Deduct minutes from subscription
-    const deducted = await subscription.deductMinutes(durationMinutes);
+    const deducted = await deductMinutes(durationMinutes);
     if (!deducted) {
       throw new Error("Failed to deduct subscription minutes");
     }
