@@ -18,6 +18,7 @@ model User {
   updatedAt  DateTime    @updatedAt
   sessions   Session[] // Sessions taken by user
   interviews Interview[] // Interviews created by user
+  subscription Subscription? // User's subscription
 
   @@index([email]) // For fast email lookups
 }
@@ -90,6 +91,20 @@ model InterviewTechnology {
   @@id([interviewId, technologyId])
 }
 
+// Subscription: Tracks user's available interview minutes
+model Subscription {
+  id            String    @id @default(uuid())
+  userId        String    @unique
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  availableMinutes Int    @default(0)
+  totalMinutes     Int    @default(0)
+  lastRenewedAt   DateTime @default(now())
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([userId])
+}
+
 // Session: Instance of a user taking an interview version
 model Session {
   id           String            @id @default(uuid())
@@ -102,6 +117,7 @@ model Session {
   status       SessionStatus     @default(IN_PROGRESS)
   overallScore Float? // 0-100
   transcript   String?           @db.Text
+  duration     Int?              // Duration in minutes
   createdAt    DateTime          @default(now())
   updatedAt    DateTime          @updatedAt
   feedback     Feedback?
