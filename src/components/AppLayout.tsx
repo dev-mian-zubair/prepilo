@@ -5,7 +5,6 @@ import { usePathname } from "next/navigation";
 import {
   HomeIcon,
   VideoCameraIcon,
-  MagnifyingGlassIcon,
   ArrowLeftOnRectangleIcon,
   CreditCardIcon,
   Bars3Icon,
@@ -59,7 +58,6 @@ export function AppLayout({ children }: AppLayoutProps) {
   const menuItems = [
     { icon: HomeIcon, label: "Dashboard", href: "/app" },
     { icon: VideoCameraIcon, label: "Interviews", href: "/app/interviews" },
-    { icon: MagnifyingGlassIcon, label: "Discover", href: "/app/discover" },
     { icon: CreditCardIcon, label: "Pricing", href: "/app/pricing" },
   ];
 
