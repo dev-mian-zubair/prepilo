@@ -5,20 +5,21 @@ import clsx from "clsx";
 
 import Footer from "../../components/Footer";
 import { Providers } from "@/providers";
-import { siteConfig } from "@/config/site";
+import { APP_CONFIG } from "@/config/app";
 import { fontSans } from "@/config/fonts";
 import { Navbar } from "@/components/NavBar";
 
 export const metadata: Metadata = {
   title: {
-    default: siteConfig.name,
-    template: `%s - ${siteConfig.name}`,
+    default: APP_CONFIG.name,
+    template: `%s - ${APP_CONFIG.name}`,
   },
-  description: siteConfig.description,
+  description: APP_CONFIG.description,
+  metadataBase: new URL("https://prepilo.com"),
   icons: {
     icon: "/favicon.ico",
   },
-  openGraph: siteConfig.og,
+  openGraph: APP_CONFIG.og,
 };
 
 export const viewport: Viewport = {

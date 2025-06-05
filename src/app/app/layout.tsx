@@ -1,22 +1,15 @@
 import "@/styles/globals.css";
-import { Metadata, Viewport } from "next";
+import { Metadata } from "next";
 import clsx from "clsx";
-import { ThemeProvider } from "next-themes";
 
 import { Providers } from "@/providers";
 import { fontSans } from "@/config/fonts";
 import { AppLayout } from "@/components/AppLayout";
+import { APP_CONFIG } from "@/config/app";
 
 export const metadata: Metadata = {
-  title: "App - Prepilo",
-  description: "Your interview preparation app",
-};
-
-export const viewport: Viewport = {
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "white" },
-    { media: "(prefers-color-scheme: dark)", color: "black" },
-  ],
+  title: `App - ${APP_CONFIG.name}`,
+  description: APP_CONFIG.description,
 };
 
 export default function RootLayout({

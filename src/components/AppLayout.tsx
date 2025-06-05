@@ -3,16 +3,13 @@ import { useState, useEffect } from "react";
 import { Link } from "@heroui/link";
 import { usePathname } from "next/navigation";
 import {
-  HomeIcon,
-  VideoCameraIcon,
   ArrowLeftOnRectangleIcon,
-  CreditCardIcon,
   Bars3Icon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
 
 import HeaderRightActions from "./header/HeaderRightActions";
-
+import { APP_CONFIG } from "@/config/app";
 import { cn } from "@/lib/utils";
 import { handleSignOut } from "@/helpers/auth.helper";
 
@@ -31,11 +28,7 @@ export function AppLayout({ children }: AppLayoutProps) {
 
   const isActive = (path: string) => pathname === path;
 
-  const menuItems = [
-    { icon: HomeIcon, label: "Dashboard", href: "/app" },
-    { icon: VideoCameraIcon, label: "Interviews", href: "/app/interviews" },
-    { icon: CreditCardIcon, label: "Pricing", href: "/app/pricing" },
-  ];
+  const menuItems = APP_CONFIG.navigation.main;
 
   return (
     <div className="flex flex-col h-screen bg-background">
@@ -49,8 +42,8 @@ export function AppLayout({ children }: AppLayoutProps) {
             >
               <div className="relative">
                 <div className="absolute inset-0 bg-primary/10 rounded-lg blur-sm group-hover:blur-md transition-all duration-200" />
-                <div className="relative bg-gradient-to-br from-primary to-primary/80 rounded-lg p-2.5 shadow-sm">
-                  <span className="text-white text-xl font-bold tracking-tight">P</span>
+                <div className={`relative bg-gradient-to-br ${APP_CONFIG.logo.gradient} rounded-lg p-2.5 shadow-sm`}>
+                  <span className="text-white text-xl font-bold tracking-tight">{APP_CONFIG.logo.text}</span>
                 </div>
               </div>
               <div className="flex flex-col">
@@ -58,7 +51,7 @@ export function AppLayout({ children }: AppLayoutProps) {
                   <span className="text-primary">Prep</span>
                   <span className="text-foreground">ilo</span>
                 </h1>
-                <span className="text-xs text-foreground/60 -mt-1">Interview Prep Platform</span>
+                <span className="text-xs text-foreground/60 -mt-1">{APP_CONFIG.title}</span>
               </div>
             </Link>
           </div>
