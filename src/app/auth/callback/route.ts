@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { createClient } from "@/supabase/server";
-import { users } from "@/actions/users";
+import { captureUserDetails } from "@/actions/users";
 
 export async function GET(request: Request) {
   // Extract search parameters and origin from the request URL
@@ -27,7 +27,7 @@ export async function GET(request: Request) {
   // Capture user details after successful OAuth
   if (data.user) {
     try {
-      await users.captureUserDetails(data.user);
+      await captureUserDetails(data.user);
     } catch (error) {
       console.error("Error capturing user details:", error);
       // Don't throw here - we still want to complete the auth flow
