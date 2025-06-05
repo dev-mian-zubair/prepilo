@@ -12,8 +12,9 @@ import { safeParseModelResponse } from "@/actions/helpers/common.helper";
 import prisma from "@/lib/prisma";
 import { getUser } from "@/lib/auth";
 import { Session } from "@/types/session.types";
+import { subscription } from "@/actions/subscription";
 
-export async function createSession(
+export async function startSession(
   interviewId: string,
   difficulty: Difficulty,
 ) {
@@ -21,11 +22,22 @@ export async function createSession(
     const user = await getCurrentUser();
     const version = await findOrCreateVersion(interviewId, difficulty);
 
+    // Get interview to check duration
+    const interview = await prisma.interview.findUnique({ where: { id: interviewId } });
+    if (!interview) throw new Error("Interview not found");
+
+    // Check if user has enough minutes
+    const hasEnoughMinutes = await subscription.checkAvailableMinutes(interview.duration);
+    if (!hasEnoughMinutes) {
+      throw new Error("Insufficient subscription minutes");
+    }
+
     const session = await prisma.session.create({
       data: {
         userId: user.id,
         versionId: version.id,
         startedAt: new Date(),
+        status: "IN_PROGRESS",
       },
       include: {
         version: { include: { questions: true } },
@@ -50,48 +62,10 @@ export async function createSession(
   }
 }
 
-async function generateSessionFeedback(session: any, transcript: string) {
-  try {
-    const { text } = await generateText({
-      model: MODEL,
-      prompt: buildSessionFeedbackPrompt(session, transcript),
-      system: SYSTEM_MESSAGES.INTERVIEW_FEEDBACK,
-    });
-
-    if (!text) {
-      throw new Error("AI model returned empty response");
-    }
-
-    const feedbackResult = safeParseModelResponse(text);
-
-    if (
-      typeof feedbackResult.technical !== 'number' ||
-      typeof feedbackResult.communication !== 'number' ||
-      typeof feedbackResult.overallScore !== 'number' ||
-      typeof feedbackResult.summary !== 'string' ||
-      !Array.isArray(feedbackResult.questionAnalysis)
-    ) {
-      throw new Error("Invalid feedback format from AI model");
-    }
-
-    return {
-      technical: Number(feedbackResult.technical),
-      communication: Number(feedbackResult.communication),
-      overallScore: Number(feedbackResult.overallScore),
-      summary: feedbackResult.summary,
-      questionAnalysis: feedbackResult.questionAnalysis,
-    };
-  } catch (error) {
-    console.error("Error generating feedback:", error);
-    throw new Error(`Failed to generate feedback: ${error instanceof Error ? error.message : 'Unknown error'}`);
-  }
-}
-
-export async function handleInProgressSession(sessionId: string, error?: string, transcript?: string) {
+export async function endSession(sessionId: string, error?: string, transcript?: string) {
   try {
     // 1. Get authenticated user
     const user = await getUser();
-
     if (!user) {
       throw new Error("Authentication required");
     }
@@ -117,6 +91,13 @@ export async function handleInProgressSession(sessionId: string, error?: string,
     }
 
     const sessionEndTime = new Date();
+    const durationMinutes = Math.ceil((sessionEndTime.getTime() - session.startedAt.getTime()) / (1000 * 60));
+
+    // Deduct minutes from subscription
+    const deducted = await subscription.deductMinutes(durationMinutes);
+    if (!deducted) {
+      throw new Error("Failed to deduct subscription minutes");
+    }
 
     // Generate feedback if transcript is provided and not empty
     let feedback = null;
@@ -132,6 +113,7 @@ export async function handleInProgressSession(sessionId: string, error?: string,
         endedAt: sessionEndTime,
         transcript: transcript || '',
         overallScore: feedback?.overallScore || null,
+        duration: durationMinutes,
       },
       include: {
         version: { include: { interview: true } },
@@ -387,3 +369,40 @@ export const generateFeedback = async (sessionId: string, transcript: string) =>
     };
   }
 };
+
+async function generateSessionFeedback(session: any, transcript: string) {
+  try {
+    const { text } = await generateText({
+      model: MODEL,
+      prompt: buildSessionFeedbackPrompt(session, transcript),
+      system: SYSTEM_MESSAGES.INTERVIEW_FEEDBACK,
+    });
+
+    if (!text) {
+      throw new Error("AI model returned empty response");
+    }
+
+    const feedbackResult = safeParseModelResponse(text);
+
+    if (
+      typeof feedbackResult.technical !== 'number' ||
+      typeof feedbackResult.communication !== 'number' ||
+      typeof feedbackResult.overallScore !== 'number' ||
+      typeof feedbackResult.summary !== 'string' ||
+      !Array.isArray(feedbackResult.questionAnalysis)
+    ) {
+      throw new Error("Invalid feedback format from AI model");
+    }
+
+    return {
+      technical: Number(feedbackResult.technical),
+      communication: Number(feedbackResult.communication),
+      overallScore: Number(feedbackResult.overallScore),
+      summary: feedbackResult.summary,
+      questionAnalysis: feedbackResult.questionAnalysis,
+    };
+  } catch (error) {
+    console.error("Error generating feedback:", error);
+    throw new Error(`Failed to generate feedback: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
