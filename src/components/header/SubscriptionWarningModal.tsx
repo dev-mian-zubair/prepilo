@@ -1,5 +1,6 @@
 import { Modal, ModalContent, ModalHeader, ModalBody, Button } from "@heroui/react";
 import { InformationCircleIcon } from "@heroicons/react/24/outline";
+import { useRouter } from "next/navigation";
 
 interface SubscriptionWarningModalProps {
   isOpen: boolean;
@@ -14,7 +15,13 @@ export default function SubscriptionWarningModal({
   used,
   total 
 }: SubscriptionWarningModalProps) {
+  const router = useRouter();
   const remaining = total - used;
+  
+  const handleBuyMore = () => {
+    onClose();
+    router.push('/app/pricing');
+  };
   
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
@@ -35,7 +42,7 @@ export default function SubscriptionWarningModal({
               Please consider purchasing more minutes to continue uninterrupted interviews.
             </p>
             <div className="flex justify-end">
-              <Button color="primary" onPress={onClose}>
+              <Button color="primary" onPress={handleBuyMore}>
                 Buy More Minutes
               </Button>
             </div>
