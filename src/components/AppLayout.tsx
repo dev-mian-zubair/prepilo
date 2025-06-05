@@ -121,14 +121,14 @@ export function AppLayout({ children }: AppLayoutProps) {
                 <Link
                   key={href}
                   className={cn(
-                    "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors duration-200",
+                    "flex items-center gap-4 rounded-lg px-4 py-3 text-base font-medium transition-colors duration-200",
                     isActive(href)
                       ? "bg-primary/10 text-primary"
                       : "text-foreground-secondary hover:bg-background-secondary/50 hover:text-foreground"
                   )}
                   href={href}
                 >
-                  <Icon className="h-5 w-5 shrink-0" />
+                  <Icon className="h-6 w-6 shrink-0" />
                   <span>{label}</span>
                 </Link>
               ))}
@@ -144,9 +144,9 @@ export function AppLayout({ children }: AppLayoutProps) {
               </div>
               <button
                 onClick={handleSignOut}
-                className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-error hover:bg-error/10 transition-colors duration-200"
+                className="flex w-full items-center gap-4 rounded-lg px-4 py-3 text-base font-medium text-error hover:bg-error/10 transition-colors duration-200"
               >
-                <ArrowLeftOnRectangleIcon className="h-5 w-5 shrink-0" />
+                <ArrowLeftOnRectangleIcon className="h-6 w-6 shrink-0" />
                 <span>Logout</span>
               </button>
             </div>
@@ -157,24 +157,24 @@ export function AppLayout({ children }: AppLayoutProps) {
       {/* Main Content */}
       <div className="flex flex-1 overflow-hidden">
         {/* Sidebar - Hidden on mobile */}
-        <aside className="hidden md:block bg-background-secondary p-4 w-64">
+        <aside className="hidden md:block bg-background-secondary p-6 w-72">
           <div className="flex flex-col h-full">
             {/* Navigation */}
-            <nav className="flex-1 space-y-1 p-3">
+            <nav className="flex-1 space-y-2">
               {menuItems.map(({ icon: Icon, label, href }) => (
                 <Link
                   key={href}
                   className={cn(
-                    "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors duration-200",
+                    "flex items-center gap-4 rounded-xl px-4 py-3.5 text-base font-medium transition-all duration-200",
                     isActive(href)
-                      ? "bg-primary/10 text-primary"
+                      ? "bg-primary/10 text-primary shadow-sm"
                       : "text-foreground-secondary hover:bg-background-secondary/50 hover:text-foreground"
                   )}
                   href={href}
                 >
                   <Icon
                     className={cn(
-                      "h-5 w-5 shrink-0 transition-colors duration-200",
+                      "h-6 w-6 shrink-0 transition-colors duration-200",
                       isActive(href)
                         ? "text-primary"
                         : "text-foreground-secondary group-hover:text-foreground"
@@ -186,11 +186,11 @@ export function AppLayout({ children }: AppLayoutProps) {
               <button
                 onClick={handleSignOut}
                 className={cn(
-                  "flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium",
-                  "text-error hover:bg-error/10 transition-colors duration-200"
+                  "flex w-full items-center gap-4 rounded-xl px-4 py-3.5 text-base font-medium",
+                  "text-error hover:bg-error/10 transition-all duration-200"
                 )}
               >
-                <ArrowLeftOnRectangleIcon className="h-5 w-5 shrink-0" />
+                <ArrowLeftOnRectangleIcon className="h-6 w-6 shrink-0" />
                 <span className="truncate">Logout</span>
               </button>
             </nav>
