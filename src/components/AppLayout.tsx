@@ -1,26 +1,20 @@
 "use client";
 import { useState, useEffect } from "react";
 import { Link } from "@heroui/link";
-import { Button } from "@heroui/button";
 import { usePathname } from "next/navigation";
 import {
   HomeIcon,
   VideoCameraIcon,
-  UserIcon,
-  ChartBarIcon,
-  Cog6ToothIcon,
   MagnifyingGlassIcon,
   ArrowLeftOnRectangleIcon,
   CreditCardIcon,
   Bars3Icon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
-import { PanelLeftClose, PanelRightClose } from "lucide-react";
 
 import HeaderRightActions from "./header/HeaderRightActions";
 import SubscriptionMinutes from "./header/SubscriptionMinutes";
 
-import { useAuth } from "@/providers/AuthProvider";
 import { cn } from "@/lib/utils";
 import { getSubscriptionMinutes } from "@/services/mock/subscription";
 import { handleSignOut } from "@/helpers/auth.helper";
@@ -30,9 +24,7 @@ interface AppLayoutProps {
 }
 
 export function AppLayout({ children }: AppLayoutProps) {
-  const { user, loading } = useAuth();
   const pathname = usePathname();
-  const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [subscription, setSubscription] = useState<{
     used: number;
@@ -65,8 +57,6 @@ export function AppLayout({ children }: AppLayoutProps) {
     { icon: MagnifyingGlassIcon, label: "Discover", href: "/app/discover" },
     { icon: CreditCardIcon, label: "Pricing", href: "/app/pricing" },
   ];
-
-  const handleSidebarToggle = () => setIsCollapsed(!isCollapsed);
 
   return (
     <div className="flex flex-col h-screen bg-background">
@@ -162,12 +152,7 @@ export function AppLayout({ children }: AppLayoutProps) {
       {/* Main Content */}
       <div className="flex flex-1 overflow-hidden">
         {/* Sidebar - Hidden on mobile */}
-        <aside
-          className={cn(
-            "hidden md:block bg-background-secondary p-4",
-            isCollapsed ? "w-16" : "w-64"
-          )}
-        >
+        <aside className="hidden md:block bg-background-secondary p-4 w-64">
           <div className="flex flex-col h-full">
             {/* Navigation */}
             <nav className="flex-1 space-y-1 p-3">
@@ -190,9 +175,7 @@ export function AppLayout({ children }: AppLayoutProps) {
                         : "text-foreground-secondary group-hover:text-foreground"
                     )}
                   />
-                  {!isCollapsed && (
-                    <span className="truncate">{label}</span>
-                  )}
+                  <span className="truncate">{label}</span>
                 </Link>
               ))}
               <button
@@ -203,9 +186,7 @@ export function AppLayout({ children }: AppLayoutProps) {
                 )}
               >
                 <ArrowLeftOnRectangleIcon className="h-5 w-5 shrink-0" />
-                {!isCollapsed && (
-                  <span className="truncate">Logout</span>
-                )}
+                <span className="truncate">Logout</span>
               </button>
             </nav>
           </div>

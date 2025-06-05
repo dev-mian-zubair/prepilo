@@ -2,7 +2,7 @@ import React, { createContext, useContext, useState, useCallback, useRef, useEff
 import { Session } from "@/types/session.types";
 import { SidebarType } from "@/types/interview";
 import { CallStatus } from "@/enums";
-import { handleInProgressSession, handlePauseSession, handleResumeSession, getSessionTranscript, generateFeedback } from "@/actions/interview-session";
+import { endSession, handlePauseSession, handleResumeSession, getSessionTranscript, generateFeedback } from "@/actions/interview-session";
 import { useVapiCall } from "@/hooks/useVapiCall";
 import { Interview } from "@/types/interview";
 import { resumingInterviewer } from "@/helpers/agent.helper";
@@ -196,7 +196,7 @@ export const InterviewAgentProvider: React.FC<InterviewAgentProviderProps> = ({
             .join('\n\n')
         : '';
 
-      const result = await handleInProgressSession(session.id, "User ended the call. Session will be evaluated for completion.", transcript);
+      const result = await endSession(session.id, "User ended the call. Session will be evaluated for completion.", transcript);
       console.log("result", result);
       if (result.success) {
         if (!result.feedback) {
